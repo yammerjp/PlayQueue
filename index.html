@@ -20,17 +20,24 @@
 <body>
 <div id="app">
   <div id="center-box">
-      <h1>Play Queue</h1>
-    <div id="player-box">
+    <h1>Play Queue</h1>
+
+    <div id="tab-bar">
+      <i class="material-icons tab-switch-bar">play_arrow</i>
+      <i class="material-icons tab-switch-bar">list</i>
+      <i class="material-icons tab-switch-bar">search</i>
+    </div>
+
+    <div id="tab-player">
       <div id="player"></div>
     </div>
-    <i class="material-icons tab-switch-bar">play_arrow</i>
-    <i class="material-icons tab-switch-bar">list</i>
-    <i class="material-icons tab-switch-bar">search</i>
-    <div class="tab-play-queue">
+
+    <div id="tab-queue">
         <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
       <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">{{item.Id}}</div>
     </div>
+
+    <div id="tab-search">tab-search</div>
   </div>
 </div>
 

@@ -16,7 +16,7 @@ h1{
 
 }
 
-#player-box{
+#tab-player{
 /*    display:none;*/
     /*youtube player 16:9固定 ↓*/
     position: relative;
@@ -24,7 +24,7 @@ h1{
     /*youtube player 16:9固定 ↑*/
 
 }
-#player-box:before {
+#tab-player:before {
     /*youtube player 16:9固定 ↓*/
     content:"";
     display: block;
