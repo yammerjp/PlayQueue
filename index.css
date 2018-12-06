@@ -1,0 +1,18 @@
+body{
+    text-align: center;
+}
+h1{
+    font-size: 1.5em;
+}
+#player{
+    width: 100%;
+}
+
+#player-box{
+    width: 100%;
+    max-width: 600px;
+    margin:0px auto;
+}
+.tab-switch-bar{
+
+}

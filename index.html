@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Play Queue for Youtube</title>
+<meta charset="utf-8">
+<meta name="description" content="youtubeを連続再生するweb app">
+<meta name="author" content="dalchemic">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="index.css">
+<link rel="shortcut icon" href="favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" sizes="196x196" href="favicon.ico">
+<link rel="apple-touch-icon" sizes="152x152" href="favicon.ico">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+  
+<body>
+<div id="player-box">
+  <h1>Play Queue</h1>
+  <div id="player"></div>
+  <i class="material-icons tab-switch-bar">search</i>
+  <i class="material-icons tab-switch-bar">play_arrow</i>
+  <div class="tab-play-queue">
+    <input type="text" id="movie-id-text"><input type="submit" value="送信" id="movie-id-text">
+  </div>
+</div>
+
+
+<script>
+
+  let movieIdQueue=['OvWqYBBIYww','mBlGOx4HdXM'];
+  let movieIdQueueCt =1;
+  movieIdQueue.push('tTPOSNxCZF4');
+
+  let tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  let firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  
+  // 3. This function creates an <iframe> (and YouTube player)
+  //    after the API code downloads.
+  let player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+//      height: '1080',//'270',
+//      width: '1920',//window.innerWidth,
+      videoId: movieIdQueue[0],
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+  });
+  }
+
+  function onPlayerReady(event) {
+      event.target.playVideo();
+  }
+
+  function onPlayerStateChange(event) {
+    if(event.data == YT.PlayerState.ENDED){
+      console.log("ended");
+      player.loadVideoById({videoId: movieIdQueue[movieIdQueueCt++] ,
+                      suggestedQuality:'small'});
+      movieIdQueueCt %= movieIdQueue.length;
+    }
+  }
+
+
+
+
+
+</script>
+</body>
+</html>
