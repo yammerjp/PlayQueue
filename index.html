@@ -28,7 +28,7 @@
     <div class="tab-play-queue">
         <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
       <ul>
-        <li v-for="item in movieQueueInvue" :key="item.Id">{{item.Id}}</li>
+        <li v-for="item in movieQueue" :key="item.Id">{{item.Id}}</li>
       </ul>
     </div>
   </div>
@@ -38,8 +38,39 @@
 <script>
 
 
-let movieQueue =[];
-let movieQueueCt =0;
+
+//console.log(vm.movieQueueInvue);
+const vm =new Vue({
+  el: "#app",
+  data:{
+    movieQueue :[
+      {
+        Id: 'OvWqYBBIYww'
+      },
+      {
+        Id: 'mBlGOx4HdXM'
+      },
+      {
+        Id: 'tTPOSNxCZF4'
+      }
+    ],
+    movieQueueCt :0
+  },
+  methods:{
+    newMovieIdSubmitted:function(){
+      this.movieQueue.push({
+        Id:this.newMovieId
+      });
+    }
+  },
+  created(){
+  }/*,
+  updated(){
+    if(this.movie){}
+  }*/
+});
+
+
 
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -48,7 +79,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 let player;
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
-    videoId: 'mBlGOx4HdXM',
+    videoId: vm.movieQueue[0].Id,
     events: {
       'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
@@ -60,48 +91,16 @@ function onPlayerReady(event) {
 }
 function onPlayerStateChange(event) {
   if(event.data == YT.PlayerState.ENDED){
-    console.log("ended");
-    player.loadVideoById({videoId: movieQueue[movieQueueCt++].Id , suggestedQuality:'small'});
+    player.loadVideoById({
+      videoId: vm.movieQueue[++ vm.movieQueueCt].Id,
+      suggestedQuality:'small'
+    });
   }
   
 }
+
+//console.log("All <script> is loaded.");
 //console.log(vm.movieQueueInvue);
-const vm =new Vue({
-  el: "#app",
-  data:{
-    newMovieId:"",
-    movieQueueInvue :[
-      {
-        Id: 'OvWqYBBIYww'
-      },
-      {
-        Id: 'mBlGOx4HdXM'
-      },
-      {
-        Id: 'tTPOSNxCZF4'
-      }
-    ]
-  },
-  methods:{
-    newMovieIdSubmitted:function(){
-
-      this.movieQueueInvue.push({Id:this.newMovieId});
-      movieQueue=this.movieQueueInvue;
-    }
-  },
-  created(){
-    movieQueue=this.movieQueueInvue;
-    console.log("copyed\n");
-    console.log(movieQueue);
-  }/*,
-  updated(){
-    if(this.movie){}
-    movieQueue=this.movieQueueInvue;
-  }*/
-});
-
-console.log("All <script> is loaded.");
-console.log(vm.movieQueueInvue);
 </script>
 </body>
 </html>
