@@ -13,6 +13,7 @@ h1{
     max-width: 600px;
     margin:0px auto;
 }
-.tab-switch-bar{
-
+#player-box{
+    background-color: #94e6ff;
+    padding: 5px;
 }
