@@ -23,26 +23,31 @@
   <div id="center-box">
     <h1>Play Queue</h1>
 
-    <div id="tab-bar">
-      <i class="material-icons tab-switch-bar">play_arrow</i>
-      <i class="material-icons tab-switch-bar">list</i>
-      <i class="material-icons tab-switch-bar">search</i>
+    <div id="tab-bar" >
+      <i class="material-icons tab-switch-bar" v-on:click='selectedTab=0'>play_arrow</i>
+      <i class="material-icons tab-switch-bar" v-on:click='selectedTab=1'>list</i>
+      <i class="material-icons tab-switch-bar" v-on:click='selectedTab=2'>search</i>
     </div>
 
-    <div id="tab-player">
+    <div id="tab-player" v-bind:class="{'unselected-tab':selectedTab!=0}">
       <div id="player"></div>
     </div>
 
-    <div id="tab-queue">
+    <div id="tab-queue" v-bind:class="{'unselected-tab':selectedTab!=1}">
         <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
       <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">{{item.Id}}</div>
     </div>
 
-    <div id="tab-search">tab-search</div>
+    <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
+      tab-search
+    </div>
   </div>
 </div>
 
 <script>
+const TAB_PLAYER =0;
+const TAB_QUEUE  =1;
+const TAB_SEARCH =2;
 
 const vm =new Vue({
   el: "#app",
@@ -53,7 +58,9 @@ const vm =new Vue({
       { Id: 'mBlGOx4HdXM' },
       { Id: 'tTPOSNxCZF4'}
     ],
-    movieQueueCt :0
+    movieQueueCt : 0,
+    selectedTab : 0
+    
   },
   methods:{
     newMovieIdSubmitted:function(){
