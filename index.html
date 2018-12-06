@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,39 +19,30 @@
   
 <body>
 <div id="app">
-  <div id="player-box">
-    <h1>Play Queue</h1>
-    <div id="player"></div>
-    <i class="material-icons tab-switch-bar">search</i>
+  <div id="center-box">
+      <h1>Play Queue</h1>
+    <div id="player-box">
+      <div id="player"></div>
+    </div>
     <i class="material-icons tab-switch-bar">play_arrow</i>
+    <i class="material-icons tab-switch-bar">list</i>
+    <i class="material-icons tab-switch-bar">search</i>
     <div class="tab-play-queue">
         <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
-      <ul>
-        <li v-for="item in movieQueue" :key="item.Id">{{item.Id}}</li>
-      </ul>
+      <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">{{item.Id}}</div>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script>
 
-
-
-//console.log(vm.movieQueueInvue);
 const vm =new Vue({
   el: "#app",
   data:{
     movieQueue :[
-      {
-        Id: 'OvWqYBBIYww'
-      },
-      {
-        Id: 'mBlGOx4HdXM'
-      },
-      {
-        Id: 'tTPOSNxCZF4'
-      }
+      { Id: 'OvWqYBBIYww' },
+      { Id: 'mBlGOx4HdXM' },
+      { Id: 'tTPOSNxCZF4'}
     ],
     movieQueueCt :0
   },
@@ -62,15 +52,8 @@ const vm =new Vue({
         Id:this.newMovieId
       });
     }
-  },
-  created(){
-  }/*,
-  updated(){
-    if(this.movie){}
-  }*/
+  }
 });
-
-
 
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -95,12 +78,8 @@ function onPlayerStateChange(event) {
       videoId: vm.movieQueue[++ vm.movieQueueCt].Id,
       suggestedQuality:'small'
     });
-  }
-  
+  } 
 }
-
-//console.log("All <script> is loaded.");
-//console.log(vm.movieQueueInvue);
 </script>
 </body>
 </html>
