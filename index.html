@@ -14,65 +14,93 @@
 <link rel="apple-touch-icon" sizes="152x152" href="favicon.ico">
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+<script src="https://unpkg.com/vue"></script>
 </head>
 
   
 <body>
-<div id="player-box">
-  <h1>Play Queue</h1>
-  <div id="player"></div>
-  <i class="material-icons tab-switch-bar">search</i>
-  <i class="material-icons tab-switch-bar">play_arrow</i>
-  <div class="tab-play-queue">
-    <input type="text" id="movie-id-text"><input type="submit" value="送信" id="movie-id-text">
+<div id="app">
+  <div id="player-box">
+    <h1>Play Queue</h1>
+    <div id="player"></div>
+    <i class="material-icons tab-switch-bar">search</i>
+    <i class="material-icons tab-switch-bar">play_arrow</i>
+    <div class="tab-play-queue">
+        <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
+      <ul>
+        <li v-for="item in movieQueue" :key="item.Id">{{item.Id}}</li>
+      </ul>
+    </div>
   </div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script>
 
-  let movieIdQueue=['OvWqYBBIYww','mBlGOx4HdXM'];
-  let movieIdQueueCt =1;
-  movieIdQueue.push('tTPOSNxCZF4');
 
-  let tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  let firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-  
-  // 3. This function creates an <iframe> (and YouTube player)
-  //    after the API code downloads.
-  let player;
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-//      height: '1080',//'270',
-//      width: '1920',//window.innerWidth,
-      videoId: movieIdQueue[0],
-      events: {
-        'onReady': onPlayerReady,
-        'onStateChange': onPlayerStateChange
+
+//console.log(vm.movieQueueInvue);
+const vm =new Vue({
+  el: "#app",
+  data:{
+    movieQueue :[
+      {
+        Id: 'OvWqYBBIYww'
+      },
+      {
+        Id: 'mBlGOx4HdXM'
+      },
+      {
+        Id: 'tTPOSNxCZF4'
       }
-  });
-  }
-
-  function onPlayerReady(event) {
-      event.target.playVideo();
-  }
-
-  function onPlayerStateChange(event) {
-    if(event.data == YT.PlayerState.ENDED){
-      console.log("ended");
-      player.loadVideoById({videoId: movieIdQueue[movieIdQueueCt++] ,
-                      suggestedQuality:'small'});
-      movieIdQueueCt %= movieIdQueue.length;
+    ],
+    movieQueueCt :0
+  },
+  methods:{
+    newMovieIdSubmitted:function(){
+      this.movieQueue.push({
+        Id:this.newMovieId
+      });
     }
+  },
+  created(){
+  }/*,
+  updated(){
+    if(this.movie){}
+  }*/
+});
+
+
+
+let tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+let firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+let player;
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    videoId: vm.movieQueue[0].Id,
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+function onPlayerReady(event) {
+    event.target.playVideo();
+}
+function onPlayerStateChange(event) {
+  if(event.data == YT.PlayerState.ENDED){
+    player.loadVideoById({
+      videoId: vm.movieQueue[++ vm.movieQueueCt].Id,
+      suggestedQuality:'small'
+    });
   }
+  
+}
 
-
-
-
-
+//console.log("All <script> is loaded.");
+//console.log(vm.movieQueueInvue);
 </script>
 </body>
 </html>
