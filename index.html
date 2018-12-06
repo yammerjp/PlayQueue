@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" sizes="152x152" href="favicon.ico">
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+<script src="https://unpkg.com/vue"></script>
 </head>
 
   
@@ -26,6 +26,9 @@
   <i class="material-icons tab-switch-bar">play_arrow</i>
   <div class="tab-play-queue">
     <input type="text" id="movie-id-text"><input type="submit" value="送信" id="movie-id-text">
+    <ul>
+      <li v-for="item in movieIdQueue">{{item}}</li>
+    </ul>
   </div>
 </div>
 
