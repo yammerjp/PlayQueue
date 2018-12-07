@@ -6,7 +6,6 @@
 <meta name="description" content="youtubeを連続再生するweb app">
 <meta name="author" content="dalchemic">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="index.css">
 <link rel="shortcut icon" href="favicon.ico">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" sizes="196x196" href="favicon.ico">
@@ -14,6 +13,12 @@
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://unpkg.com/vue"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
 </head>
 
   
@@ -23,24 +28,51 @@
   <div id="center-box">
     <h1>Play Queue</h1>
 
-    <div id="tab-bar" >
-      <i class="material-icons tab-switch-bar" v-on:click='selectedTab=0'>play_arrow</i>
-      <i class="material-icons tab-switch-bar" v-on:click='selectedTab=1'>list</i>
-      <i class="material-icons tab-switch-bar" v-on:click='selectedTab=2'>search</i>
-    </div>
 
-    <div id="tab-player" v-bind:class="{'unselected-tab':selectedTab!=0}">
+
+    <div id="tab-player">
       <div id="player"></div>
     </div>
 
+    <div id="tab-bar" class="row tab-row">
+      <div class="col s12">
+        <div class="tab col s6" v-on:click='selectedTab=1' v-bind:class="{'selected-tab-bar': selectedTab==1}">
+          <i class="material-icons tab-switch-bar">list</i>
+        </div>
+        <div class="tab col s6" v-on:click='selectedTab=2' v-bind:class="{'selected-tab-bar': selectedTab==2}">
+          <i class="material-icons tab-switch-bar">search</i>
+        </div>
+      </div>
+    </div>
+    
     <div id="tab-queue" v-bind:class="{'unselected-tab':selectedTab!=1}">
-        <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
-      <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">{{item.Id}}</div>
-    </div>
+      <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">
+      <div class="col s12 m8 ">
+      <div class="card-panel grey lighten-5 z-depth-1 queue-card-panel">
+      <div class="row valign-wrapper queue-row">
+      <!--タップ時にこの中を編集-->
+            <div class="col s4">
+<!--              <img src="thumbnail-test.jpg" alt="" class="responsive-img">-->
+              <img v-bind:src=" 'https://i.ytimg.com/vi/' + item.Id + '/default.jpg' " alt="" class="responsive-img">
+            </div>
+            <div class="col s8">
+              <span class="black-text">
+                  {{item.Id}}
+              </span>
+            </div>
 
-    <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
-      tab-search
+      </div>
+      </div>
+      </div>
+      </div>
     </div>
+    
+
+    
+    <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
+      <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
+    </div>
+    
   </div>
 </div>
 
@@ -53,14 +85,21 @@ const vm =new Vue({
   el: "#app",
   data:{
     movieQueue :[
-
+    
       { Id: 'OvWqYBBIYww' },
       { Id: 'mBlGOx4HdXM' },
-      { Id: 'tTPOSNxCZF4'}
+      { Id: 'tTPOSNxCZF4'},
+      { Id: 'IGInsosP0Ac'},
+      { Id: 'C-xF2MAFw5s'},
+      { Id: 'drSMZgnmJjk'},
+      { Id: 'x9v8aNl6Aps'},
+      { Id: 'Hh9yZWeTmVM'},
+      { Id: 'RgKp3ppdhWs'},
+      { Id: '5GQnC6UUsZw'}
     ],
     newMovieId:"",
     movieQueueCt : 0,
-    selectedTab : 0
+    selectedTab : 1
     
   },
   methods:{

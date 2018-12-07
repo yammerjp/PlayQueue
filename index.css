@@ -2,7 +2,9 @@ body{
     text-align: center;
 }
 h1{
+    font-family: 'Anton', sans-serif;
     font-size: 1.5em;
+    color: #DA5019;
 }
 
 #player{
@@ -14,7 +16,10 @@ h1{
     height: 100%;
     /*youtube player 16:9固定 ↑*/
 }
-
+#tab-bar{
+    padding-top:5px;
+    padding-bottom: 5px;
+}
 #tab-player:before {
     /*youtube player 16:9固定 ↓*/
     content:"";
@@ -34,6 +39,9 @@ h1{
 #tab-search{
     
 }*/
+.selected-tab-bar{
+    border-bottom: solid 2px #DA5019;
+}
 .unselected-tab{
     display:none;
 }
@@ -41,13 +49,22 @@ h1{
 #center-box{
     width: 100%;
     max-width: 600px;
-    margin:0px auto;
-    background-color: burlywood;
+/*    margin:0px auto;*/
+/*    background-color: burlywood;*/
 }
 
 .movieQueueList{
-    background-color: cornflowerblue;
-    margin:2px;
+    background-color:#F3C0AB;
 /*    list-style: none;*/
 
+}
+.queue-card-panel{
+    padding:2px;
+    margin:0px;
+}
+.tab-row{
+    margin-bottom: 3px;
+}
+.queue-row {
+    margin-bottom: 3px;
 }
