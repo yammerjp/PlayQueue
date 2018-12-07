@@ -18,6 +18,7 @@
 
 <link rel="stylesheet" href="iziToast/iziToast.min.css">
 <script src="iziToast/iziToast.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
@@ -83,13 +84,18 @@
 const TAB_PLAYER =0;
 const TAB_QUEUE  =1;
 const TAB_SEARCH =2;
+const YoutubeKey="AIzaSyCCgdgCh4cw1pnscxtRsfP80M23lMlCdKY";
 
 const vm =new Vue({
   el: "#app",
   data:{
     movieQueue :[
     
-      { Id: 'OvWqYBBIYww' },
+      { Id: 'OvWqYBBIYww',
+        title:'',
+        description:'',
+        thumbnails:''
+      }/*,
       { Id: 'drSMZgnmJjk'},
       { Id: 'mBlGOx4HdXM' },
       { Id: 'tTPOSNxCZF4'},
@@ -98,18 +104,48 @@ const vm =new Vue({
       { Id: 'x9v8aNl6Aps'},
       { Id: 'Hh9yZWeTmVM'},
       { Id: 'RgKp3ppdhWs'},
-      { Id: '5GQnC6UUsZw'}
+      { Id: '5GQnC6UUsZw'}*/
     ],
     newMovieId:"",
     movieQueueCt : 0,
     selectedTab : 1
     
   },
+  mounted(){
+
+  },
   methods:{
     newMovieIdSubmitted:function(){
-      this.movieQueue.push({
-        Id:this.newMovieId
-      });
+      const requestUrl 
+        ='https://www.googleapis.com/youtube/v3/videos?id='
+        + this.newMovieId
+        +'&key='+YoutubeKey
+        +'&part=snippet,status';
+      axios.get(requestUrl)
+        .then(function (res) {
+//          console.log(res.data.items[0]);
+          if(res.data.items[0].status.embeddable==true){  
+          //一応埋め込み可否っぽい値を判断しているが、埋め込み不可動画でもtrueで通ってしまった このまま解決しないならこの部分はいらない。
+            const newMovieQueue ={
+              Id: vm.newMovieId,
+              title: res.data.items[0].snippet.title,
+              description: res.data.items[0].snippet.description,
+              thumbnails: res.data.items[0].snippet.thumbnails.default.url
+            };
+            vm.movieQueue.push(newMovieQueue);
+          }else{
+            iziToast.error({ 
+              title: 'Not permitted', 
+              message: 'The movie is not permitted on Youtube embedded player.' 
+            });
+          }
+        }).catch(function (err) {
+          console.log(err);
+          iziToast.error({ 
+            title: 'Reject http request', 
+            message: 'could not get movie details. Youtube reject http request.' 
+          });
+        });
     }
 
   }
@@ -130,6 +166,7 @@ function onYouTubeIframeAPIReady() {
     }
   });
 }
+
 function onPlayerReady(event) {
     event.target.playVideo();
 }
@@ -154,13 +191,14 @@ function onPlayerError(event){
         suggestedQuality:'small'  });
       iziToast.error({ 
         title: 'Skip Movie', 
-        message: 'The skipped movie is not permitted on Youtube embedded player.' });
-      console.log("player error. load next movie. error code:"+ event.data);
+        message: 'The skipped movie is not permitted on Youtube embedded player.'
+      });
+//      console.log("player error. load next movie. error code:"+ event.data);
       break;
 
     default:
       iziToast.error({ title: 'Unknown Error', message: 'Stop movie' });
-      console.log("unknown player error");
+//      console.log("unknown player error");
   }
 
 }
