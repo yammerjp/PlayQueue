@@ -15,6 +15,9 @@
 <script src="https://unpkg.com/vue"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
+
+<link rel="stylesheet" href="iziToast/iziToast.min.css">
+<script src="iziToast/iziToast.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
@@ -87,11 +90,11 @@ const vm =new Vue({
     movieQueue :[
     
       { Id: 'OvWqYBBIYww' },
+      { Id: 'drSMZgnmJjk'},
       { Id: 'mBlGOx4HdXM' },
       { Id: 'tTPOSNxCZF4'},
       { Id: 'IGInsosP0Ac'},
       { Id: 'C-xF2MAFw5s'},
-      { Id: 'drSMZgnmJjk'},
       { Id: 'x9v8aNl6Aps'},
       { Id: 'Hh9yZWeTmVM'},
       { Id: 'RgKp3ppdhWs'},
@@ -122,7 +125,8 @@ function onYouTubeIframeAPIReady() {
     videoId: vm.movieQueue[0].Id,
     events: {
       'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
+      'onStateChange': onPlayerStateChange,
+      'onError':onPlayerError
     }
   });
 }
@@ -137,6 +141,28 @@ function onPlayerStateChange(event) {
     });
 
   } 
+}
+function onPlayerError(event){
+  switch(event.data){
+    case 2://リクエストが無効なパラメータ値 動画IDのフォーマットが異なる
+    case 5://HTML5プレイヤーに関するエラー
+    case 100://動画が見つからない(非公開含む)
+    case 101://埋め込み不可の動画
+    case 150://埋め込み不可の動画
+      player.loadVideoById({
+        videoId: vm.movieQueue[++ vm.movieQueueCt].Id,
+        suggestedQuality:'small'  });
+      iziToast.error({ 
+        title: 'Skip Movie', 
+        message: 'The skipped movie is not permitted on Youtube embedded player.' });
+      console.log("player error. load next movie. error code:"+ event.data);
+      break;
+
+    default:
+      iziToast.error({ title: 'Unknown Error', message: 'Stop movie' });
+      console.log("unknown player error");
+  }
+
 }
 </script>
 </body>
