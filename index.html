@@ -54,7 +54,7 @@
             </div>
             <div class="col s8">
               <span class="black-text">
-                  {{item.Id}}
+                {{item.title}} //{{item.Id}}
               </span>
             </div>
 
@@ -65,7 +65,31 @@
     </div>
 
     <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
-      <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
+      <input v-model="newMovieId" placeholder="new movie id">
+      <button v-on:click="newMovieIdSubmitted">submit</button>
+      <input v-model="searchWord" placeholder="search word">
+      <button v-on:click="searchWordSubmitted">search</button>
+
+      <div class="movieSearchList" v-for="item in movieSearchList" :key="item.Id">
+        <div class="col s12 m8 ">
+        <div class="card-panel grey lighten-5 z-depth-1 queue-card-panel">
+        <div class="row valign-wrapper queue-row">
+        <!--タップ時にこの中を編集-->
+              <div class="col s4">
+  <!--              <img src="thumbnail-test.jpg" alt="" class="responsive-img">-->
+                <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
+              </div>
+              <div class="col s8">
+                <span class="black-text">
+                    {{item.title}} //{{item.Id}}
+                </span>
+              </div>
+  
+        </div>
+        </div>
+        </div>
+        </div>
+
     </div>
     
   </div>
@@ -85,7 +109,7 @@ const vm =new Vue({
       { Id: 'OvWqYBBIYww',
         title:'',
         description:'',
-        thumbnails:''
+        thumbnail:''
       }/*,
       { Id: 'drSMZgnmJjk'},
       { Id: 'mBlGOx4HdXM' },
@@ -97,8 +121,11 @@ const vm =new Vue({
       { Id: 'RgKp3ppdhWs'},
       { Id: '5GQnC6UUsZw'}*/
     ],
-    newMovieId:"",
     movieQueueCt : 0,
+    newMovieId:"",
+
+    searchWord: "",
+    movieSearchList :[],
     selectedTab : 1
   },/*
   mounted(){
@@ -119,7 +146,7 @@ const vm =new Vue({
               Id: vm.newMovieId,
               title: res.data.items[0].snippet.title,
               description: res.data.items[0].snippet.description,
-              thumbnails: res.data.items[0].snippet.thumbnails.default.url
+              thumbnail: res.data.items[0].snippet.thumbnails.default.url
             };
             vm.movieQueue.push(newMovieQueue);
           }else{
@@ -127,6 +154,32 @@ const vm =new Vue({
               title: 'Not permitted', 
               message: 'The movie is not permitted on Youtube embedded player.' 
             });
+          }
+        }).catch(function (err) {
+          console.log(err);
+          iziToast.error({ 
+            title: 'Reject http request', 
+            message: 'could not get movie details. Youtube reject http request.' 
+          });
+        });
+    },
+    searchWordSubmitted:function(){
+      const requestUrl 
+        ='https://www.googleapis.com/youtube/v3/search?'
+        + "q=" + this.searchWord
+        +'&key='+YoutubeKey
+        +'&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true';
+      axios.get(requestUrl)
+        .then(function (res) {
+        for( item of res.data.items){
+            const searchMovie ={
+              Id: item.id.videoId,
+              title: item.snippet.title,
+              description: item.snippet.description,
+              thumbnail: item.snippet.thumbnails.default.url
+            };
+            console.log(searchMovie);
+            vm.movieSearchList.push(searchMovie);
           }
         }).catch(function (err) {
           console.log(err);
