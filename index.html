@@ -14,8 +14,6 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://unpkg.com/vue"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-
-
 <link rel="stylesheet" href="iziToast/iziToast.min.css">
 <script src="iziToast/iziToast.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -25,15 +23,10 @@
 <link rel="stylesheet" href="index.css">
 </head>
 
-  
 <body>
 <div id="app">
-
   <div id="center-box">
     <h1>Play Queue</h1>
-
-
-
     <div id="tab-player">
       <div id="player"></div>
     </div>
@@ -70,9 +63,7 @@
       </div>
       </div>
     </div>
-    
 
-    
     <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
       <input v-model="newMovieId" placeholder="new movie id"><button v-on:click="newMovieIdSubmitted">submit</button>
     </div>
@@ -109,11 +100,9 @@ const vm =new Vue({
     newMovieId:"",
     movieQueueCt : 0,
     selectedTab : 1
-    
-  },
+  },/*
   mounted(){
-
-  },
+  },*/
   methods:{
     newMovieIdSubmitted:function(){
       const requestUrl 
@@ -147,7 +136,6 @@ const vm =new Vue({
           });
         });
     }
-
   }
 });
 
@@ -171,13 +159,8 @@ function onPlayerReady(event) {
     event.target.playVideo();
 }
 function onPlayerStateChange(event) {
-  if(event.data == YT.PlayerState.ENDED){
-    player.loadVideoById({
-      videoId: vm.movieQueue[++ vm.movieQueueCt].Id,
-      suggestedQuality:'small'
-    });
-
-  } 
+  if(event.data == YT.PlayerState.ENDED)
+    playNextMovie();
 }
 function onPlayerError(event){
   switch(event.data){
@@ -186,21 +169,25 @@ function onPlayerError(event){
     case 100://動画が見つからない(非公開含む)
     case 101://埋め込み不可の動画
     case 150://埋め込み不可の動画
-      player.loadVideoById({
-        videoId: vm.movieQueue[++ vm.movieQueueCt].Id,
-        suggestedQuality:'small'  });
+      playNextMovie();
       iziToast.error({ 
         title: 'Skip Movie', 
         message: 'The skipped movie is not permitted on Youtube embedded player.'
       });
-//      console.log("player error. load next movie. error code:"+ event.data);
       break;
 
     default:
       iziToast.error({ title: 'Unknown Error', message: 'Stop movie' });
-//      console.log("unknown player error");
   }
+}
 
+function playNextMovie(){ //MovieQueueが全て再生したら最初からループ
+  vm.movieQueueCt = (vm.movieQueueCt+1) % vm.movieQueue.length;
+//  if(vm.movieQueue.length > vm.movieQueueCt +1 );
+    player.loadVideoById({
+      videoId: vm.movieQueue[ vm.movieQueueCt ].Id,
+      suggestedQuality:'small'
+    });
 }
 </script>
 </body>
