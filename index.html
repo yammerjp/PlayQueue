@@ -45,19 +45,18 @@
     <div id="tab-queue" v-bind:class="{'unselected-tab':selectedTab!=1}">
       <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">
       <div class="col s12 m8 ">
-      <div class="card-panel grey lighten-5 z-depth-1 queue-card-panel">
-      <div class="row valign-wrapper queue-row">
+      <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
+      <div class="row valign-wrapper intab-row">
       <!--タップ時にこの中を編集-->
             <div class="col s4">
-<!--              <img src="thumbnail-test.jpg" alt="" class="responsive-img">-->
-              <img v-bind:src=" 'https://i.ytimg.com/vi/' + item.Id + '/default.jpg' " alt="" class="responsive-img">
+              <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
             </div>
             <div class="col s8">
               <span class="black-text">
-                {{item.title}} //{{item.Id}}
+                {{item.title}} //{{item.Id}}//{{item.description}}
               </span>
             </div>
-
+      <!--タップ時にこの中を編集 ここまで-->
       </div>
       </div>
       </div>
@@ -72,19 +71,18 @@
 
       <div class="movieSearchList" v-for="item in movieSearchList" :key="item.Id">
         <div class="col s12 m8 ">
-        <div class="card-panel grey lighten-5 z-depth-1 queue-card-panel">
-        <div class="row valign-wrapper queue-row">
+        <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
+        <div class="row valign-wrapper intab-row">
         <!--タップ時にこの中を編集-->
               <div class="col s4">
-  <!--              <img src="thumbnail-test.jpg" alt="" class="responsive-img">-->
                 <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
               </div>
               <div class="col s8">
                 <span class="black-text">
-                    {{item.title}} //{{item.Id}}
+                  {{item.title}} //{{item.Id}}//{{item.description}}
                 </span>
               </div>
-  
+        <!--タップ時にこの中を編集 ここまで-->
         </div>
         </div>
         </div>
@@ -107,9 +105,9 @@ const vm =new Vue({
     movieQueue :[
     
       { Id: 'OvWqYBBIYww',
-        title:'',
-        description:'',
-        thumbnail:''
+        title:'【ハタラクティブWebCM】選択篇（年末ver.）15秒 ',
+        description:'女優・小林涼子さんから正社員就職を考える方へ。 就職するまでひとりで頑張るか、プロに相談するか。あなたならどうしますか。 若手フリーター・既卒の就職・転職なら『ハタラクティブ』 https://hataractive.jp/',
+        thumbnail: 'https://i.ytimg.com/vi/OvWqYBBIYww/default.jpg'
       }/*,
       { Id: 'drSMZgnmJjk'},
       { Id: 'mBlGOx4HdXM' },
@@ -132,6 +130,7 @@ const vm =new Vue({
   },*/
   methods:{
     newMovieIdSubmitted:function(){
+      //今後はsearchしたときに引っ張ってきたデータをそのまま渡すので、こちら側でhttp getしてデータを取りに行かなくてよくなる予定。
       const requestUrl 
         ='https://www.googleapis.com/youtube/v3/videos?id='
         + this.newMovieId
@@ -178,7 +177,7 @@ const vm =new Vue({
               description: item.snippet.description,
               thumbnail: item.snippet.thumbnails.default.url
             };
-            console.log(searchMovie);
+//            console.log(searchMovie);
             vm.movieSearchList.push(searchMovie);
           }
         }).catch(function (err) {
