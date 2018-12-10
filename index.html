@@ -69,7 +69,7 @@
       <input v-model="searchWord" placeholder="search word">
       <button v-on:click="searchWordSubmitted">search</button>
 
-      <div class="movieSearchList" v-for="item in movieSearchList" :key="item.Id">
+      <div class="movieSearchList" v-for="item in movieSearchList" :key="item.uniqueKey">
         <div class="col s12 m8 ">
         <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
         <div class="row valign-wrapper intab-row">
@@ -79,7 +79,7 @@
               </div>
               <div class="col s8">
                 <span class="black-text">
-                  {{item.title}} //{{item.Id}}//{{item.description}}
+                  {{item.uniqueKey}}//{{item.title}} //{{item.Id}}//{{item.description}}
                 </span>
               </div>
         <!--タップ時にこの中を編集 ここまで-->
@@ -168,18 +168,21 @@ const vm =new Vue({
         + "q=" + this.searchWord
         +'&key='+YoutubeKey
         +'&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true';
+      const date = new Date();
+
       axios.get(requestUrl)
         .then(function (res) {
-        for( item of res.data.items){
+          res.data.items.forEach((item,index) => {
             const searchMovie ={
-              Id: item.id.videoId,
-              title: item.snippet.title,
-              description: item.snippet.description,
-              thumbnail: item.snippet.thumbnails.default.url
-            };
-//            console.log(searchMovie);
-            vm.movieSearchList.push(searchMovie);
-          }
+                uniqueKey:  `${date.getTime()}#${index}`,
+                Id: item.id.videoId,
+                title: item.snippet.title,
+                description: item.snippet.description,
+                thumbnail: item.snippet.thumbnails.default.url
+              };
+  //            console.log(searchMovie);
+              vm.movieSearchList.push(searchMovie);
+          });
         }).catch(function (err) {
           console.log(err);
           iziToast.error({ 
@@ -196,6 +199,7 @@ tag.src = "https://www.youtube.com/iframe_api";
 let firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 let player;
+
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     videoId: vm.movieQueue[0].Id,
@@ -210,10 +214,12 @@ function onYouTubeIframeAPIReady() {
 function onPlayerReady(event) {
     event.target.playVideo();
 }
+
 function onPlayerStateChange(event) {
   if(event.data == YT.PlayerState.ENDED)
     playNextMovie();
 }
+
 function onPlayerError(event){
   switch(event.data){
     case 2://リクエストが無効なパラメータ値 動画IDのフォーマットが異なる
@@ -241,6 +247,7 @@ function playNextMovie(){ //MovieQueueが全て再生したら最初からルー
       suggestedQuality:'small'
     });
 }
+
 </script>
 </body>
 </html>
