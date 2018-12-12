@@ -101,6 +101,8 @@ h1{
 
 .item-title{
     font-size: 1em;
+    user-select: none; /* Firefox */
+    touch-callout: none; /* Disable Android and iOS callouts*/
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer */
     -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
@@ -110,6 +112,8 @@ h1{
 .item-description{
     font-size:0.8em;
     color: rgb(71, 71, 71) ;
+    user-select: none; /* Firefox */
+    touch-callout: none; /* Disable Android and iOS callouts*/
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer */
     -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
