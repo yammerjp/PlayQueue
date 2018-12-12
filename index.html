@@ -25,8 +25,9 @@
 </head>
 
 <body>
+    <div id="center-box">
 <div id="app">
-  <div id="center-box">
+  
     <h1>Play Queue</h1>
     <div id="tab-player">
       <div id="player"></div>
@@ -43,7 +44,7 @@
       </div>
     </div>
     
-    <div id="tab-queue" v-bind:class="{'unselected-tab':selectedTab!=1}">
+    <div class="tab-queue" v-bind:class="{'unselected-tab':selectedTab!=1}">
       <div class="movieQueueList" v-for="item in movieQueue" :key="item.Id">
       <div class="col s12 m8 ">
       <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
@@ -66,7 +67,7 @@
       </div>
     </div>
 
-    <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
+    <div class="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
       <form @submit.prevent="searchWordSubmitted">
         <input type="text" v-model="searchWord" placeholder="search word" class="searchWordInput">
 <!--        <button v-on:click="searchWordSubmitted">search</button>-->

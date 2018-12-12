@@ -5,8 +5,13 @@ h1{
     font-family: 'Anton', sans-serif;
     font-size: 1.5em;
     color: #DA5019;
+}/*
+#app{
+    text-align: center;
+}*/
+#center-box{
+    display: inline-block;
 }
-
 #player{
     /*youtube player 16:9固定 ↓*/
     position: absolute;
@@ -32,13 +37,17 @@ h1{
     position: relative;
     width: 100%;
     /*youtube player 16:9固定 ↑*/
-}/*
-#tab-queue{
-   
 }
-#tab-search{
-    
-}*/
+.tab-queue{
+    width: 98%;
+    margin: auto;
+    display: inline-block;
+}
+.tab-search{
+    width: 98%;
+    margin: auto;
+    display: inline-block;
+}
 .selected-tab-bar{
     border-bottom: solid 2px #DA5019;
 }
@@ -100,4 +109,7 @@ h1{
 /*
 .searchWordInput{
     display:inline;
+}*//*
+.col{
+    padding:0px;
 }*/
