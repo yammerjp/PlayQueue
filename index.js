@@ -24,6 +24,8 @@ const vm =new Vue({
     selectedTab : 1,
     movable:false,
     moveFrom:"",
+
+    relatedMovieList:[],
   },/*
   mounted(){
   },*/
@@ -227,4 +229,7 @@ function playNextMovie(){ //MovieQueueが全て再生したら最初からルー
       videoId: vm.movieQueue[ vm.movieQueueCt ].Id,
       suggestedQuality:'small'
     });
+//関連動画リストの取得
+
+    //relatedToVideoId
 }
