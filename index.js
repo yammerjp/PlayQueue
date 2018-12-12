@@ -7,13 +7,12 @@ const vm =new Vue({
   el: "#app",
   data:{
     movieQueue :[
-    
       { Id:"etKuJ7ibrvc",
         description:"お口の恋人ロッテのスペシャルアニメーション 「ベイビーアイラブユーだぜ」のフルバージョンを公開！ 企画・プロデュース:川村元気 監督:松...",
         thumbnail:"https://i.ytimg.com/vi/etKuJ7ibrvc/default.jpg",
         title:"ロッテ×BUMP OF CHICKEN ベイビーアイラブユーだぜ フルバージョン",
-        uniqueKey:"1544599827709#0"
-    }
+        uniqueKey:"1544599827709#0",
+      }
     ],
     movieQueueCt : 0,
 
@@ -21,15 +20,29 @@ const vm =new Vue({
     searchWordLS: "",
     nextPageToken: "",
     movieSearchList :[],
+    movieSearchListClickUniqueKey:"",
     selectedTab : 1
   },/*
   mounted(){
   },*/
   methods:{
-    newMovieQueue:function(movie){
-        vm.movieQueue.push(movie);
-        console.log(movie);
+    
+    newMovieQueue:function(when,movie){
+        switch(when){
+            case "PLAY_NOW":        
+                vm.movieQueue.splice(vm.movieQueueCt+1,0,movie);
+                playNextMovie()
+                break;
+            case "PLAY_NEXT":
+                vm.movieQueue.splice(vm.movieQueueCt+1,0,movie);
+                break;
+            case "PLAY_LAST":
+                vm.movieQueue.push(movie);
+                break;
+
+        }
     },
+
     searchWordSubmitted:function(){
       if(this.searchWord=="")
         return 0;
@@ -64,12 +77,14 @@ const vm =new Vue({
             message: 'could not get movie details. Youtube reject http request.' 
           });
         });
-    },searchWordSubmittedMore:function(){
+    },
+
+    searchWordSubmittedMore:function(){
         if(this.searchWordLS=="")
             return 0;
           const requestUrl 
           ='https://www.googleapis.com/youtube/v3/search?'
-          + "q=" + this.searchWord
+          + "q=" + this.searchWordLS
           +'&key='+YoutubeKey
           +'&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true'
           +'&pageToken='+ this.nextPageToken;
@@ -85,19 +100,25 @@ const vm =new Vue({
                   description: item.snippet.description,
                   thumbnail: item.snippet.thumbnails.default.url
                 };
-    //            console.log(searchMovie);
                 vm.movieSearchList.push(searchMovie);
             });
             vm.nextPageToken=res.data.nextPageToken;
-          
           }).catch(function (err) {
             console.log(err);
             iziToast.error({ 
               title: 'Reject http request', 
               message: 'could not get movie details. Youtube reject http request.' 
             });
-          });
-      }
+        });
+    },
+
+    searchMovieClicked:function(movie){
+        if(vm.movieSearchListClickUniqueKey==movie.uniqueKey){
+            vm.movieSearchListClickUniqueKey = "";
+        }else{
+            vm.movieSearchListClickUniqueKey=movie.uniqueKey;
+        }
+    }
   }
 });
 

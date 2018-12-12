@@ -74,7 +74,7 @@
         <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
         <div class="row valign-wrapper intab-row">
         <!--タップ時にこの中を編集-->
-          <div v-bind:class="{'displayNone':false}" v-on:click='newMovieQueue(item)'>
+          <div v-on:click='searchMovieClicked(item)'>
               <div class="col s3">
                 <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
               </div>
@@ -86,23 +86,23 @@
                   </span>
               </div>
           </div>
-          <div class="selected-movie-s12" v-bind:class="{'displayNone':true}">
-              <div class="col s3">
-                <img src="play.png" alt="" class="responsive-img">
-              </div>
-              <div class="col s3 selected-movie-s3">
-                <button class="btn waves-effect waves-light play-button">now</button>
-              </div>
-              <div class="col s3 selected-movie-s3">
-                <button class="btn waves-effect waves-light play-button">next</button>
-              </div>
-              <div class="col s3 selected-movie-s3">
-                  <button class="btn waves-effect waves-light play-button">last</button>
-              </div>
-              
-          </div>
+
         <!--タップ時にこの中を編集 ここまで-->
         </div>
+        <div  class="selected-movie-s12" 
+              v-bind:class="{'displayNone':!(item.uniqueKey==movieSearchListClickUniqueKey)}" 
+              v-on:click='searchMovieClicked(item)'>
+            <button class="btn waves-effect waves-light play-button" v-on:click="newMovieQueue('PLAY_NOW',item)">
+              <i class="material-icons">play_arrow</i>now
+            </button>
+            <button class="btn waves-effect waves-light play-button" v-on:click="newMovieQueue('PLAY_NEXT',item)">
+              <i class="material-icons">add</i>next
+            </button>
+              <button class="btn waves-effect waves-light play-button" v-on:click="newMovieQueue('PLAY_LAST',item)">
+                <i class="material-icons">low_priority</i>last
+              </button>
+          
+      </div>
         </div>
       </div>
       <button v-on:click="searchWordSubmittedMore" class="btn waves-effect waves-light">
