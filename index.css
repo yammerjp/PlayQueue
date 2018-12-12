@@ -22,14 +22,14 @@ h1{
     padding-top:5px;
     padding-bottom: 5px;
 }
-#tab-player:before {
+#player-box:before {
     /*youtube player 16:9固定 ↓*/
     content:"";
     display: block;
     padding-top: 56.25%; /* 高さと幅の比を16:9に固定。9/16*100=56.25 */
     /*youtube player 16:9固定 ↑*/
 }
-#tab-player{
+#player-box{
     /*youtube player 16:9固定 ↓*/
     position: relative;
     width: 100%;
@@ -52,13 +52,8 @@ h1{
 #center-box{
     width: 100%;
     max-width: 600px;
-/*    margin:0px auto;*/
-/*    background-color: burlywood;*/
 }
-/*
-.movieQueueList{
 
-}*/
 .intab-card-panel{
     padding:2px;
     margin:0px;
@@ -73,34 +68,40 @@ h1{
 .displayNone{
     display:none;
 }
-.selected-movie-s3{
-    width:100%;
-    height: 100%;
-    text-align: center;
-    margin: auto;
-}
-.selected-movie-s12{
-    width:100%;
-
-}
 
 .movie-list{
     margin-bottom:0px;
 }
-.play-button{
+.movie-list button{
     margin:5px;
 }
 
-.item-title{
+.title{
+    text-align:left;
     font-size: 1em;
+}
+#tab-player .title{
+    margin:0.25em 1em;
+    font-style: bold;
+}
+.movie-list .title{
     user-select: none; /* Firefox */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer */
     -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
     -webkit-user-select: none; /* Chrome, Safari, and Opera */
     -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+
 }
-.item-description{
+.description{
+    text-align:left;
+    font-size:0.8em;
+    color: rgb(71, 71, 71) ;
+}
+#tab-player .description{
+    margin :0.25em 1.1em;
+}
+.movie-list .description{
     font-size:0.8em;
     color: rgb(71, 71, 71) ;
     user-select: none; /* Firefox */
@@ -110,13 +111,7 @@ h1{
     -webkit-user-select: none; /* Chrome, Safari, and Opera */
     -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
-/*
-.searchWordInput{
-    display:inline;
-}*//*
-.col{
-    padding:0px;
-}*/
+
 .col .row {
     margin-left: auto;
     margin-right: auto;

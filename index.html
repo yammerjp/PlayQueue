@@ -45,7 +45,11 @@
     </div>
     <!--動画再生タブ-->    
     <div id="tab-player" v-bind:class="{'displayNone':selectedTab!=0}">
-        <div id="player"></div>
+        <div id='player-box'>
+          <div id="player"></div>
+        </div>
+        <div class="title">{{movieQueue[movieQueueCt].title}}</div>
+        <div class="description">{{movieQueue[movieQueueCt].description}}</div>
     </div>
 
     <!--再生リストタブ-->    
@@ -62,8 +66,8 @@
               </div>
               <div class="col s9">
                 <span class="black-text">
-                    <div class="item-title">{{item.title}}</div>
-                    <div class="item-description">{{item.description}}</div>
+                    <div class="title">{{item.title}}</div>
+                    <div class="description">{{item.description}}</div>
                 </span>
               </div>
             </div>
@@ -71,13 +75,13 @@
           <div  class="selected-movie-s12" 
            v-bind:class="{'displayNone':!(item.uniqueKey==ListClickUniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
-            <button class="btn waves-effect waves-light play-button" v-on:click="changeMovieQueue('JUMP',item)">
+            <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('JUMP',item)">
               <i class="material-icons">play_arrow</i>now
             </button>
-            <button class="btn waves-effect waves-light play-button" v-on:click="changeMovieQueue('DELETE',item)">
+            <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('DELETE',item)">
               <i class="material-icons">clear</i>delete
             </button>
-            <button class="btn waves-effect waves-light play-button" v-on:click="changeMovieQueue('MOVE',item)">
+            <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('MOVE',item)">
               <i class="material-icons">format_line_spacing</i>move
             </button>
           </div>
@@ -102,8 +106,8 @@
               </div>
               <div class="col s9">
                 <span class="black-text">
-                    <div class="item-title">{{item.title}}</div>
-                    <div class="item-description">{{item.description}}</div>
+                    <div class="title">{{item.title}}</div>
+                    <div class="description">{{item.description}}</div>
                 </span>
               </div>
             </div>
@@ -111,13 +115,13 @@
           <div  class="selected-movie-s12" 
            v-bind:class="{'displayNone':!(item.uniqueKey==ListClickUniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
-            <button class="btn waves-effect waves-light play-button" v-on:click="newMovieQueue('PLAY_NOW',item)">
+            <button class="btn waves-effect waves-light " v-on:click="newMovieQueue('PLAY_NOW',item)">
               <i class="material-icons">play_arrow</i>now
             </button>
-            <button class="btn waves-effect waves-light play-button" v-on:click="newMovieQueue('PLAY_NEXT',item)">
+            <button class="btn waves-effect waves-light " v-on:click="newMovieQueue('PLAY_NEXT',item)">
               <i class="material-icons">add</i>next
             </button>
-            <button class="btn waves-effect waves-light play-button" v-on:click="newMovieQueue('PLAY_LAST',item)">
+            <button class="btn waves-effect waves-light " v-on:click="newMovieQueue('PLAY_LAST',item)">
               <i class="material-icons">low_priority</i>last
             </button>
           </div>
