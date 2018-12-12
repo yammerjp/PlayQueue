@@ -49,12 +49,14 @@
       <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
       <div class="row valign-wrapper intab-row">
       <!--タップ時にこの中を編集-->
-            <div class="col s4">
+            <div class="col s3">
               <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
             </div>
-            <div class="col s8">
+            <div class="col s9">
               <span class="black-text">
-                {{item.title}} //{{item.Id}}//{{item.description}}
+<!--                {{item.title}} //{{item.Id}}//{{item.description}}-->
+                <div class="item-title">{{item.title}}</div>
+                <div class="item-description">{{item.description}}</div>
               </span>
             </div>
       <!--タップ時にこの中を編集 ここまで-->
@@ -65,30 +67,47 @@
     </div>
 
     <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
-      <input v-model="newMovieId" placeholder="new movie id">
-      <button v-on:click="newMovieIdSubmitted">submit</button>
       <input v-model="searchWord" placeholder="search word">
       <button v-on:click="searchWordSubmitted">search</button>
 
-      <div class="movieSearchList" v-for="item in movieSearchList" :key="item.uniqueKey">
-        <div class="col s12 m8 ">
+      <div class="movie-search-list col s12 row" v-for="item in movieSearchList" :key="item.uniqueKey">
         <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
         <div class="row valign-wrapper intab-row">
         <!--タップ時にこの中を編集-->
-              <div class="col s4">
+          <div v-bind:class="{'displayNone':false}" v-on:click='newMovieQueue(item)'>
+              <div class="col s3">
                 <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
               </div>
-              <div class="col s8">
-                <span class="black-text">
-                  {{item.uniqueKey}}//{{item.title}} //{{item.Id}}//{{item.description}}
-                </span>
+              <div class="col s9">
+                  <span class="black-text">
+    <!--                {{item.title}} //{{item.Id}}//{{item.description}}-->
+                    <div class="item-title">{{item.title}}</div>
+                    <div class="item-description">{{item.description}}</div>
+                  </span>
               </div>
+          </div>
+          <div class="selected-movie-s12" v-bind:class="{'displayNone':true}">
+              <div class="col s3">
+                <img src="play.png" alt="" class="responsive-img">
+              </div>
+              <div class="col s3 selected-movie-s3">
+                <button class="btn waves-effect waves-light play-button">now</button>
+              </div>
+              <div class="col s3 selected-movie-s3">
+                <button class="btn waves-effect waves-light play-button">next</button>
+              </div>
+              <div class="col s3 selected-movie-s3">
+                  <button class="btn waves-effect waves-light play-button">last</button>
+              </div>
+              
+          </div>
         <!--タップ時にこの中を編集 ここまで-->
         </div>
         </div>
-        </div>
-        </div>
-
+      </div>
+      <button v-on:click="searchWordSubmittedMore" class="btn waves-effect waves-light">
+        <i class="material-icons">keyboard_arrow_down</i>
+        </button>
     </div>
     
   </div>

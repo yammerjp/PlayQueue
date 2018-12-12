@@ -8,65 +8,31 @@ const vm =new Vue({
   data:{
     movieQueue :[
     
-      { Id: 'OvWqYBBIYww',
-        title:'【ハタラクティブWebCM】選択篇（年末ver.）15秒 ',
-        description:'女優・小林涼子さんから正社員就職を考える方へ。 就職するまでひとりで頑張るか、プロに相談するか。あなたならどうしますか。 若手フリーター・既卒の就職・転職なら『ハタラクティブ』 https://hataractive.jp/',
-        thumbnail: 'https://i.ytimg.com/vi/OvWqYBBIYww/default.jpg'
-      }/*,
-      { Id: 'drSMZgnmJjk'},
-      { Id: 'mBlGOx4HdXM' },
-      { Id: 'tTPOSNxCZF4'},
-      { Id: 'IGInsosP0Ac'},
-      { Id: 'C-xF2MAFw5s'},
-      { Id: 'x9v8aNl6Aps'},
-      { Id: 'Hh9yZWeTmVM'},
-      { Id: 'RgKp3ppdhWs'},
-      { Id: '5GQnC6UUsZw'}*/
+      { Id:"etKuJ7ibrvc",
+        description:"お口の恋人ロッテのスペシャルアニメーション 「ベイビーアイラブユーだぜ」のフルバージョンを公開！ 企画・プロデュース:川村元気 監督:松...",
+        thumbnail:"https://i.ytimg.com/vi/etKuJ7ibrvc/default.jpg",
+        title:"ロッテ×BUMP OF CHICKEN ベイビーアイラブユーだぜ フルバージョン",
+        uniqueKey:"1544599827709#0"
+    }
     ],
     movieQueueCt : 0,
-    newMovieId:"",
 
     searchWord: "",
+    searchWordLS: "",
+    nextPageToken: "",
     movieSearchList :[],
     selectedTab : 1
   },/*
   mounted(){
   },*/
   methods:{
-    newMovieIdSubmitted:function(){
-      //今後はsearchしたときに引っ張ってきたデータをそのまま渡すので、こちら側でhttp getしてデータを取りに行かなくてよくなる予定。
-      const requestUrl 
-        ='https://www.googleapis.com/youtube/v3/videos?id='
-        + this.newMovieId
-        +'&key='+YoutubeKey
-        +'&part=snippet,status';
-      axios.get(requestUrl)
-        .then(function (res) {
-//          console.log(res.data.items[0]);
-          if(res.data.items[0].status.embeddable==true){  
-          //一応埋め込み可否っぽい値を判断しているが、埋め込み不可動画でもtrueで通ってしまった このまま解決しないならこの部分はいらない。
-            const newMovieQueue ={
-              Id: vm.newMovieId,
-              title: res.data.items[0].snippet.title,
-              description: res.data.items[0].snippet.description,
-              thumbnail: res.data.items[0].snippet.thumbnails.default.url
-            };
-            vm.movieQueue.push(newMovieQueue);
-          }else{
-            iziToast.error({ 
-              title: 'Not permitted', 
-              message: 'The movie is not permitted on Youtube embedded player.' 
-            });
-          }
-        }).catch(function (err) {
-          console.log(err);
-          iziToast.error({ 
-            title: 'Reject http request', 
-            message: 'could not get movie details. Youtube reject http request.' 
-          });
-        });
+    newMovieQueue:function(movie){
+        vm.movieQueue.push(movie);
+        console.log(movie);
     },
     searchWordSubmitted:function(){
+      if(this.searchWord=="")
+        return 0;
       const requestUrl 
         ='https://www.googleapis.com/youtube/v3/search?'
         + "q=" + this.searchWord
@@ -76,6 +42,7 @@ const vm =new Vue({
 
       axios.get(requestUrl)
         .then(function (res) {
+          vm.movieSearchList =[];
           res.data.items.forEach((item,index) => {
             const searchMovie ={
                 uniqueKey:  `${date.getTime()}#${index}`,
@@ -87,6 +54,9 @@ const vm =new Vue({
   //            console.log(searchMovie);
               vm.movieSearchList.push(searchMovie);
           });
+          vm.nextPageToken=res.data.nextPageToken;
+          vm.searchWordLS = vm.searchWord;
+        
         }).catch(function (err) {
           console.log(err);
           iziToast.error({ 
@@ -94,7 +64,40 @@ const vm =new Vue({
             message: 'could not get movie details. Youtube reject http request.' 
           });
         });
-    }
+    },searchWordSubmittedMore:function(){
+        if(this.searchWordLS=="")
+            return 0;
+          const requestUrl 
+          ='https://www.googleapis.com/youtube/v3/search?'
+          + "q=" + this.searchWord
+          +'&key='+YoutubeKey
+          +'&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true'
+          +'&pageToken='+ this.nextPageToken;
+        const date = new Date();
+  
+        axios.get(requestUrl)
+          .then(function (res) {
+            res.data.items.forEach((item,index) => {
+              const searchMovie ={
+                  uniqueKey:  `${date.getTime()}#${index}`,
+                  Id: item.id.videoId,
+                  title: item.snippet.title,
+                  description: item.snippet.description,
+                  thumbnail: item.snippet.thumbnails.default.url
+                };
+    //            console.log(searchMovie);
+                vm.movieSearchList.push(searchMovie);
+            });
+            vm.nextPageToken=res.data.nextPageToken;
+          
+          }).catch(function (err) {
+            console.log(err);
+            iziToast.error({ 
+              title: 'Reject http request', 
+              message: 'could not get movie details. Youtube reject http request.' 
+            });
+          });
+      }
   }
 });
 
