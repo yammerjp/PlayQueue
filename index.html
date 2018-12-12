@@ -67,8 +67,10 @@
     </div>
 
     <div id="tab-search" v-bind:class="{'unselected-tab':selectedTab!=2}">
-      <input v-model="searchWord" placeholder="search word">
-      <button v-on:click="searchWordSubmitted">search</button>
+      <form @submit.prevent="searchWordSubmitted">
+        <input type="text" v-model="searchWord" placeholder="search word" class="searchWordInput">
+<!--        <button v-on:click="searchWordSubmitted">search</button>-->
+      </form>
 
       <div class="movie-search-list col s12 row" v-for="item in movieSearchList" :key="item.uniqueKey">
         <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
@@ -107,7 +109,7 @@
       </div>
       <button v-on:click="searchWordSubmittedMore" class="btn waves-effect waves-light">
         <i class="material-icons">keyboard_arrow_down</i>
-        </button>
+      </button>
     </div>
     
   </div>
