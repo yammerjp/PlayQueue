@@ -5,10 +5,7 @@ h1{
     font-family: 'Anton', sans-serif;
     font-size: 1.5em;
     color: #DA5019;
-}/*
-#app{
-    text-align: center;
-}*/
+}
 #center-box{
     display: inline-block;
 }
@@ -51,9 +48,6 @@ h1{
 .selected-tab-bar{
     border-bottom: solid 2px #DA5019;
 }
-.unselected-tab{
-    display:none;
-}
 
 #center-box{
     width: 100%;
@@ -61,12 +55,10 @@ h1{
 /*    margin:0px auto;*/
 /*    background-color: burlywood;*/
 }
-
+/*
 .movieQueueList{
-    background-color:#F3C0AB;
-/*    list-style: none;*/
 
-}
+}*/
 .intab-card-panel{
     padding:2px;
     margin:0px;
@@ -92,7 +84,7 @@ h1{
 
 }
 
-.movie-search-list{
+.movie-list{
     margin-bottom:0px;
 }
 .play-button{
@@ -128,4 +120,12 @@ h1{
 .col .row {
     margin-left: auto;
     margin-right: auto;
+}
+.now-play-movie{
+    border-style:solid;
+    border-color: #DA5019;
+    border-radius: 3px;
+}
+.move-here{
+    background-color:#F3C0AB;
 }

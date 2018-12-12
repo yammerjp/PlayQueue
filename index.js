@@ -20,15 +20,17 @@ const vm =new Vue({
     searchWordLS: "",
     nextPageToken: "",
     movieSearchList :[],
-    movieSearchListClickUniqueKey:"",
-    selectedTab : 1
+    ListClickUniqueKey:"",
+    selectedTab : 1,
+    movable:false,
+    moveFrom:"",
   },/*
   mounted(){
   },*/
   methods:{
     
-    newMovieQueue:function(when,movie){
-        switch(when){
+    newMovieQueue:function(msg,movie){
+        switch(msg){
             case "PLAY_NOW":        
                 vm.movieQueue.splice(vm.movieQueueCt+1,0,movie);
                 playNextMovie()
@@ -41,6 +43,53 @@ const vm =new Vue({
                 break;
 
         }
+    },
+    changeMovieQueue(msg,item){
+        const itemCt=vm.movieQueue.findIndex(({uniqueKey})=>uniqueKey===item.uniqueKey);
+        /*↑uniqueキーが一致するmovieQueueの配列番号 つまりitemが存在するmovieQueue配列内の位置 */
+        switch(msg){
+            case "JUMP"://itemの位置に再生キューを移動して再生
+                vm.movieQueueCt= itemCt-1;
+                playNextMovie()
+                break;
+            case 'DELETE'://itemを再生キューから削除
+                if(vm.movieQueueCt==itemCt)//現在再生中なら次を再生してから
+                    playNextMovie();
+                    vm.movieQueue.splice(itemCt,1);//削除
+                break;
+            
+            case 'MOVE'://itemの位置を移動して再生キュー内の順番を変更
+                if(vm.movieQueueCt==itemCt){
+                    iziToast.error({ 
+                        title: 'This movie is playing now', 
+                        message: 'can not move movie in the list.' 
+                      });
+                    return 0;
+                }
+                
+                vm.moveFrom=item;
+                //削除前に、移動する動画のデータを保存しておく
+                vm.movieQueue.splice(itemCt,1);//削除
+                if(vm.movieQueueCt>itemCt)//削除に合わせてmovieQueueCtも現在再生しているものを指すように適切に変更
+                    vm.movieQueueCt--;
+                vm.movable=true;
+                /*選択画面を挟んでから移動先が決定 */
+                break;
+
+        }
+    },
+    moveHere(item){
+        let itemCt;
+        if(item===0){
+            itemCt=-1;//一番上に挿入する場合
+        }else{
+            itemCt= vm.movieQueue.findIndex(({uniqueKey})=>uniqueKey===item.uniqueKey);
+        }
+        vm.movieQueue.splice(itemCt+1,0,vm.moveFrom);//予め保存していたデータをリストに挿入
+        if(vm.movieQueueCt>itemCt)
+            vm.movieQueueCt++;//挿入後はvm.movieQueueCtも適切に変更する必要がある
+        vm.moveFrom="";
+        vm.movable=false;
     },
 
     searchWordSubmitted:function(){
@@ -112,12 +161,16 @@ const vm =new Vue({
         });
     },
 
-    searchMovieClicked:function(movie){
-        if(vm.movieSearchListClickUniqueKey==movie.uniqueKey){
-            vm.movieSearchListClickUniqueKey = "";
+    listMovieClicked:function(movie){
+        if(vm.ListClickUniqueKey==movie.uniqueKey){
+            vm.ListClickUniqueKey = "";
         }else{
-            vm.movieSearchListClickUniqueKey=movie.uniqueKey;
+            vm.ListClickUniqueKey=movie.uniqueKey;
         }
+    },
+    tabChange(num){
+        vm.ListClickUniqueKey = "";
+        vm.selectedTab=num;
     }
   }
 });
