@@ -20,7 +20,7 @@ const vm = new Vue({
             mvListCt: 0,//movieQueueCt
             move: {
                 able: false,//movable
-                from: '',//moveFrom
+                from: -1,//moveFrom
             }
         },
         tabPlay: {
@@ -77,6 +77,8 @@ const vm = new Vue({
                     break;
 
                 case 'MOVE'://itemの位置を移動して再生キュー内の順番を変更
+                    if(this.tabQueue.move.able == true)
+                        this.moveCancel();
                     if (this.tabQueue.mvListCt == itemCt) {
                         iziToast.error({
                             title: 'can not move movie in the list',
@@ -84,12 +86,8 @@ const vm = new Vue({
                         });
                         return 0;
                     }
-
-                    this.tabQueue.move.from = item;
-                    //削除前に、移動する動画のデータを保存しておく
-                    this.tabQueue.mvList.splice(itemCt, 1);//削除
-                    if (this.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
-                        this.tabQueue.mvListCt--;
+                    this.tabQueue.move.from = itemCt;
+                    //削除前に、移動する動画の場所を保存しておく
                     this.tabQueue.move.able = true;
                     /*選択画面を挟んでから移動先が決定 */
                     break;
@@ -97,17 +95,38 @@ const vm = new Vue({
             }
         },
         moveHere(item) {
+            if (this.tabQueue.mvListCt == this.tabQueue.move.from) {//再生中は位置変更不可
+                iziToast.error({
+                    title: 'can not move movie in the list',
+                    message: 'This movie is playing now.'
+                });
+                this.moveCancel();
+                return 0;
+            }
+            const itemFrom=this.tabQueue.mvList[this.tabQueue.move.from];
+            if(itemFrom==item){//同じ場所に変更しろと言われたらキャンセル
+                this.moveCancel();
+                return 0;
+            }
+            this.tabQueue.mvList.splice(this.tabQueue.move.from, 1);//削除
+            if (this.tabQueue.mvListCt > this.tabQueue.move.from)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
+                this.tabQueue.mvListCt--;
+
             let itemCt;
             if (item === 0) {
                 itemCt = -1;//一番上に挿入する場合
             } else {
                 itemCt = vm.tabQueue.mvList.findIndex(({ uniqueKey }) => uniqueKey === item.uniqueKey);
             }
-            vm.tabQueue.mvList.splice(itemCt + 1, 0, vm.tabQueue.move.from);//予め保存していたデータをリストに挿入
+            vm.tabQueue.mvList.splice(itemCt + 1, 0, itemFrom);//予め保存していたデータをリストに挿入
             if (vm.tabQueue.mvListCt > itemCt)
                 vm.tabQueue.mvListCt++;//挿入後はvm.tabQueue.mvListCtも適切に変更する必要がある
-            vm.tabQueue.move.from = "";
+            vm.tabQueue.move.from = -1;
             vm.tabQueue.move.able = false;
+        },
+        moveCancel: function(){
+            this.tabQueue.move.able = false;
+            this.tabQueue.move.from = -1;
         },
 
         searchWordSubmitted: function () {
@@ -141,6 +160,7 @@ const vm = new Vue({
         tabChange(num) {
             vm.tabCommon.ListClickUniqueKey = "";
             vm.tabCommon.selectedTab = num;
+            this.moveCancel();
         },
         relatedMovieMore(){
             if(this.tabPlay.mvList==[])

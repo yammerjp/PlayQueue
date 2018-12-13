@@ -21,6 +21,12 @@ h1{
 #tab-bar{
     padding-top:5px;
     padding-bottom: 5px;
+    user-select: none; /* Firefox */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer */
+    -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+    -webkit-user-select: none; /* Chrome, Safari, and Opera */
+    -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
 #player-box:before {
     /*youtube player 16:9固定 ↓*/
@@ -120,6 +126,9 @@ h1{
     border-style:solid;
     border-color: #DA5019;
     border-radius: 3px;
+}
+.now-move-movie{
+    background-color:rgb(139, 139, 139);
 }
 .move-here{
     background-color:#F3C0AB;
