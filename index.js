@@ -141,6 +141,8 @@ const vm = new Vue({
             vm.tabCommon.selectedTab = num;
         },
         relatedMovieMore(){
+            if(this.tabPlay.mvList==[])
+                this.tabPlay.nextPageToken='';
             getMovieList(this.tabPlay);
         },
     }
