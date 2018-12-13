@@ -83,13 +83,6 @@ const vm = new Vue({
                 case 'MOVE'://itemの位置を移動して再生キュー内の順番を変更
                     if(this.tabQueue.move.able == true)
                         this.moveCancel();
-/*                    if (this.tabQueue.mvListCt == itemCt) {
-                        iziToast.error({
-                            title: 'can not move movie in the list',
-                            message: 'This movie is playing now.'
-                        });
-                        return 0;
-                    }*/
                     this.tabQueue.move.from = itemCt;
                     //削除前に、移動する動画の場所を保存しておく
                     this.tabQueue.move.able = true;
@@ -99,14 +92,6 @@ const vm = new Vue({
             }
         },
         moveHere(item) {
- /*           if (this.tabQueue.mvListCt == this.tabQueue.move.from) {//再生中は位置変更不可
-                iziToast.error({
-                    title: 'can not move movie in the list',
-                    message: 'This movie is playing now.'
-                });
-                this.moveCancel();
-                return 0;
-            }*/
             const itemFrom=this.tabQueue.mvList[this.tabQueue.move.from];
             if(itemFrom==item){//同じ場所に変更しろと言われたらキャンセル
                 this.moveCancel();
@@ -215,29 +200,42 @@ function onPlayerStateChange(event) {
 
 function onPlayerError(event) {
     switch (event.data) {
-        case 2://リクエストが無効なパラメータ値 動画IDのフォーマットが異なる
-        case 5://HTML5プレイヤーに関するエラー
         case 100://動画が見つからない(非公開含む)
+            playNextMovie();
+            iziToast.error({
+                title: 'Skip Movie',
+                message: '動画が見つかりません。削除や非公開化によるものです。'
+            });
+            break;    
         case 101://埋め込み不可の動画
         case 150://埋め込み不可の動画
             playNextMovie();
             iziToast.error({
                 title: 'Skip Movie',
-                message: 'The skipped movie is not permitted on Youtube embedded player.'
+                message: '埋め込み不可の動画です。'
             });
             break;
-
+        case 2://リクエストが無効なパラメータ値 動画IDのフォーマットが異なる
+            playNextMovie();
+            iziToast.error({
+                title: 'Skip Movie',
+                message: 'Youtubeへの再生リクエストに無効なパラメータが設定されました。動画IDのフォーマットが異なる可能性があります。'
+            });
+            break;
+        case 5://HTML5プレイヤーに関するエラー
+            playNextMovie();
+            iziToast.error({
+                title: 'Skip Movie',
+                message: 'HTML5プレイヤーに関するエラーが発生しました。'
+            });
+            break;
+        
         default:
             iziToast.error({ title: 'Unknown Error', message: 'Stop movie' });
     }
 }
 
 function playNextMovie() { //tabQueue.mvListが全て再生したら最初からループ
-/*    if(vm.tabQueue.mvList==[]){//現在は発生しないはずの状態
-        vm.tabQueue.mvListCt=-1;
-        playerStop=true;
-        return 0;
-    }*/
     if(vm.tabQueue.loop==false){//ループがオフ
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
             if(vm.tabQueue.autoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
@@ -266,7 +264,6 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
     vm.tabPlay.nextPageToken = '';
     vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
     getMovieList(vm.tabPlay);
-    //relatedToVideoId
 }
 
 function getMovieList(tab) {
@@ -304,7 +301,7 @@ function getMovieList(tab) {
             console.log(err);
             iziToast.error({
                 title: 'Reject http request',
-                message: 'could not get movie details. Youtube reject http request.'
+                message: 'Youtubeとの通信に失敗し、動画の検索結果を取得することができませんでした。'
             });
         });
 }

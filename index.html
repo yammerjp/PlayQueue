@@ -77,13 +77,13 @@
                v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
                v-on:click='listMovieClicked(item)'>
                 <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NOW',item)">
-                  <i class="material-icons">play_arrow</i>now
+                  <i class="material-icons">play_arrow</i>今すぐ再生
                 </button>
                 <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NEXT',item)">
-                  <i class="material-icons">add</i>next
+                  <i class="material-icons">add</i>次に再生
                 </button>
                 <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_LAST',item)">
-                  <i class="material-icons">low_priority</i>last
+                  <i class="material-icons">low_priority</i>最後に再生
                 </button>
               </div>
             </div>
@@ -123,24 +123,24 @@
            <!--クリックされている∧再生中でない⇒表示-->
            <div v-bind:class="{'displayNone':item==tabQueue.mvList[tabQueue.mvListCt] }">
               <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('JUMP',item)">
-                <i class="material-icons">play_arrow</i>now
+                <i class="material-icons">play_arrow</i>今すぐ再生
               </button>
               <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('DELETE',item)">
-                <i class="material-icons">clear</i>delete
+                <i class="material-icons">clear</i>リストから削除
               </button>
               <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('MOVE',item)">
-                <i class="material-icons">format_line_spacing</i>move
+                <i class="material-icons">format_line_spacing</i>移動
               </button>
             </div>
             <div v-bind:class="{'displayNone':item!=tabQueue.mvList[tabQueue.mvListCt]}">
                 <button class="btn waves-effect waves-light disabled">
-                  <i class="material-icons">play_arrow</i>now
+                  <i class="material-icons">play_arrow</i>今すぐ再生
                 </button>
                 <button class="btn waves-effect waves-light disabled">
-                  <i class="material-icons">clear</i>delete
+                  <i class="material-icons">clear</i>リストから削除
                 </button>
                 <button class="btn waves-effect waves-light disabled">
-                  <i class="material-icons">format_line_spacing</i>move
+                  <i class="material-icons">format_line_spacing</i>移動
                 </button>
             </div>
           </div>  
@@ -150,7 +150,7 @@
       <tr>
       <div class="settings">
           <div class="switch">
-              <span class="switch-caption">Loop:</span>  
+              <span class="switch-caption">ループ:</span>  
               <label>
                 Off
                 <input type="checkbox" v-model="tabQueue.loop">
@@ -206,13 +206,13 @@
            v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
             <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NOW',item)">
-              <i class="material-icons">play_arrow</i>now
+              <i class="material-icons">play_arrow</i>今すぐ再生
             </button>
             <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NEXT',item)">
-              <i class="material-icons">add</i>next
+              <i class="material-icons">add</i>次に再生
             </button>
             <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_LAST',item)">
-              <i class="material-icons">low_priority</i>last
+              <i class="material-icons">low_priority</i>最後に再生
             </button>
           </div>
         </div>
