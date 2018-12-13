@@ -72,6 +72,8 @@ const vm = new Vue({
                     if (vm.tabQueue.mvListCt == itemCt)//現在再生中なら次を再生してから
                         playNextMovie();
                     vm.tabQueue.mvList.splice(itemCt, 1);//削除
+                    if (vm.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
+                        vm.tabQueue.mvListCt--;
                     break;
 
                 case 'MOVE'://itemの位置を移動して再生キュー内の順番を変更
