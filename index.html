@@ -51,7 +51,7 @@
         <div class="title">{{tabQueue.mvList[tabQueue.mvListCt].title}}</div>
         <div class="description">{{tabQueue.mvList[tabQueue.mvListCt].description}}</div>
         
-        <div>関連動画</div>
+        <div class='list-name'>関連動画</div>
         <div class="movie-list col s12 row" v-for="item in tabPlay.mvList" :key="item.uniqueKey">
             <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
               <div class="row valign-wrapper intab-row">
@@ -90,6 +90,7 @@
 
     <!--再生リストタブ-->    
     <div class="tab-queue" v-bind:class="{'displayNone':tabCommon.selectedTab!=1}">
+      <div>再生リスト</div>
       <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(0)'>here</div>
       <div class="movie-list col s12 row" v-for="item in tabQueue.mvList" :key="item.uniqueKey">
         <div
@@ -111,19 +112,32 @@
             </div>
           </div>
           <div  class="selected-movie-s12" 
-           v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey&&item.uniqueKey!=tabQueue.mvList[tabQueue.mvListCt].uniqueKey)}" 
+           v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
            <!--クリックされている∧再生中でない⇒表示-->
-            <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('JUMP',item)">
-              <i class="material-icons">play_arrow</i>now
-            </button>
-            <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('DELETE',item)">
-              <i class="material-icons">clear</i>delete
-            </button>
-            <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('MOVE',item)">
-              <i class="material-icons">format_line_spacing</i>move
-            </button>
-          </div>
+           <div v-bind:class="{'displayNone':item==tabQueue.mvList[tabQueue.mvListCt] }">
+              <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('JUMP',item)">
+                <i class="material-icons">play_arrow</i>now
+              </button>
+              <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('DELETE',item)">
+                <i class="material-icons">clear</i>delete
+              </button>
+              <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('MOVE',item)">
+                <i class="material-icons">format_line_spacing</i>move
+              </button>
+            </div>
+            <div v-bind:class="{'displayNone':item!=tabQueue.mvList[tabQueue.mvListCt]}">
+                <button class="btn waves-effect waves-light disabled">
+                  <i class="material-icons">play_arrow</i>now
+                </button>
+                <button class="btn waves-effect waves-light disabled">
+                  <i class="material-icons">clear</i>delete
+                </button>
+                <button class="btn waves-effect waves-light disabled">
+                  <i class="material-icons">format_line_spacing</i>move
+                </button>
+            </div>
+          </div>  
         </div>
         <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(item)'>here</div>
       </div>

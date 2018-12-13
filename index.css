@@ -5,6 +5,8 @@ h1{
     font-family: 'Anton', sans-serif;
     font-size: 1.5em;
     color: #DA5019;
+    margin-top:0.5em;
+    margin-bottom: 0.5em;
 }
 #center-box{
     display: inline-block;
@@ -132,4 +134,9 @@ h1{
 }
 .move-here{
     background-color:#F3C0AB;
+}
+
+.list-name{
+    margin-top:2em;
+    margin-bottom: 0.25em;
 }
