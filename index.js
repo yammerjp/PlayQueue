@@ -61,23 +61,23 @@ const vm = new Vue({
             }
         },
         changeMovieQueue(msg, item) {
-            const itemCt = vm.tabQueue.mvList.findIndex(({ uniqueKey }) => uniqueKey === item.uniqueKey);
+            const itemCt = this.tabQueue.mvList.findIndex(({ uniqueKey }) => uniqueKey === item.uniqueKey);
             /*↑uniqueキーが一致するtabQueue.mvListの配列番号 つまりitemが存在するtabQueue.mvList配列内の位置 */
             switch (msg) {
                 case "JUMP"://itemの位置に再生キューを移動して再生
-                    vm.tabQueue.mvListCt = itemCt - 1;
+                    this.tabQueue.mvListCt = itemCt - 1;
                     playNextMovie()
                     break;
                 case 'DELETE'://itemを再生キューから削除
-                    if (vm.tabQueue.mvListCt == itemCt)//現在再生中なら次を再生してから
+                    if (this.tabQueue.mvListCt == itemCt)//現在再生中なら次を再生してから
                         playNextMovie();
-                    vm.tabQueue.mvList.splice(itemCt, 1);//削除
-                    if (vm.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
-                        vm.tabQueue.mvListCt--;
+                    this.tabQueue.mvList.splice(itemCt, 1);//削除
+                    if (this.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
+                        this.tabQueue.mvListCt--;
                     break;
 
                 case 'MOVE'://itemの位置を移動して再生キュー内の順番を変更
-                    if (vm.tabQueue.mvListCt == itemCt) {
+                    if (this.tabQueue.mvListCt == itemCt) {
                         iziToast.error({
                             title: 'can not move movie in the list',
                             message: 'This movie is playing now.'
@@ -85,12 +85,12 @@ const vm = new Vue({
                         return 0;
                     }
 
-                    vm.tabQueue.move.from = item;
+                    this.tabQueue.move.from = item;
                     //削除前に、移動する動画のデータを保存しておく
-                    vm.tabQueue.mvList.splice(itemCt, 1);//削除
-                    if (vm.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
-                        vm.tabQueue.mvListCt--;
-                    vm.tabQueue.move.able = true;
+                    this.tabQueue.mvList.splice(itemCt, 1);//削除
+                    if (this.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
+                        this.tabQueue.mvListCt--;
+                    this.tabQueue.move.able = true;
                     /*選択画面を挟んでから移動先が決定 */
                     break;
 
@@ -210,7 +210,7 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
     vm.tabPlay.mvList =[];
     vm.tabPlay.nextPageToken = '';
     vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
-    getMovieList(mv.tabPlay);
+    getMovieList(vm.tabPlay);
     //relatedToVideoId
 }
 
