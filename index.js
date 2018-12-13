@@ -145,8 +145,14 @@ const vm = new Vue({
         },
 
         searchWordSubmittedMore: function () {
-            if (this.tabSearch.wordSubmit == "")
+            if (this.tabSearch.wordSubmit == ""){
+                if(this.tabSearch.word!=""){//もし未検索でmoreボタンを押して検索バーに文字があったら、その内容で検索
+                    this.searchWordSubmitted();   
+                }
                 return 0;
+                //ちなみに何も入力せずにmoreボタンを押していたら無視
+            }
+
             getMovieList(this.tabSearch);
         },
 
