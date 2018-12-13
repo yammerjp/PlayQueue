@@ -23,6 +23,7 @@ const vm = new Vue({
                 from: -1,//moveFrom
             },
             loop:false,
+            autoPlayRelatedMovie:false,
         },
         tabPlay: {
             mvList: [],
@@ -237,13 +238,18 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
         playerStop=true;
         return 0;
     }*/
-    if(vm.tabQueue.loop==false){
+    if(vm.tabQueue.loop==false){//ループがオフ
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
-            playerStop=true;
+            if(vm.tabQueue.autoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
+                vm.addMovieQueue("PLAY_NOW", vm.tabPlay.mvList[0]);
+            }else{
+                playerStop=true;
+                
+            }
             return 0;
         }
         vm.tabQueue.mvListCt = vm.tabQueue.mvListCt + 1;
-    }else{
+    }else{//ループがオン
         vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
     }
     player.loadVideoById({
