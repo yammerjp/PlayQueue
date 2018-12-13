@@ -38,7 +38,7 @@ const vm = new Vue({
         },
         tabCommon: {
             ListClickUniqueKey: '',//ListClickUniqueKey
-            selectedTab: 0, // selectedTab
+            selectedTab: 0// selectedTab
         },
     },/*
   mounted(){
