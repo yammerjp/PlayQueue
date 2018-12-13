@@ -53,9 +53,11 @@ const vm = new Vue({
                     break;
                 case "PLAY_NEXT":
                     vm.tabQueue.mvList.splice(vm.tabQueue.mvListCt + 1, 0, movie);
+                    playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
                     break;
                 case "PLAY_LAST":
                     vm.tabQueue.mvList.push(movie);
+                    playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
                     break;
 
             }
@@ -66,11 +68,11 @@ const vm = new Vue({
             switch (msg) {
                 case "JUMP"://itemの位置に再生キューを移動して再生
                     this.tabQueue.mvListCt = itemCt - 1;
-                    playNextMovie()
+                    playNextMovie();
                     break;
                 case 'DELETE'://itemを再生キューから削除
-                    if (this.tabQueue.mvListCt == itemCt)//現在再生中なら次を再生してから
-                        playNextMovie();
+//                    if (this.tabQueue.mvListCt == itemCt)//現在再生中なら次を再生してから
+//                        playNextMovie();
                     this.tabQueue.mvList.splice(itemCt, 1);//削除
                     if (this.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
                         this.tabQueue.mvListCt--;
@@ -79,13 +81,13 @@ const vm = new Vue({
                 case 'MOVE'://itemの位置を移動して再生キュー内の順番を変更
                     if(this.tabQueue.move.able == true)
                         this.moveCancel();
-                    if (this.tabQueue.mvListCt == itemCt) {
+/*                    if (this.tabQueue.mvListCt == itemCt) {
                         iziToast.error({
                             title: 'can not move movie in the list',
                             message: 'This movie is playing now.'
                         });
                         return 0;
-                    }
+                    }*/
                     this.tabQueue.move.from = itemCt;
                     //削除前に、移動する動画の場所を保存しておく
                     this.tabQueue.move.able = true;
@@ -95,14 +97,14 @@ const vm = new Vue({
             }
         },
         moveHere(item) {
-            if (this.tabQueue.mvListCt == this.tabQueue.move.from) {//再生中は位置変更不可
+ /*           if (this.tabQueue.mvListCt == this.tabQueue.move.from) {//再生中は位置変更不可
                 iziToast.error({
                     title: 'can not move movie in the list',
                     message: 'This movie is playing now.'
                 });
                 this.moveCancel();
                 return 0;
-            }
+            }*/
             const itemFrom=this.tabQueue.mvList[this.tabQueue.move.from];
             if(itemFrom==item){//同じ場所に変更しろと言われたらキャンセル
                 this.moveCancel();
@@ -123,6 +125,8 @@ const vm = new Vue({
                 vm.tabQueue.mvListCt++;//挿入後はvm.tabQueue.mvListCtも適切に変更する必要がある
             vm.tabQueue.move.from = -1;
             vm.tabQueue.move.able = false;
+
+            playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
         },
         moveCancel: function(){
             this.tabQueue.move.able = false;
@@ -181,6 +185,7 @@ tag.src = "https://www.youtube.com/iframe_api";
 let firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 let player;
+let playerStop =false;
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
@@ -226,12 +231,26 @@ function onPlayerError(event) {
 }
 
 function playNextMovie() { //tabQueue.mvListが全て再生したら最初からループ
-    vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
-    //  if(vm.tabQueue.mvList.length > vm.tabQueue.mvListCt +1 );
+    if(vm.tabQueue.mvList==[]){
+        vm.tabQueue.mvListCt=-1;
+        playerStop=true;
+        return 0;
+    }
+    if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
+        playerStop=true;
+        return 0;
+    }
+//    vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
+    vm.tabQueue.mvListCt = vm.tabQueue.mvListCt + 1;
     player.loadVideoById({
         videoId: vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id,
         suggestedQuality: 'small'
     });
+    if(vm.tabQueue.move.able==true
+    &&vm.tabQueue.move.from==vm.tabQueue.mvListCt){
+        vm.moveCancel();
+    }
+
     //関連動画リストの取得
     vm.tabPlay.mvList =[];
     vm.tabPlay.nextPageToken = '';
@@ -278,4 +297,10 @@ function getMovieList(tab) {
                 message: 'could not get movie details. Youtube reject http request.'
             });
         });
+}
+function playRestart(){
+    if(playerStop==true){
+        playerStop=false;
+        playNextMovie();
+    }
 }

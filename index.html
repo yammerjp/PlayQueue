@@ -111,8 +111,9 @@
             </div>
           </div>
           <div  class="selected-movie-s12" 
-           v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
+           v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey&&item.uniqueKey!=tabQueue.mvList[tabQueue.mvListCt].uniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
+           <!--クリックされている∧再生中でない⇒表示-->
             <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('JUMP',item)">
               <i class="material-icons">play_arrow</i>now
             </button>
