@@ -21,7 +21,8 @@ const vm = new Vue({
             move: {
                 able: false,//movable
                 from: -1,//moveFrom
-            }
+            },
+            loop:false,
         },
         tabPlay: {
             mvList: [],
@@ -231,17 +232,20 @@ function onPlayerError(event) {
 }
 
 function playNextMovie() { //tabQueue.mvListが全て再生したら最初からループ
-    if(vm.tabQueue.mvList==[]){
+/*    if(vm.tabQueue.mvList==[]){//現在は発生しないはずの状態
         vm.tabQueue.mvListCt=-1;
         playerStop=true;
         return 0;
+    }*/
+    if(vm.tabQueue.loop==false){
+        if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
+            playerStop=true;
+            return 0;
+        }
+        vm.tabQueue.mvListCt = vm.tabQueue.mvListCt + 1;
+    }else{
+        vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
     }
-    if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
-        playerStop=true;
-        return 0;
-    }
-//    vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
-    vm.tabQueue.mvListCt = vm.tabQueue.mvListCt + 1;
     player.loadVideoById({
         videoId: vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id,
         suggestedQuality: 'small'

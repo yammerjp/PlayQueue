@@ -141,6 +141,18 @@
         </div>
         <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(item)'>here</div>
       </div>
+      <tr>
+      <div class="settings">
+          <div class="switch">
+              Loop:  
+              <label>
+                Off
+                <input type="checkbox" v-model="tabQueue.loop">
+                <span class="lever"></span>
+                On
+              </label>
+            </div>
+      </div>
     </div>
 
     <!--検索リストタブ-->    
