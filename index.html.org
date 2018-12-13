@@ -32,69 +32,33 @@
     <!--タブ選択バー-->
     <div id="tab-bar" class="row tab-row">
       <div class="col s12">
-          <div class="tab col s4" v-on:click='tabChange(0)' v-bind:class="{'selected-tab-bar': tabCommon.selectedTab==0}">
+          <div class="tab col s4" v-on:click='tabChange(0)' v-bind:class="{'selected-tab-bar': selectedTab==0}">
               <i class="material-icons tab-switch-bar">play_arrow</i>
           </div>
-        <div class="tab col s4" v-on:click='tabChange(1)' v-bind:class="{'selected-tab-bar': tabCommon.selectedTab==1}">
+        <div class="tab col s4" v-on:click='tabChange(1)' v-bind:class="{'selected-tab-bar': selectedTab==1}">
           <i class="material-icons tab-switch-bar">list</i>
         </div>
-        <div class="tab col s4" v-on:click='tabChange(2)' v-bind:class="{'selected-tab-bar': tabCommon.selectedTab==2}">
+        <div class="tab col s4" v-on:click='tabChange(2)' v-bind:class="{'selected-tab-bar': selectedTab==2}">
           <i class="material-icons tab-switch-bar">search</i>
         </div>
       </div>
     </div>
     <!--動画再生タブ-->    
-    <div id="tab-player" v-bind:class="{'displayNone':tabCommon.selectedTab!=0}">
+    <div id="tab-player" v-bind:class="{'displayNone':selectedTab!=0}">
         <div id='player-box'>
           <div id="player"></div>
         </div>
-        <div class="title">{{tabQueue.mvList[tabQueue.mvListCt].title}}</div>
-        <div class="description">{{tabQueue.mvList[tabQueue.mvListCt].description}}</div>
-        
-        <div>関連動画</div>
-        <div class="movie-list col s12 row" v-for="item in tabPlay.mvList" :key="item.uniqueKey">
-            <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
-              <div class="row valign-wrapper intab-row">
-                <div v-on:click='listMovieClicked(item)'>
-                  <div class="col s3">
-                    <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
-                  </div>
-                  <div class="col s9">
-                    <span class="black-text">
-                        <div class="title">{{item.title}}</div>
-                        <div class="description">{{item.description}}</div>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div  class="selected-movie-s12" 
-               v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
-               v-on:click='listMovieClicked(item)'>
-                <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NOW',item)">
-                  <i class="material-icons">play_arrow</i>now
-                </button>
-                <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NEXT',item)">
-                  <i class="material-icons">add</i>next
-                </button>
-                <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_LAST',item)">
-                  <i class="material-icons">low_priority</i>last
-                </button>
-              </div>
-            </div>
-          </div>
-    
-          <button v-on:click="relatedMovieMore" class="btn waves-effect waves-light">
-            <i class="material-icons">keyboard_arrow_down</i>
-          </button>
+        <div class="title">{{movieQueue[movieQueueCt].title}}</div>
+        <div class="description">{{movieQueue[movieQueueCt].description}}</div>
     </div>
 
     <!--再生リストタブ-->    
-    <div class="tab-queue" v-bind:class="{'displayNone':tabCommon.selectedTab!=1}">
-      <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(0)'>here</div>
-      <div class="movie-list col s12 row" v-for="item in tabQueue.mvList" :key="item.uniqueKey">
+    <div class="tab-queue" v-bind:class="{'displayNone':selectedTab!=1}">
+      <div class='move-here' v-bind:class="{'displayNone':movable==false}" v-on:click='moveHere(0)'>here</div>
+      <div class="movie-list col s12 row" v-for="item in movieQueue" :key="item.uniqueKey">
         <div
          class="card-panel grey lighten-5 z-depth-1 intab-card-panel"
-         v-bind:class='{"now-play-movie":item.uniqueKey==tabQueue.mvList[tabQueue.mvListCt].uniqueKey}'>
+         v-bind:class='{"now-play-movie":item.uniqueKey==movieQueue[movieQueueCt].uniqueKey}'>
           <div class="row valign-wrapper intab-row">
             <div v-on:click='listMovieClicked(item)'>
               <div class="col s3">
@@ -109,7 +73,7 @@
             </div>
           </div>
           <div  class="selected-movie-s12" 
-           v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
+           v-bind:class="{'displayNone':!(item.uniqueKey==ListClickUniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
             <button class="btn waves-effect waves-light " v-on:click="changeMovieQueue('JUMP',item)">
               <i class="material-icons">play_arrow</i>now
@@ -122,18 +86,18 @@
             </button>
           </div>
         </div>
-        <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(item)'>here</div>
+        <div class='move-here' v-bind:class="{'displayNone':movable==false}" v-on:click='moveHere(item)'>here</div>
       </div>
     </div>
 
     <!--検索リストタブ-->    
-    <div class="tab-search" v-bind:class="{'displayNone':tabCommon.selectedTab!=2}">
+    <div class="tab-search" v-bind:class="{'displayNone':selectedTab!=2}">
       <form @submit.prevent="searchWordSubmitted">
-        <input type="text" v-model="tabSearch.word" placeholder="search word" class="searchWordInput">
+        <input type="text" v-model="searchWord" placeholder="search word" class="searchWordInput">
 <!--        <button v-on:click="searchWordSubmitted">search</button>-->
       </form>
 
-      <div class="movie-list col s12 row" v-for="item in tabSearch.mvList" :key="item.uniqueKey">
+      <div class="movie-list col s12 row" v-for="item in movieSearchList" :key="item.uniqueKey">
         <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
           <div class="row valign-wrapper intab-row">
             <div v-on:click='listMovieClicked(item)'>
@@ -149,15 +113,15 @@
             </div>
           </div>
           <div  class="selected-movie-s12" 
-           v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}" 
+           v-bind:class="{'displayNone':!(item.uniqueKey==ListClickUniqueKey)}" 
            v-on:click='listMovieClicked(item)'>
-            <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NOW',item)">
+            <button class="btn waves-effect waves-light " v-on:click="newMovieQueue('PLAY_NOW',item)">
               <i class="material-icons">play_arrow</i>now
             </button>
-            <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_NEXT',item)">
+            <button class="btn waves-effect waves-light " v-on:click="newMovieQueue('PLAY_NEXT',item)">
               <i class="material-icons">add</i>next
             </button>
-            <button class="btn waves-effect waves-light " v-on:click="addMovieQueue('PLAY_LAST',item)">
+            <button class="btn waves-effect waves-light " v-on:click="newMovieQueue('PLAY_LAST',item)">
               <i class="material-icons">low_priority</i>last
             </button>
           </div>
