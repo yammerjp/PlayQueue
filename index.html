@@ -54,7 +54,7 @@
         <div class='list-name'>関連動画</div>
         <div class="movie-list col s12 row" v-for="item in tabPlay.mvList" :key="item.uniqueKey">
             <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
-              <div
+              <div class='next-play'
                v-bind:class="{'displayNone':!(tabQueue.loop==false && 
                                               tabQueue.autoPlayRelatedMovie==true &&
                                               tabQueue.mvListCt + 1 >=tabQueue.mvList.length &&
@@ -150,7 +150,7 @@
       <tr>
       <div class="settings">
           <div class="switch">
-              Loop:  
+              <span class="switch-caption">Loop:</span>  
               <label>
                 Off
                 <input type="checkbox" v-model="tabQueue.loop">
@@ -158,13 +158,22 @@
                 On
               </label>
           </div>
-          <div class="switch">
-              最後の動画の関連動画を再生する:  
+          <div class="switch" v-bind:class="{'displayNone':tabQueue.loop==true}">
+              <span class="switch-caption">最後の動画の関連動画を再生する:</span> 
               <label>
                 Off
                 <input type="checkbox" v-model="tabQueue.autoPlayRelatedMovie">
                 <span class="lever"></span>
                 On
+              </label>
+          </div>
+          <div class="switch" v-bind:class="{'displayNone':tabQueue.loop==false}">
+              <span class='switch-caption strikeout'>最後の動画の関連動画を再生する:</span>  
+              <label>
+                Off
+                <input disabled type="checkbox" v-model="tabQueue.autoPlayRelatedMovie">
+                <span class="lever"></span>
+                <span class="strikeout">On</span>
               </label>
           </div>
             

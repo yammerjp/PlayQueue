@@ -140,3 +140,18 @@ h1{
     margin-top:2em;
     margin-bottom: 0.25em;
 }
+.next-play{
+    text-align: left;
+    margin-left:1em;
+}
+.settings{
+    text-align: right;
+    margin-right:1em;
+}
+.switch-caption{
+    color: rgb(32, 32, 32);
+}
+.strikeout{
+    text-decoration: line-through;
+    color: rgb(114, 114, 114);
+}
