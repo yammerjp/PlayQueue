@@ -3,7 +3,7 @@ const TAB_QUEUE = 1;
 const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
-const YoutubeKey = "AIzaSyCCgdgCh4cw1pnscxtRsfP80M23lMlCdKY";
+const YoutubeKey = "AIzaSyBxO0o94z2pTyey5aEdEN3PnkpyNJj4hjE";
 
 const vm = new Vue({
     el: "#app",
