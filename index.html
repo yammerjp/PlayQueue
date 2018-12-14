@@ -94,7 +94,10 @@
             </div>
           </div>
     
-          <button v-on:click="relatedMovieMore" class="btn waves-effect waves-light">
+          <button
+           v-on:click="relatedMovieMore"
+           class="btn waves-effect waves-light"
+           v-bind:class="{'displayNone':tabCommon.playerStart==false}">
             <i class="material-icons">keyboard_arrow_down</i>
           </button>
     </div>
@@ -103,7 +106,11 @@
     <div class="tab-queue" v-bind:class="{'displayNone':tabCommon.selectedTab!=1}">
       <div>再生リスト</div>
       <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(0)'>here</div>
-      <div class="movie-list col s12 row" v-for="item in tabQueue.mvList" :key="item.uniqueKey">
+      <div 
+       class="movie-list col s12 row"
+       v-bind:class="{'displayNone':tabCommon.playerStart==false}"
+       v-for="item in tabQueue.mvList"
+       :key="item.uniqueKey">
         <div
          class="card-panel grey lighten-5 z-depth-1 intab-card-panel"
          v-bind:class='{"now-play-movie":item.uniqueKey==tabQueue.mvList[tabQueue.mvListCt].uniqueKey}'>

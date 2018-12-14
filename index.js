@@ -9,7 +9,7 @@ const vm = new Vue({
     el: "#app",
     data: {
         tabQueue: {
-            mvList: [//movieQueue
+            mvList: [/*//movieQueue
                 {
                     Id: "etKuJ7ibrvc",
                     description: "お口の恋人ロッテのスペシャルアニメーション 「ベイビーアイラブユーだぜ」のフルバージョンを公開！ 企画・プロデュース:川村元気 監督:松...",
@@ -17,7 +17,15 @@ const vm = new Vue({
                     title: "ロッテ×BUMP OF CHICKEN ベイビーアイラブユーだぜ フルバージョン",
                     uniqueKey: "1544599827709#0",
                     publishedAt:"",
-                }],
+                } */ 
+                {
+                    Id: "",
+                    description: "",
+                    thumbnail: "",
+                    title: "",
+                    uniqueKey: "",
+                    publishedAt:"",
+                } ],
             mvListCt: 0,//movieQueueCt
             move: {
                 able: false,//movable
@@ -41,25 +49,26 @@ const vm = new Vue({
         },
         tabCommon: {
             ListClickUniqueKey: '',//ListClickUniqueKey
-            selectedTab: 0// selectedTab
+            selectedTab: 0,// selectedTab
+            playerStop :true,
+            playerStart:false,
         },
     },/*
   mounted(){
   },*/
     methods: {
-
         addMovieQueue: function (msg, movie) {
             switch (msg) {
                 case "PLAY_NOW":
-                    vm.tabQueue.mvList.splice(vm.tabQueue.mvListCt + 1, 0, movie);
+                    this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, movie);
                     playNextMovie()
                     break;
                 case "PLAY_NEXT":
-                    vm.tabQueue.mvList.splice(vm.tabQueue.mvListCt + 1, 0, movie);
+                    this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, movie);
                     playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
                     break;
                 case "PLAY_LAST":
-                    vm.tabQueue.mvList.push(movie);
+                    this.tabQueue.mvList.push(movie);
                     playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
                     break;
 
@@ -106,13 +115,13 @@ const vm = new Vue({
             if (item === 0) {
                 itemCt = -1;//一番上に挿入する場合
             } else {
-                itemCt = vm.tabQueue.mvList.findIndex(({ uniqueKey }) => uniqueKey === item.uniqueKey);
+                itemCt = this.tabQueue.mvList.findIndex(({ uniqueKey }) => uniqueKey === item.uniqueKey);
             }
-            vm.tabQueue.mvList.splice(itemCt + 1, 0, itemFrom);//予め保存していたデータをリストに挿入
-            if (vm.tabQueue.mvListCt > itemCt)
-                vm.tabQueue.mvListCt++;//挿入後はvm.tabQueue.mvListCtも適切に変更する必要がある
-            vm.tabQueue.move.from = -1;
-            vm.tabQueue.move.able = false;
+            this.tabQueue.mvList.splice(itemCt + 1, 0, itemFrom);//予め保存していたデータをリストに挿入
+            if (this.tabQueue.mvListCt > itemCt)
+                this.tabQueue.mvListCt++;//挿入後はthis.tabQueue.mvListCtも適切に変更する必要がある
+            this.tabQueue.move.from = -1;
+            this.tabQueue.move.able = false;
 
             playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
         },
@@ -149,18 +158,20 @@ const vm = new Vue({
         },
 
         listMovieClicked: function (movie) {
-            if (vm.tabCommon.ListClickUniqueKey == movie.uniqueKey) {
-                vm.tabCommon.ListClickUniqueKey = "";
+            if (this.tabCommon.ListClickUniqueKey == movie.uniqueKey) {
+                this.tabCommon.ListClickUniqueKey = "";
             } else {
-                vm.tabCommon.ListClickUniqueKey = movie.uniqueKey;
+                this.tabCommon.ListClickUniqueKey = movie.uniqueKey;
             }
         },
         tabChange(num) {
-            vm.tabCommon.ListClickUniqueKey = "";
-            vm.tabCommon.selectedTab = num;
+            this.tabCommon.ListClickUniqueKey = "";
+            this.tabCommon.selectedTab = num;
             this.moveCancel();
         },
         relatedMovieMore(){
+            if(this.tabCommon.playerStart==false)
+                return;
             if(this.tabPlay.mvList==[])
                 this.tabPlay.nextPageToken='';
             getMovieList(this.tabPlay);
@@ -168,12 +179,15 @@ const vm = new Vue({
     }
 });
 
-let tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-let firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+function replacePlayer(){
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
 let player;
-let playerStop =false;
+
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
@@ -237,12 +251,20 @@ function onPlayerError(event) {
 }
 
 function playNextMovie() { //tabQueue.mvListが全て再生したら最初からループ
+    if(vm.tabCommon.playerStart==false){//ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
+        vm.tabQueue.mvList.shift();
+        vm.tabQueue.mvListCt=0;
+        replacePlayer();
+        vm.tabCommon.playerStart=true;
+        vm.tabCommon.playerStop=false;
+        return;
+    }
     if(vm.tabQueue.loop==false){//ループがオフ
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
             if(vm.tabQueue.autoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
                 vm.addMovieQueue("PLAY_NOW", vm.tabPlay.mvList[0]);
             }else{
-                playerStop=true;
+                vm.tabCommon.playerStop=true;
                 
             }
             return 0;
@@ -287,11 +309,14 @@ function getMovieList(tab) {
         .then(function (res) {
             res.data.items.forEach((item, index) => {
                 const dt=new Date(item.snippet.publishedAt);
+                let dsc=item.snippet.description;
+                if(dsc.length>210) //説明が長すぎる場合は210文字でカットして...を付ける
+                    dsc=dsc.substring(0,210)+'...';
                 const searchMovie = {
                     uniqueKey: `${date.getTime()}#${index}`,
                     Id: item.id.videoId,
                     title: item.snippet.title,
-                    description: item.snippet.description,
+                    description: dsc,
                     thumbnail: item.snippet.thumbnails.default.url,
                     publishedAt: dt.toLocaleString(),
                 };
@@ -308,8 +333,8 @@ function getMovieList(tab) {
         });
 }
 function playRestart(){
-    if(playerStop==true){
-        playerStop=false;
+    if(vm.tabCommon.playerStop==true){
+        vm.tabCommon.playerStop=false;
         playNextMovie();
     }
 }
