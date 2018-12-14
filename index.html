@@ -56,8 +56,8 @@
         <div class="movie-list col s12 row" v-for="item in tabPlay.mvList" :key="item.uniqueKey">
             <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
               <div class='next-play'
-               v-bind:class="{'displayNone':!(tabQueue.loop==false && 
-                                              tabQueue.autoPlayRelatedMovie==true &&
+               v-bind:class="{'displayNone':!(tQloop==false && 
+                                              tQautoPlayRelatedMovie==true &&
                                               tabQueue.mvListCt + 1 >=tabQueue.mvList.length &&
                                               item==tabPlay.mvList[0]
                                               )}">次に再生:</div>
@@ -169,25 +169,25 @@
               <span class="switch-caption">ループ:</span>  
               <label>
                 Off
-                <input type="checkbox" v-model="tabQueue.loop">
+                <input type="checkbox" v-model="tQloop">
                 <span class="lever"></span>
                 On
               </label>
           </div>
-          <div class="switch" v-bind:class="{'displayNone':tabQueue.loop==true}">
+          <div class="switch" v-bind:class="{'displayNone':tQloop==true}">
               <span class="switch-caption">最後の動画の関連動画を再生する:</span> 
               <label>
                 Off
-                <input type="checkbox" v-model="tabQueue.autoPlayRelatedMovie">
+                <input type="checkbox" v-model="tQautoPlayRelatedMovie">
                 <span class="lever"></span>
                 On
               </label>
           </div>
-          <div class="switch" v-bind:class="{'displayNone':tabQueue.loop==false}">
+          <div class="switch" v-bind:class="{'displayNone':tQloop==false}">
               <span class='switch-caption strikeout'>最後の動画の関連動画を再生する:</span>  
               <label>
                 Off
-                <input disabled type="checkbox" v-model="tabQueue.autoPlayRelatedMovie">
+                <input disabled type="checkbox" v-model="tQautoPlayRelatedMovie">
                 <span class="lever"></span>
                 <span class="strikeout">On</span>
               </label>

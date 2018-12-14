@@ -31,8 +31,6 @@ const vm = new Vue({
                 able: false,//movable
                 from: -1,//moveFrom
             },
-            loop:false,
-            autoPlayRelatedMovie:false,
         },
         tabPlay: {
             mvList: [],
@@ -50,11 +48,30 @@ const vm = new Vue({
         tabCommon: {
             ListClickUniqueKey: '',//ListClickUniqueKey
             selectedTab: 0,// selectedTab
-            playerStop :true,
+            playerFinish :true,//playerStop
             playerStart:false,
         },
-    },/*
-  mounted(){
+        tQloop:false,
+        tQautoPlayRelatedMovie:false,
+    },
+    watch: {
+        tQloop: function(newVal, oldVal) {
+                if( newVal==true
+                    &&oldVal==false
+                    &&this.tabCommon.playerStart==true ){
+                        playRestart();
+                    }
+            },
+            tQautoPlayRelatedMovie: function(newVal, oldVal) {
+                if( newVal==true
+                    &&oldVal==false
+                    &&this.tabCommon.playerStart==true ){
+                        playRestart();
+                    }
+            }
+        
+    },
+/*mounted(){
   },*/
     methods: {
         addMovieQueue: function (msg, movie) {
@@ -256,16 +273,15 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
         vm.tabQueue.mvListCt=0;
         replacePlayer();
         vm.tabCommon.playerStart=true;
-        vm.tabCommon.playerStop=false;
+        vm.tabCommon.playerFinish=false;
         return;
     }
-    if(vm.tabQueue.loop==false){//ループがオフ
-        if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){
-            if(vm.tabQueue.autoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
-                vm.addMovieQueue("PLAY_NOW", vm.tabPlay.mvList[0]);
-            }else{
-                vm.tabCommon.playerStop=true;
-                
+    if(vm.tQloop==false){//ループがオフ
+        if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){//リストの末尾に到達
+            if(vm.tQautoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
+                            vm.addMovieQueue("PLAY_NOW", vm.tabPlay.mvList[0]);
+            }else{//ループせず関連動画も再生しない
+                vm.tabCommon.playerFinish=true;
             }
             return 0;
         }
@@ -333,8 +349,8 @@ function getMovieList(tab) {
         });
 }
 function playRestart(){
-    if(vm.tabCommon.playerStop==true){
-        vm.tabCommon.playerStop=false;
+    if(vm.tabCommon.playerFinish==true){
+        vm.tabCommon.playerFinish=false;
         playNextMovie();
     }
 }
