@@ -61,7 +61,10 @@
                                               item==tabPlay.mvList[0]
                                               )}">次に再生:</div>
               <div class="row valign-wrapper intab-row">
-                <div v-on:click='listMovieClicked(item)'>
+                <div
+                 class="width100"
+                 v-bind:class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
+                 v-on:click='listMovieClicked(item)' >
                   <div class="col s3">
                     <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
                   </div>
@@ -105,7 +108,10 @@
           <div 
            class="row valign-wrapper intab-row"
            v-bind:class='{"now-move-movie":item==tabQueue.mvList[tabQueue.move.from]}'>
-            <div v-on:click='listMovieClicked(item)'>
+            <div
+             class="width100"
+             v-bind:class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
+             v-on:click='listMovieClicked(item)'>
               <div class="col s3">
                 <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
               </div>
@@ -190,7 +196,10 @@
       <div class="movie-list col s12 row" v-for="item in tabSearch.mvList" :key="item.uniqueKey">
         <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
           <div class="row valign-wrapper intab-row">
-            <div v-on:click='listMovieClicked(item)'>
+            <div
+             class="width100"
+             v-bind:class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
+             v-on:click='listMovieClicked(item)'>
               <div class="col s3">
                 <img v-bind:src="item.thumbnail" alt="" class="responsive-img">
               </div>

@@ -56,12 +56,10 @@ h1{
 .selected-tab-bar{
     border-bottom: solid 2px #DA5019;
 }
-
 #center-box{
     width: 100%;
     max-width: 600px;
 }
-
 .intab-card-panel{
     padding:2px;
     margin:0px;
@@ -71,12 +69,11 @@ h1{
 }
 .intab-row {
     margin-bottom: 3px;
+    width: 100%;
 }
-
 .displayNone{
     display:none;
 }
-
 .movie-list{
     margin-bottom:0px;
 }
@@ -85,14 +82,21 @@ h1{
 }
 
 .title{
+
     text-align:left;
     font-size: 1em;
 }
-#tab-player .title{
+
+#tab-player > .title{
     margin:0.25em 1em;
     font-style: bold;
 }
 .movie-list .title{
+    width:100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
+    overflow: hidden;
     user-select: none; /* Firefox */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer */
@@ -101,15 +105,28 @@ h1{
     -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 
 }
+.movie-list .selected .title{
+/*    text-overflow:clip;*/
+    overflow-wrap: break-word;
+    white-space: normal;
+}
 .description{
+    margin:0;
     text-align:left;
     font-size:0.8em;
     color: rgb(71, 71, 71) ;
+    width:100%;
+    overflow-wrap: break-word;
 }
-#tab-player .description{
+/*#tab-player .description{
     margin :0.25em 1.1em;
-}
+}*/
 .movie-list .description{
+    width:100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
     font-size:0.8em;
     color: rgb(71, 71, 71) ;
     user-select: none; /* Firefox */
@@ -118,6 +135,10 @@ h1{
     -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
     -webkit-user-select: none; /* Chrome, Safari, and Opera */
     -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+.movie-list .selected .description{
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .col .row {
@@ -135,7 +156,6 @@ h1{
 .move-here{
     background-color:#F3C0AB;
 }
-
 .list-name{
     margin-top:2em;
     margin-bottom: 0.25em;
@@ -154,4 +174,10 @@ h1{
 .strikeout{
     text-decoration: line-through;
     color: rgb(114, 114, 114);
+}
+.width100{
+    width: 100%;
+}
+.responsive-img{
+    
 }
