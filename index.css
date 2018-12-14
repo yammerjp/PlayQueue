@@ -118,9 +118,12 @@ h1{
     width:100%;
     overflow-wrap: break-word;
 }
-/*#tab-player .description{
-    margin :0.25em 1.1em;
-}*/
+#tab-player .description{
+    margin :0.25em;
+}
+#tab-player .publishedAt{
+    margin :0.25em;
+}
 .movie-list .description{
     width:100%;
     text-overflow: ellipsis;
@@ -139,6 +142,11 @@ h1{
 .movie-list .selected .description{
     overflow-wrap: break-word;
     white-space: normal;
+}
+.publishedAt{
+    font-size:0.8em;
+    color: rgb(71, 71, 71) ;
+    text-align: right;
 }
 
 .col .row {

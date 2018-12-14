@@ -16,6 +16,7 @@ const vm = new Vue({
                     thumbnail: "https://i.ytimg.com/vi/etKuJ7ibrvc/default.jpg",
                     title: "ロッテ×BUMP OF CHICKEN ベイビーアイラブユーだぜ フルバージョン",
                     uniqueKey: "1544599827709#0",
+                    publishedAt:"",
                 }],
             mvListCt: 0,//movieQueueCt
             move: {
@@ -282,16 +283,17 @@ function getMovieList(tab) {
         + '&key=' + YoutubeKey
         + '&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true';
     const date = new Date();
-
     axios.get(requestUrl)
         .then(function (res) {
             res.data.items.forEach((item, index) => {
+                const dt=new Date(item.snippet.publishedAt);
                 const searchMovie = {
                     uniqueKey: `${date.getTime()}#${index}`,
                     Id: item.id.videoId,
                     title: item.snippet.title,
                     description: item.snippet.description,
-                    thumbnail: item.snippet.thumbnails.default.url
+                    thumbnail: item.snippet.thumbnails.default.url,
+                    publishedAt: dt.toLocaleString(),
                 };
                 tab.mvList.push(searchMovie);
             });
