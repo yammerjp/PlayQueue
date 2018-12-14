@@ -142,8 +142,8 @@
               </button>
             </div>
             <div v-bind:class="{'displayNone':item!=tabQueue.mvList[tabQueue.mvListCt]}">
-                <button class="btn waves-effect waves-light disabled">
-                  <i class="material-icons">play_arrow</i>今すぐ再生
+                <button class="btn waves-effect waves-light"  v-on:click="changeMovieQueue('JUMP',item)">
+                  <i class="material-icons">play_arrow</i>最初から再生
                 </button>
                 <button class="btn waves-effect waves-light disabled">
                   <i class="material-icons">clear</i>リストから削除
