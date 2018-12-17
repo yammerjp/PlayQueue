@@ -31,7 +31,6 @@ const vm = new Vue({
             },
         },
         tabPlay: {
-            mvPlaying:{},
             mvList: [],
             nextPageToken: '',
             preWord: 'relatedToVideoId=',
@@ -263,8 +262,14 @@ function onPlayerReady(event) {
     event.target.playVideo();
 }
 
-function playNextMovie() { //tabQueue.mvListが全て再生したら最初からループ
-    if(vm.tabCommon.playerStart==false){//ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
+function playNextMovie() {
+
+    //ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
+    if(vm.tabCommon.playerStart==false){
+        //vm.tabQueue.mvListに初めて動画が追加されたとき
+        //divをiframe置き換えてプレイヤー設置
+        //(準備が整ったらイベントトリガーでonPlayerReady()が実行される。)
+        //つまり初回にこの関数が呼ばれたときは、再生処理はこの関数ではなくonPlayerReady()で行われる
         vm.tabQueue.mvList.shift();
         vm.tabQueue.mvListCt=0;
         replacePlayer();
@@ -273,6 +278,7 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
         return;
     }
 
+    //vm.tabQueue.mvListCtの更新
     if(vm.tQloop==false){//ループがオフ
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){//リストの末尾に到達
             if(vm.tQautoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
@@ -289,10 +295,10 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
 
 
     getMovieInformation(vm.tabQueue.mvList[vm.tabQueue.mvListCt]);
-
     vm.tabPlay.fullDescription=false;
 
-    if( vm.tabQueue.move.able==true //再生しようとした動画が移動操作中の場合キャンセル
+    //再生しようとした動画が移動操作中の場合キャンセル
+    if( vm.tabQueue.move.able==true 
         &&vm.tabQueue.move.from==vm.tabQueue.mvListCt){
             vm.moveCancel();
     }
@@ -307,7 +313,7 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
 }
 
 function getMovieList(tab,listReset,newWordSubmit) {
-    //tab..tabQueue,tabPlay,tabSearch listReset..true/false newWordSubmit..検索パラメータ 更新しない場合は指定しない
+    //tab..tabQueue,tabPlay,tabSearch listReset..true/false [newWordSubmit..検索パラメータ 更新しない場合は指定しない]
 
     /* tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
     tab.mvListに動画をpush
@@ -344,6 +350,10 @@ function getMovieList(tab,listReset,newWordSubmit) {
                     description210: dsc,
                     thumbnail: item.snippet.thumbnails.default.url,
                     publishedAt: dt.toLocaleString(),
+                    description: '',//以下は検索リクエストからは取得できない値。再生時に動画毎に取得している
+                    duration: '',
+                    viewCount: '',
+                    channelTitle: ''
                 };
                 tab.mvList.push(searchMovie);
             });
