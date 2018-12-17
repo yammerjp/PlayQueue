@@ -381,7 +381,11 @@ function getMovieInformation(mv){
             mv.duration = res.data.items[0].contentDetails.duration.replace('PT','').replace('H','hour').replace('M','min').replace('S','sec');
             mv.viewCount = res.data.items[0].statistics.viewCount;
             mv.channelTitle = res.data.items[0].snippet.channelTitle;
-            console.log(mv);
+
+
+
+            console.log(mv.description210);
+            console.log(mv.description);
         }).catch(function (err) {
             console.log(err);
             iziToast.error({

@@ -59,11 +59,7 @@
                   [全文表示&gt;&gt;]
                 </span>
             </span>
-            <span class='full-description' v-bind:class='{"displayNone":tabPlay.fullDescription==false}'>
-              {{tabQueue.mvList[tabQueue.mvListCt].description}}
-              <span class='description-button' v-on:click='tabPlay.fullDescription=false'>
-                [隠す&lt;&lt;]
-              </span>
+            <span class='full-description' v-bind:class='{"displayNone":tabPlay.fullDescription==false}'>{{tabQueue.mvList[tabQueue.mvListCt].description}}<span class='description-button' v-on:click='tabPlay.fullDescription=false'>[隠す&lt;&lt;]</span>
             </span>
           </div>
         <div class="information">
