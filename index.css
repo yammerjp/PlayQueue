@@ -121,7 +121,7 @@ h1{
 #tab-player .description{
     margin :0.25em;
 }
-#tab-player .publishedAt{
+#tab-player .information{
     margin :0.25em;
 }
 .movie-list .description{
@@ -143,7 +143,7 @@ h1{
     overflow-wrap: break-word;
     white-space: normal;
 }
-.publishedAt{
+.information{
     font-size:0.8em;
     color: rgb(71, 71, 71) ;
     text-align: right;
@@ -192,4 +192,8 @@ h1{
 }*/
 .readMe{
     width:100%;
+}
+
+.description .description-button{
+    text-decoration: underline;
 }

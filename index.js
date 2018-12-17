@@ -5,26 +5,24 @@ const SEARCHED = 0;
 const RELATED = 1;
 const YoutubeKey = "AIzaSyBxO0o94z2pTyey5aEdEN3PnkpyNJj4hjE";
 
+let player;
+
 const vm = new Vue({
     el: "#app",
     data: {
         tabQueue: {
-            mvList: [/*//movieQueue
-                {
-                    Id: "etKuJ7ibrvc",
-                    description: "お口の恋人ロッテのスペシャルアニメーション 「ベイビーアイラブユーだぜ」のフルバージョンを公開！ 企画・プロデュース:川村元気 監督:松...",
-                    thumbnail: "https://i.ytimg.com/vi/etKuJ7ibrvc/default.jpg",
-                    title: "ロッテ×BUMP OF CHICKEN ベイビーアイラブユーだぜ フルバージョン",
-                    uniqueKey: "1544599827709#0",
-                    publishedAt:"",
-                } */ 
+            mvList: [//movieQueue
                 {
                     Id: "",
-                    description: "",
+                    description210: "",
                     thumbnail: "",
                     title: "",
                     uniqueKey: "",
                     publishedAt:"",
+                    description: '',
+                    duration: '',
+                    viewCount: '',
+                    channelTitle: '',
                 } ],
             mvListCt: 0,//movieQueueCt
             move: {
@@ -33,10 +31,13 @@ const vm = new Vue({
             },
         },
         tabPlay: {
+            mvPlaying:{},
             mvList: [],
             nextPageToken: '',
             preWord: 'relatedToVideoId=',
             wordSubmit: '',// 
+            fullDescription: false,
+            
         },
         tabSearch: {
             mvList: [],// movieSearchList
@@ -100,8 +101,6 @@ const vm = new Vue({
                     playNextMovie();
                     break;
                 case 'DELETE'://itemを再生キューから削除
-//                    if (this.tabQueue.mvListCt == itemCt)//現在再生中なら次を再生してから
-//                        playNextMovie();
                     this.tabQueue.mvList.splice(itemCt, 1);//削除
                     if (this.tabQueue.mvListCt > itemCt)//削除に合わせてtabQueue.mvListCtも現在再生しているものを指すように適切に変更
                         this.tabQueue.mvListCt--;
@@ -203,7 +202,7 @@ function replacePlayer(){
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 }
-let player;
+
 
 
 function onYouTubeIframeAPIReady() {
@@ -217,13 +216,6 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function onPlayerReady(event) {
-    event.target.playVideo();
-    vm.tabPlay.mvList =[];
-    vm.tabPlay.nextPageToken = '';
-    vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
-    getMovieList(vm.tabPlay);
-}
 
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.ENDED)
@@ -267,6 +259,18 @@ function onPlayerError(event) {
     }
 }
 
+function onPlayerReady(event) {
+    getMovieInformation(vm.tabQueue.mvList[vm.tabQueue.mvListCt]);
+  
+
+    vm.tabPlay.mvList =[];
+    vm.tabPlay.nextPageToken = '';
+    vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
+    getMovieList(vm.tabPlay);
+
+    event.target.playVideo();
+}
+
 function playNextMovie() { //tabQueue.mvListが全て再生したら最初からループ
     if(vm.tabCommon.playerStart==false){//ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
         vm.tabQueue.mvList.shift();
@@ -276,6 +280,7 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
         vm.tabCommon.playerFinish=false;
         return;
     }
+
     if(vm.tQloop==false){//ループがオフ
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){//リストの末尾に到達
             if(vm.tQautoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
@@ -289,11 +294,13 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
     }else{//ループがオン
         vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
     }
-    player.loadVideoById({
-        videoId: vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id,
-        suggestedQuality: 'small'
-    });
-    if(vm.tabQueue.move.able==true
+
+
+    getMovieInformation(vm.tabQueue.mvList[vm.tabQueue.mvListCt]);
+
+    vm.tabPlay.fullDescription=false;
+
+    if(vm.tabQueue.move.able==true //再生しようとした動画が移動操作中の場合キャンセル
     &&vm.tabQueue.move.from==vm.tabQueue.mvListCt){
         vm.moveCancel();
     }
@@ -303,6 +310,11 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
     vm.tabPlay.nextPageToken = '';
     vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
     getMovieList(vm.tabPlay);
+
+    player.loadVideoById({
+        videoId: vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id,
+        suggestedQuality: 'small'
+    });
 }
 
 function getMovieList(tab) {
@@ -332,7 +344,7 @@ function getMovieList(tab) {
                     uniqueKey: `${date.getTime()}#${index}`,
                     Id: item.id.videoId,
                     title: item.snippet.title,
-                    description: dsc,
+                    description210: dsc,
                     thumbnail: item.snippet.thumbnails.default.url,
                     publishedAt: dt.toLocaleString(),
                 };
@@ -348,6 +360,30 @@ function getMovieList(tab) {
             });
         });
 }
+
+function getMovieInformation(mv){
+    const requestUrl
+        = 'https://www.googleapis.com/youtube/v3/videos?'
+        +  'id=' +mv.Id
+        + '&key=' + YoutubeKey
+        + '&part=snippet,contentDetails,statistics&regionCode=jp';
+    const date = new Date();
+    axios.get(requestUrl)
+        .then(function (res) {
+            mv.description = res.data.items[0].snippet.description;
+            mv.duration = res.data.items[0].contentDetails.duration.replace('PT','').replace('H','hour').replace('M','min').replace('S','sec');
+            mv.viewCount = res.data.items[0].statistics.viewCount;
+            mv.channelTitle = res.data.items[0].snippet.channelTitle;
+            console.log(mv);
+        }).catch(function (err) {
+            console.log(err);
+            iziToast.error({
+                title: 'Reject http request',
+                message: 'Youtubeとの通信に失敗し、動画の詳細を取得することができませんでした。'
+            });
+        });
+}
+
 function playRestart(){
     if(vm.tabCommon.playerFinish==true){
         vm.tabCommon.playerFinish=false;
