@@ -154,11 +154,7 @@ const vm = new Vue({
             if(active_element){
                   active_element.blur();
                 }
-            this.tabSearch.wordSubmit= this.tabSearch.word;
-
-            this.tabSearch.mvList=[];        //初期化
-            this.tabSearch.nextPageToken=''; //初期化
-            getMovieList(this.tabSearch);
+            getMovieList(this.tabSearch,true,this.tabSearch.word);
         },
 
         searchWordSubmittedMore: function () {
@@ -170,7 +166,7 @@ const vm = new Vue({
                 //ちなみに何も入力せずにmoreボタンを押していたら無視
             }
 
-            getMovieList(this.tabSearch);
+            getMovieList(this.tabSearch,false);
         },
 
         listMovieClicked: function (movie) {
@@ -188,9 +184,9 @@ const vm = new Vue({
         relatedMovieMore(){
             if(this.tabCommon.playerStart==false)
                 return;
-            if(this.tabPlay.mvList==[])
-                this.tabPlay.nextPageToken='';
-            getMovieList(this.tabPlay);
+//            if(this.tabPlay.mvList==[])
+//                this.tabPlay.nextPageToken='';
+            getMovieList(this.tabPlay,false);
         },
     }
 });
@@ -262,11 +258,7 @@ function onPlayerError(event) {
 function onPlayerReady(event) {
     getMovieInformation(vm.tabQueue.mvList[vm.tabQueue.mvListCt]);
   
-
-    vm.tabPlay.mvList =[];
-    vm.tabPlay.nextPageToken = '';
-    vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
-    getMovieList(vm.tabPlay);
+    getMovieList(vm.tabPlay,true,vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id);
 
     event.target.playVideo();
 }
@@ -300,16 +292,13 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
 
     vm.tabPlay.fullDescription=false;
 
-    if(vm.tabQueue.move.able==true //再生しようとした動画が移動操作中の場合キャンセル
-    &&vm.tabQueue.move.from==vm.tabQueue.mvListCt){
-        vm.moveCancel();
+    if( vm.tabQueue.move.able==true //再生しようとした動画が移動操作中の場合キャンセル
+        &&vm.tabQueue.move.from==vm.tabQueue.mvListCt){
+            vm.moveCancel();
     }
 
     //関連動画リストの取得
-    vm.tabPlay.mvList =[];
-    vm.tabPlay.nextPageToken = '';
-    vm.tabPlay.wordSubmit=vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id;
-    getMovieList(vm.tabPlay);
+    getMovieList(vm.tabPlay,true,vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id);
 
     player.loadVideoById({
         videoId: vm.tabQueue.mvList[vm.tabQueue.mvListCt].Id,
@@ -317,15 +306,23 @@ function playNextMovie() { //tabQueue.mvListが全て再生したら最初から
     });
 }
 
-function getMovieList(tab) {
-    //vm.movieSearchList =[]; リストの初期化は関数外で行う
-    //nextPageToken=''
-    //wordSubmit=word
+function getMovieList(tab,listReset,newWordSubmit) {
+    //tab..tabQueue,tabPlay,tabSearch listReset..true/false newWordSubmit..検索パラメータ 更新しない場合は指定しない
 
     /* tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
     tab.mvListに動画をpush
     tab.nextPageTokenを更新
     */
+
+    //初期化処理
+    if(listReset==true){
+        tab.mvList=[];
+        tab.nextPageToken='';
+    }
+    if(newWordSubmit != undefined){
+        tab.wordSubmit=newWordSubmit;
+    }
+
     const requestUrl
         = 'https://www.googleapis.com/youtube/v3/search?'
         + tab.preWord + tab.wordSubmit
