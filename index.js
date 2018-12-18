@@ -6,6 +6,25 @@ const RELATED = 1;
 const YoutubeKey = "AIzaSyBxO0o94z2pTyey5aEdEN3PnkpyNJj4hjE";
 
 let player;
+//localStorage.clear();
+if(!(('localStorage' in window) && (window.localStorage !== null))) {
+    // ローカルストレージが使えない。。。
+    iziToast.error({
+        title: 'Local Storage Error',
+        message: '保存機能が使えません。ブラウザがHTML5 Local Storageに対応していません。'
+    });
+}
+
+function storeLS(listName,mvList){
+    localStorage.setItem(listName, JSON.stringify(mvList));
+}
+function showLS(){//keyの配列
+    return Object.keys(localStorage);
+}
+function getLS(listName){
+    return JSON.parse(localStorage.getItem(listName));
+}
+//function editLS(){}
 
 const vm = new Vue({
     el: "#app",
@@ -29,6 +48,8 @@ const vm = new Vue({
                 able: false,//movable
                 from: -1,//moveFrom
             },
+            LSkeyList:["L1","L2","L3"],
+            LSkeyListShow:false,
         },
         tabPlay: {
             mvList: [],
@@ -61,31 +82,35 @@ const vm = new Vue({
                     &&this.tabCommon.playerStart==true ){
                         playRestart();
                     }
-            },
-            tQautoPlayRelatedMovie: function(newVal, oldVal) {
+        },
+        tQautoPlayRelatedMovie: function(newVal, oldVal) {
+
                 if( newVal==true
                     &&oldVal==false
                     &&this.tabCommon.playerStart==true ){
                         playRestart();
                     }
-            }
-        
+        }
     },
 /*mounted(){
   },*/
     methods: {
         addMovieQueue: function (msg, movie) {
+
+            const date = new Date();
+            let pushedMv =Object.assign({}, movie);
+            pushedMv.uniqueKey=`${date.getTime()}#added`;
             switch (msg) {
                 case "PLAY_NOW":
-                    this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, movie);
-                    playNextMovie()
+                    this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, pushedMv);
+                    playNextMovie();
                     break;
                 case "PLAY_NEXT":
-                    this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, movie);
+                    this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, pushedMv);
                     playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
                     break;
                 case "PLAY_LAST":
-                    this.tabQueue.mvList.push(movie);
+                    this.tabQueue.mvList.push(pushedMv);
                     playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
                     break;
 
@@ -113,7 +138,6 @@ const vm = new Vue({
                     this.tabQueue.move.able = true;
                     /*選択画面を挟んでから移動先が決定 */
                     break;
-
             }
         },
         moveHere(item) {
@@ -140,12 +164,12 @@ const vm = new Vue({
 
             playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
         },
-        moveCancel: function(){
+        moveCancel(){
             this.tabQueue.move.able = false;
             this.tabQueue.move.from = -1;
         },
 
-        searchWordSubmitted: function () {
+        searchWordSubmitted() {
             if (this.tabSearch.word == "")
                 return 0;
             
@@ -156,7 +180,7 @@ const vm = new Vue({
             getMovieList(this.tabSearch,true,this.tabSearch.word);
         },
 
-        searchWordSubmittedMore: function () {
+        searchWordSubmittedMore() {
             if (this.tabSearch.wordSubmit == ""){
                 if(this.tabSearch.word!=""){//もし未検索でmoreボタンを押して検索バーに文字があったら、その内容で検索
                     this.searchWordSubmitted();   
@@ -168,7 +192,7 @@ const vm = new Vue({
             getMovieList(this.tabSearch,false);
         },
 
-        listMovieClicked: function (movie) {
+        listMovieClicked(movie) {
             if (this.tabCommon.ListClickUniqueKey == movie.uniqueKey) {
                 this.tabCommon.ListClickUniqueKey = "";
             } else {
@@ -187,9 +211,56 @@ const vm = new Vue({
 //                this.tabPlay.nextPageToken='';
             getMovieList(this.tabPlay,false);
         },
+        addLS(){
+            let LSkey;
+            let msg="保存するリスト名";
+            while(true){
+                LSkey=window.prompt(msg, "");
+                if(showLS().indexOf(LSkey)>=0){
+                    msg = msg="既に同名のリストが存在します。\n保存するリスト名"
+                }else if(LSkey===""){
+                    msg = msg="一文字以上入力してください\n保存するリスト名"
+                }else if(LSkey===null){
+                    return;
+                }else{
+                    break;
+                }
+            }
+            storeLS(LSkey,this.tabQueue.mvList);
+
+        },
+        openLS(){
+            //playerStart==falseに非対応
+            let LSkey;
+            let msg="開くリスト名";
+            while(true){
+                LSkey=window.prompt(msg, "");
+                if(showLS().indexOf(LSkey)>=0){
+                    break;
+                }else if(LSkey===null){
+                    return;
+                }else{
+                    msg = msg=`${LSkey} というリストは存在しません。\n開くリスト名`
+                }
+            }
+            if(this.tabCommon.playerStart==true){            
+                this.tabQueue.mvList.splice(0,this.tabQueue.mvListCt);
+                this.tabQueue.mvList.splice(1);
+                this.tabQueue.mvListCt=0;
+                this.moveCancel();
+                this.tabQueue.mvList=[...this.tabQueue.mvList, ...getLS(LSkey)];
+                playNextMovie();
+                this.tabQueue.mvList.splice(0,1);
+                this.tabQueue.mvListCt=0;
+                //            this.tabQueue.mvList.prototype.push.apply( , );
+            }else{
+                this.tabQueue.mvList=[];
+                this.tabQueue.mvList=getLS(LSkey);
+                playNextMovie();
+            }
+        }
     }
 });
-
 
 function replacePlayer(){
     const tag = document.createElement('script');
@@ -197,8 +268,6 @@ function replacePlayer(){
     const firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 }
-
-
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
@@ -263,7 +332,6 @@ function onPlayerReady(event) {
 }
 
 function playNextMovie() {
-
     //ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
     if(vm.tabCommon.playerStart==false){
         //vm.tabQueue.mvListに初めて動画が追加されたとき
@@ -374,9 +442,10 @@ function getMovieInformation(mv){
         +  'id=' +mv.Id
         + '&key=' + YoutubeKey
         + '&part=snippet,contentDetails,statistics&regionCode=jp';
-    const date = new Date();
+//    const date = new Date();
     axios.get(requestUrl)
         .then(function (res) {
+//            mv.uniqueKey=`${date.getTime()}#added`;
             mv.description = res.data.items[0].snippet.description;
             mv.duration = res.data.items[0].contentDetails.duration.replace('PT','').replace('H','hour').replace('M','min').replace('S','sec');
             mv.viewCount = res.data.items[0].statistics.viewCount;
@@ -384,8 +453,6 @@ function getMovieInformation(mv){
 
 
 
-            console.log(mv.description210);
-            console.log(mv.description);
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
