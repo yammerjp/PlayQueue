@@ -139,9 +139,9 @@
           </button>
     </div>
 
-    <!--再生リストタブ-->    
+    <!--プレイリストタブ-->    
     <div class="tab-queue" v-bind:class="{'displayNone':tabCommon.selectedTab!=1}">
-      <div>再生リスト</div>
+      <div>プレイリスト</div>
       <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(0)'>here</div>
       <div 
        class="movie-list col s12 row"
@@ -232,8 +232,8 @@
       </div>
       <!--リストを保存、開く機能-->
       <div class='row RW-list'>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='openListStorageWindow("INPUT")'><i class="material-icons tab-switch-bar">save</i></a>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='openListStorageWindow("LIST")'><i class="material-icons tab-switch-bar">folder_open</i></a>
+        <a class="waves-effect waves-light btn RW-button" v-on:click='openListStorageWindow("INPUT")'><i class="material-icons tab-switch-bar">save</i>保存</a>
+        <a class="waves-effect waves-light btn RW-button" v-on:click='openListStorageWindow("LIST")'><i class="material-icons tab-switch-bar">folder_open</i>開く</a>
         <div class="modal-background" v-bind:class='{"displayNone":tabQueue.LSkey.inputWindow!=true && tabQueue.LSkey.listWindow!=true}' v-on:click='openListStorageWindow("CLOSE")'>
         </div>
         
