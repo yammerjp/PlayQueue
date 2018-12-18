@@ -212,9 +212,6 @@ h1{
 .modal-title{
     padding:0.5em;
 }
-.modal-window{
-    background-color: rgb(255,255,255);
-}
 .modal-background{
     position: absolute;
     top: 0px;
@@ -228,6 +225,27 @@ h1{
     display: table-cell;
     vertical-align: middle;
 }
+.modal-window{
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    
+    width:auto;
+    height:auto; 
+
+    margin: auto;
+    background-color: rgb(255,255,255);
+    width:auto;
+    
+    z-index: 2;
+}
+
 .LS-key{
     width:80%;
     display:inline-block;
@@ -238,7 +256,9 @@ h1{
 
 
 }
-
+select{
+    display: block;
+}
 .displayNone{
     display:none;
 }

@@ -210,19 +210,29 @@
           </div>
             
       </div>
-      <!--保存したリストを開く-->
+      <!--リストを保存、開く機能-->
       <div class='row RW-list'>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='addLS()'><i class="material-icons tab-switch-bar">save</i></a>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='selectLS()'><i class="material-icons tab-switch-bar">folder_open</i></a>
-        <div class="modal-background" v-bind:class='{"displayNone":tabQueue.LSkeyListShow!=true}' v-on:click='tabQueue.LSkeyListShow=false'>
-          <div class='modal-window' v-on:click='tabQueue.LSkeyListShow=true'><ul>
-            <div class='modal-title'>保存したリストを開く</div>
-            <li v-for="(item,index) in tabQueue.LSkeyList" :key='item'>
-              <span class='LS-key' v-on:click='openLS(item)'>{{item}}</span>
-              <i class="material-icons" v-on:click='deleteLS(item)'>cancel</i>
-            </li>
-          </ul></div>
-       </div>
+        <a class="waves-effect waves-light btn RW-button" v-on:click='openLSwindow("INPUT")'><i class="material-icons tab-switch-bar">save</i></a>
+        <a class="waves-effect waves-light btn RW-button" v-on:click='openLSwindow("LIST")'><i class="material-icons tab-switch-bar">folder_open</i></a>
+        <div class="modal-background" v-bind:class='{"displayNone":tabQueue.LSkey.inputWindow!=true && tabQueue.LSkey.listWindow!=true}' v-on:click='openLSwindow("CLOSE")'>
+        </div>
+        
+        <div class='modal-window'  v-bind:class='{"displayNone":tabQueue.LSkey.inputWindow!=true}'>
+            <input type="text" v-model="tabQueue.LSkey.inputKey" placeholder="list name">
+          <button class="waves-effect waves-light btn RW-button" v-on:click="addLS(tabQueue.LSkey.inputKey)">保存</button>
+        </div>
+
+        <div class='modal-window'  v-bind:class='{"displayNone":tabQueue.LSkey.listWindow!=true}'>
+          <select v-model='tabQueue.LSkey.inputKey' name='LSkey-view'>
+            <option value="" disabled selected>保存したリスト</option>
+            <option
+              v-for="(item,index) in tabQueue.LSkey.list"
+              :key='item'
+              v-bind:value="item">{{item}}</option>
+          </select>
+          <button class="waves-effect waves-light btn RW-button" v-on:click='openLS(tabQueue.LSkey.inputKey)'>開く</button>
+          <button class="waves-effect waves-light btn RW-button" v-on:click='deleteLS(tabQueue.LSkey.inputKey)'>削除する</button>
+        </div>
       </div>
     </div>
 

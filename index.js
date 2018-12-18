@@ -50,8 +50,15 @@ const vm = new Vue({
                 able: false,//movable
                 from: -1,//moveFrom
             },
-            LSkeyList:["L1","L2","L3"],
-            LSkeyListShow:false,
+            LSkey:{
+                list:['S1','S2','S3'],
+                inputKey:'',
+                listWindow:false,
+                inputWindow:false,
+            },
+//            LSkeyList:["L1","L2","L3"],
+//            LSkeyListSelect:'',
+//            LSkeyListShow:false,
         },
         tabPlay: {
             mvList: [],
@@ -210,7 +217,7 @@ const vm = new Vue({
 //                this.tabPlay.nextPageToken='';
             getMovieList(this.tabPlay,false);
         },
-        addLS(){
+/*        addLS(){
             let LSkey;
             let msg="保存するリスト名";
             while(true){
@@ -226,10 +233,21 @@ const vm = new Vue({
                 }
             }
             storeLS(LSkey,this.tabQueue.mvList);
+            this.openLSwindow('CLOSE');  
+        },*/
+        addLS(LSkey){
+            if(showLS().indexOf(LSkey)>=0){
+                alert('既に存在するリスト名です');
+            }else if(LSkey===""){
+                alert("一文字以上入力してください");
+            }else{
+                storeLS(LSkey,this.tabQueue.mvList);
+                this.openLSwindow('CLOSE');  
+            }
 
         },
         openLS(LSkey){
-//            this.tabQueue.LSkeyListShow = !this.tabQueue.LSkeyListShow;
+            this.openLSwindow('CLOSE');
             if(this.tabCommon.playerStart==true){            
                 this.tabQueue.mvList.splice(0,this.tabQueue.mvListCt);
                 this.tabQueue.mvList.splice(1);
@@ -239,24 +257,37 @@ const vm = new Vue({
                 playNextMovie();
                 this.tabQueue.mvList.splice(0,1);
                 this.tabQueue.mvListCt=0;
-                //            this.tabQueue.mvList.prototype.push.apply( , );
             }else{
                 this.tabQueue.mvList=[];
                 this.tabQueue.mvList=getLS(LSkey);
                 playNextMovie();
             }
         },
-        selectLS(){
+        openLSwindow(window){//selectLS
             //playerStart==falseに非対応
-            this.tabQueue.LSkeyListShow = true;
-            if(this.tabQueue.LSkeyListShow==true){
-                this.tabQueue.LSkeyList=showLS();
+            switch(window){
+                case 'INPUT':
+                    this.tabQueue.LSkey.inputKey="";
+                    this.tabQueue.LSkey.inputWindow = true;
+                    this.tabQueue.LSkey.listWindow = false;
+                    break;
+                case 'LIST' :
+                    this.tabQueue.LSkey.inputWindow = false;
+                    this.tabQueue.LSkey.listWindow = true;
+                    this.tabQueue.LSkey.list=showLS();
+                    break;
+                case 'CLOSE':
+                    this.tabQueue.LSkey.inputWindow = false;
+                    this.tabQueue.LSkey.listWindow = false;
+                    break;
             }
         },
         deleteLS(LSkey){
             if(window.confirm(`${LSkey} を削除します。よろしいですか？`)){
                 deleteLS(LSkey);
-                this.tabQueue.LSkeyList=showLS();    
+                this.tabQueue.LSkey.list=showLS();  
+                this.openLSwindow('CLOSE');
+//                this.tabQueue.LSkey.listWindow = false;  
             }
         }
     }
