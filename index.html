@@ -180,7 +180,6 @@
         </div>
         <div class='move-here' v-bind:class="{'displayNone':tabQueue.move.able==false}" v-on:click='moveHere(item)'>here</div>
       </div>
-      <tr>
       <div class="settings">
           <div class="switch">
               <span class="switch-caption">ループ:</span>  
@@ -215,13 +214,14 @@
       <div class='row RW-list'>
         <a class="waves-effect waves-light btn RW-button" v-on:click='addLS()'><i class="material-icons tab-switch-bar">save</i></a>
         <a class="waves-effect waves-light btn RW-button" v-on:click='selectLS()'><i class="material-icons tab-switch-bar">folder_open</i></a>
-        <div class="input-field col s12" v-bind:class='{"displayNone":tabQueue.LSkeyListShow!=true}'>
-          <ul>
+        <div class="modal-background" v-bind:class='{"displayNone":tabQueue.LSkeyListShow!=true}' v-on:click='tabQueue.LSkeyListShow=false'>
+          <div class='modal-window' v-on:click='tabQueue.LSkeyListShow=true'><ul>
+            <div class='modal-title'>保存したリストを開く</div>
             <li v-for="(item,index) in tabQueue.LSkeyList" :key='item'>
               <span class='LS-key' v-on:click='openLS(item)'>{{item}}</span>
               <i class="material-icons" v-on:click='deleteLS(item)'>cancel</i>
             </li>
-          </ul>
+          </ul></div>
        </div>
       </div>
     </div>

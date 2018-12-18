@@ -229,7 +229,7 @@ const vm = new Vue({
 
         },
         openLS(LSkey){
-
+//            this.tabQueue.LSkeyListShow = !this.tabQueue.LSkeyListShow;
             if(this.tabCommon.playerStart==true){            
                 this.tabQueue.mvList.splice(0,this.tabQueue.mvListCt);
                 this.tabQueue.mvList.splice(1);
@@ -248,42 +248,16 @@ const vm = new Vue({
         },
         selectLS(){
             //playerStart==falseに非対応
-            this.tabQueue.LSkeyListShow = !this.tabQueue.LSkeyListShow;
+            this.tabQueue.LSkeyListShow = true;
             if(this.tabQueue.LSkeyListShow==true){
                 this.tabQueue.LSkeyList=showLS();
             }
-            /*
-            let LSkey;
-            let msg="開くリスト名";
-            while(true){
-                LSkey=window.prompt(msg, "");
-                if(showLS().indexOf(LSkey)>=0){
-                    break;
-                }else if(LSkey===null){
-                    return;
-                }else{
-                    msg = msg=`${LSkey} というリストは存在しません。\n開くリスト名`
-                }
-            }
-            if(this.tabCommon.playerStart==true){            
-                this.tabQueue.mvList.splice(0,this.tabQueue.mvListCt);
-                this.tabQueue.mvList.splice(1);
-                this.tabQueue.mvListCt=0;
-                this.moveCancel();
-                this.tabQueue.mvList=[...this.tabQueue.mvList, ...getLS(LSkey)];
-                playNextMovie();
-                this.tabQueue.mvList.splice(0,1);
-                this.tabQueue.mvListCt=0;
-                //            this.tabQueue.mvList.prototype.push.apply( , );
-            }else{
-                this.tabQueue.mvList=[];
-                this.tabQueue.mvList=getLS(LSkey);
-                playNextMovie();
-            }*/
         },
         deleteLS(LSkey){
-            deleteLS(LSkey);
-            this.tabQueue.LSkeyList=showLS();
+            if(window.confirm(`${LSkey} を削除します。よろしいですか？`)){
+                deleteLS(LSkey);
+                this.tabQueue.LSkeyList=showLS();    
+            }
         }
     }
 });
