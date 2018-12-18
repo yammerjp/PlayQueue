@@ -53,6 +53,7 @@ const vm = new Vue({
             LSkey:{
                 list:['S1','S2','S3'],
                 inputKey:'',
+                listNameConflict:false,
                 listWindow:false,
                 inputWindow:false,
             },
@@ -213,41 +214,26 @@ const vm = new Vue({
         relatedMovieMore(){
             if(this.tabCommon.playerStart==false)
                 return;
-//            if(this.tabPlay.mvList==[])
-//                this.tabPlay.nextPageToken='';
             getMovieList(this.tabPlay,false);
         },
-/*        addLS(){
-            let LSkey;
-            let msg="保存するリスト名";
-            while(true){
-                LSkey=window.prompt(msg, "");
-                if(showLS().indexOf(LSkey)>=0){
-                    msg = msg="既に同名のリストが存在します。\n保存するリスト名"
-                }else if(LSkey===""){
-                    msg = msg="一文字以上入力してください\n保存するリスト名"
-                }else if(LSkey===null){
-                    return;
-                }else{
-                    break;
-                }
-            }
-            storeLS(LSkey,this.tabQueue.mvList);
-            this.openLSwindow('CLOSE');  
-        },*/
-        addLS(LSkey){
+        addListStorage(LSkey){
             if(showLS().indexOf(LSkey)>=0){
-                alert('既に存在するリスト名です');
+                this.tabQueue.LSkey.listNameConflict=true;
+                //既に存在する リスト名
+                return;
             }else if(LSkey===""){
-                alert("一文字以上入力してください");
+                return;
             }else{
                 storeLS(LSkey,this.tabQueue.mvList);
-                this.openLSwindow('CLOSE');  
+                this.openListStorageWindow('CLOSE');  
             }
 
         },
-        openLS(LSkey){
-            this.openLSwindow('CLOSE');
+        openListStorage(LSkey){
+            if(LSkey==''){
+                return;
+            }
+            this.openListStorageWindow('CLOSE');
             if(this.tabCommon.playerStart==true){            
                 this.tabQueue.mvList.splice(0,this.tabQueue.mvListCt);
                 this.tabQueue.mvList.splice(1);
@@ -263,11 +249,22 @@ const vm = new Vue({
                 playNextMovie();
             }
         },
-        openLSwindow(window){//selectLS
+        deleteListStorage(LSkey){
+            if(LSkey==''){
+                return;
+            }
+            if(window.confirm(`${LSkey} を削除します。よろしいですか？`)){
+                deleteLS(LSkey);
+                this.tabQueue.LSkey.list=showLS();  
+                this.openListStorageWindow('CLOSE');
+            }
+        },
+        openListStorageWindow(window){//selectLS
             //playerStart==falseに非対応
             switch(window){
                 case 'INPUT':
                     this.tabQueue.LSkey.inputKey="";
+                    this.tabQueue.LSkey.listNameConflict=false;
                     this.tabQueue.LSkey.inputWindow = true;
                     this.tabQueue.LSkey.listWindow = false;
                     break;
@@ -280,14 +277,6 @@ const vm = new Vue({
                     this.tabQueue.LSkey.inputWindow = false;
                     this.tabQueue.LSkey.listWindow = false;
                     break;
-            }
-        },
-        deleteLS(LSkey){
-            if(window.confirm(`${LSkey} を削除します。よろしいですか？`)){
-                deleteLS(LSkey);
-                this.tabQueue.LSkey.list=showLS();  
-                this.openLSwindow('CLOSE');
-//                this.tabQueue.LSkey.listWindow = false;  
             }
         }
     }
