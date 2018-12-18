@@ -211,3 +211,13 @@ h1{
     padding-right: 1em;
     padding-left: 1em;
 }
+.LS-key{
+    width:80%;
+    display:inline-block;
+    border-style:solid;
+    border-radius: 1em;
+    border-width: thin;
+    margin: 0.2em;
+
+
+}

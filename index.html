@@ -211,37 +211,18 @@
           </div>
             
       </div>
+      <!--保存したリストを開く-->
       <div class='row RW-list'>
         <a class="waves-effect waves-light btn RW-button" v-on:click='addLS()'><i class="material-icons tab-switch-bar">save</i></a>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='openLS()'><i class="material-icons tab-switch-bar">folder_open</i></a>
-<!--        <div class="input-field col s12" v-bind:class='{"displayNone":tabQueue.LSkeyListShow!=true}'>
-
-
-
-            <select name="hel">
-                <option value="0" disabled selected>開くリストを選ぶ</option>
-                <option value="1">ああ</option>
-                <option value="2">いい</option>
-                <option value="3">うう</option>
-                <option v-for="(item,index) in tabQueue.LSkeyList" :key='item' v-bind:value="index">{{item}}</option>
-         </select>
-              <label>リストの読み込み</label>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>-->
+        <a class="waves-effect waves-light btn RW-button" v-on:click='selectLS()'><i class="material-icons tab-switch-bar">folder_open</i></a>
+        <div class="input-field col s12" v-bind:class='{"displayNone":tabQueue.LSkeyListShow!=true}'>
+          <ul>
+            <li v-for="(item,index) in tabQueue.LSkeyList" :key='item'>
+              <span class='LS-key' v-on:click='openLS(item)'>{{item}}</span>
+              <i class="material-icons" v-on:click='deleteLS(item)'>cancel</i>
+            </li>
+          </ul>
+       </div>
       </div>
     </div>
 
