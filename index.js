@@ -266,6 +266,7 @@ const vm = new Vue({
                     this.tabQueue.LSkey.listWindow = false;
                     break;
                 case 'LIST' :
+                    this.tabQueue.LSkey.inputKey="";
                     this.tabQueue.LSkey.inputWindow = false;
                     this.tabQueue.LSkey.listWindow = true;
                     this.tabQueue.LSkey.list=showLS();
