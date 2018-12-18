@@ -51,15 +51,12 @@ const vm = new Vue({
                 from: -1,//moveFrom
             },
             LSkey:{
-                list:['S1','S2','S3'],
+                list:[],
                 inputKey:'',
                 listNameConflict:false,
                 listWindow:false,
                 inputWindow:false,
             },
-//            LSkeyList:["L1","L2","L3"],
-//            LSkeyListSelect:'',
-//            LSkeyListShow:false,
         },
         tabPlay: {
             mvList: [],

@@ -45,8 +45,28 @@
     </div>
     <!--動画再生タブ-->    
     <div id="tab-player" v-bind:class="{'displayNone':tabCommon.selectedTab!=0}">
+        <div id="pre-first-messege" v-bind:class='{"displayNone":tabCommon.playerStart==true}'><div id="first-messege">
+            <div>ようこそPlay Queueへ</div>
+            <div>検索から動画をみつけましょう</div>
+          </div></div>
         <div id='player-box'>
-          <div id="player"><img src="readMe.png" class="readMe"></div>
+          <div id="player">
+              <div class="row">
+                  <div class="col s4">
+                      <div><i class="material-icons tab-switch-bar">arrow_upward</i></div>
+                      <div>再生</div>
+                  </div>
+                  <div class="col s4">
+                      <div><i class="material-icons tab-switch-bar">arrow_upward</i></div>
+                      <div>プレイリスト</div>
+                  </div>
+                  <div class="col s4 search">
+                      <div><i class="material-icons tab-switch-bar">arrow_upward</i></div>
+                      <div>検索</div>
+                  </div>
+              </div>
+          </div>
+          
         </div>
         <div class="title">{{tabQueue.mvList[tabQueue.mvListCt].title}}</div>
           <div class="description">
@@ -62,14 +82,14 @@
             <span class='full-description' v-bind:class='{"displayNone":tabPlay.fullDescription==false}'>{{tabQueue.mvList[tabQueue.mvListCt].description}}<span class='description-button' v-on:click='tabPlay.fullDescription=false'>[隠す&lt;&lt;]</span>
             </span>
           </div>
-        <div class="information">
+        <div class="information" v-bind:class='{"displayNone":tabCommon.playerStart!=true}'>
           <span class="publishedAt">{{tabQueue.mvList[tabQueue.mvListCt].publishedAt}}投稿 /</span>
           <span class="duration"> 再生時間:{{tabQueue.mvList[tabQueue.mvListCt].duration}} /</span>
           <span class="viewCount"> 再生回数:{{tabQueue.mvList[tabQueue.mvListCt].viewCount}}回/</span>
           <span class="channelTitle"> Channel: {{tabQueue.mvList[tabQueue.mvListCt].channelTitle}} </span>
         </div>
         
-        <div class='list-name'>関連動画</div>
+        <div class='list-name' v-bind:class='{"displayNone":tabCommon.playerStart!=true}'>関連動画</div>
         <div class="movie-list col s12 row" v-for="item in tabPlay.mvList" :key="item.uniqueKey">
             <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
               <div class='next-play'
