@@ -227,7 +227,7 @@ h1{
     padding:0.5em;
 }
 .modal-background{
-    position: absolute;
+    position: fixed;
     top: 0px;
     right: 0px;
     width:100%;
@@ -240,7 +240,7 @@ h1{
     vertical-align: middle;
 }
 .modal-window{
-    position: absolute;
+    position: fixed;
 
     top: 50%;
     left: 50%;
@@ -258,6 +258,7 @@ h1{
     width:auto;
     
     z-index: 2;
+    padding: 1em;
 }
 
 .LS-key{
