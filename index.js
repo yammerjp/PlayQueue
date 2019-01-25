@@ -3,8 +3,7 @@ const TAB_QUEUE = 1;
 const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
-const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
-
+const YoutubeKey = "AIzaSyBIhSGTanPEt07EkBYizee39cqo3x8ZW-c";
 let player;
 //localStorage.clear();
 if(!(('localStorage' in window) && (window.localStorage !== null))) {
@@ -295,7 +294,13 @@ function onYouTubeIframeAPIReady() {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange,
             'onError': onPlayerError
-        }
+        }/*,
+        playerVars: {
+            "rel": 0,
+            "autoplay": 0,
+            "wmode": "opaque",
+            'origin': location.protocol + '//' + location.hostname + "/"
+        }*/
     });
 }
 
@@ -347,7 +352,7 @@ function onPlayerReady(event) {
     event.target.playVideo();
 }
 
-function playNextMovie() {
+const playNextMovie=function () {
     //ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
     if(vm.tabCommon.playerStart==false){
         //vm.tabQueue.mvListに初めて動画が追加されたとき
@@ -376,10 +381,10 @@ function playNextMovie() {
                             playMovie =vm.tabPlay.mvList[i];
                             break;          
                         }
-                    }
+                    } //関連動画リストがすべて再生済みならリストの続きをロード後、コールバックでもう一度playNextMovie
                     if(playMovie==undefined){
-                        //関連動画リストがすべて再生済みならリストの続きをロード後、コールバックでもう一度playNextMovie
                         vm.relatedMovieMore(playNextMovie);
+                        return;
                     }
                 }else{
                     playMovie=vm.tabPlay.mvList[0];
@@ -440,8 +445,7 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
     const date = new Date();
     axios.get(requestUrl)
         .then((res)=> {
-            for(let index;index<res.data.items.length;index++){
-                const item = res.data.items[index];
+            res.data.items.forEach((item, index) => {
                 const dt=new Date(item.snippet.publishedAt);
                 let dsc=item.snippet.description;
                 if(dsc.length>210) //説明が長すぎる場合は210文字でカットして...を付ける
@@ -459,13 +463,10 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
                     channelTitle: ''
                 };
                 tab.mvList.push(searchMovie);
-            }
+            });
             tab.nextPageToken = res.data.nextPageToken;
-
-            if(callback!=undefined)
-                callbackWrap(callback);
-                //ここでcallback();してしまうとundefinedのときにerror
-
+            if(callback!=undefined && typeof callback =='function')
+                setTimeout(callback, 100);
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
@@ -473,10 +474,6 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
                 message: 'Youtubeとの通信に失敗し、動画の検索結果を取得することができませんでした。'
             });
         });
-}
-
-function callbackWrap(callback){
-    callback();
 }
 
 function getMovieInformation(mv){
@@ -493,9 +490,6 @@ function getMovieInformation(mv){
             mv.duration = res.data.items[0].contentDetails.duration.replace('PT','').replace('H','hour').replace('M','min').replace('S','sec');
             mv.viewCount = res.data.items[0].statistics.viewCount;
             mv.channelTitle = res.data.items[0].snippet.channelTitle;
-
-
-
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
