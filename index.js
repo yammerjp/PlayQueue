@@ -208,7 +208,7 @@ const vm = new Vue({
             this.tabCommon.selectedTab = num;
             this.moveCancel();
         },
-        relatedMovieMore(callback){//callback..リスト追加後に行われる関数 未指定も可能
+        relatedMovieMore(callback){//[callback..リスト追加後に行われる関数 任意]
             if(this.tabCommon.playerStart==false)
                 return;
             getMovieList(this.tabPlay,false,undefined,callback);
@@ -352,7 +352,7 @@ function onPlayerReady(event) {
     event.target.playVideo();
 }
 
-const playNextMovie=function () {
+function playNextMovie() {
     //ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
     if(vm.tabCommon.playerStart==false){
         //vm.tabQueue.mvListに初めて動画が追加されたとき
@@ -368,7 +368,9 @@ const playNextMovie=function () {
     }
 
     //vm.tabQueue.mvListCtの更新
-    if(vm.tQloop==false){//ループがオフ
+    if(vm.tQloop==true){//ループ
+        vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
+    }else{
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){//リストの末尾に到達
             if(vm.tQautoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
                 let playMovie;
@@ -396,8 +398,6 @@ const playNextMovie=function () {
             return 0;
         }
         vm.tabQueue.mvListCt = vm.tabQueue.mvListCt + 1;
-    }else{//ループがオン
-        vm.tabQueue.mvListCt = (vm.tabQueue.mvListCt + 1) % vm.tabQueue.mvList.length;
     }
 
     getMovieInformation(vm.tabQueue.mvList[vm.tabQueue.mvListCt]);
