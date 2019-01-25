@@ -378,7 +378,7 @@ function playNextMovie() {
                             break;          
                         }
                         if(i==iMax-1){
-                            relatedMovieMore();
+                            vm.relatedMovieMore();
                             iMax=vm.tabPlay.mvList.length;
                         }
                     }
