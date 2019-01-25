@@ -419,10 +419,13 @@ const playNextMovie=function () {
 }
 
 function getMovieList(tab,listReset,newWordSubmit,callback) {
-    //引数
-    //tab..tabQueue,tabPlay,tabSearch listReset..true/false [newWordSubmit..検索パラメータ 更新しない場合は指定しない,callback..リスト更新後に行いたい関数。 ない場合は無指定]
+    /*引数
+    tab..tabQueue,tabPlay,tabSearch
+    listReset..true/false 
+    [newWordSubmit..検索パラメータ 任意
+    [callback..リスト更新後に行いたい関数 任意]
 
-    /* tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
+    tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
     tab.mvListに動画をpush
     tab.nextPageTokenを更新
     */
@@ -465,16 +468,9 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
                 tab.mvList.push(searchMovie);
             });
             tab.nextPageToken = res.data.nextPageToken;
-<<<<<<< HEAD
             if(callback!=undefined && typeof callback =='function')
                 setTimeout(callback, 100);
-=======
 
-            if(callback!=undefined)
-                callbackWrap(callback);
-                //ここでcallback();してしまうとundefinedのときにerror
-
->>>>>>> master
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
