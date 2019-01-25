@@ -439,8 +439,9 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
         + '&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true';
     const date = new Date();
     axios.get(requestUrl)
-        .then(function (res) {
-            res.data.items.forEach((item, index) => {
+        .then((res)=> {
+            for(let index;index<res.data.items.length;index++){
+                const item = res.data.items[index];
                 const dt=new Date(item.snippet.publishedAt);
                 let dsc=item.snippet.description;
                 if(dsc.length>210) //説明が長すぎる場合は210文字でカットして...を付ける
@@ -458,10 +459,11 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
                     channelTitle: ''
                 };
                 tab.mvList.push(searchMovie);
-            });
+            }
             tab.nextPageToken = res.data.nextPageToken;
 
-            callback();
+            if(callback!=undefined)
+                callback();
 
         }).catch(function (err) {
             console.log(err);
