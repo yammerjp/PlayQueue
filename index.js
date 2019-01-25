@@ -370,12 +370,17 @@ function playNextMovie() {
                 if(vm.tQautoPlayNewRelatedMovie==true){//関連動画を未再生のものに限定
                     let iMax=vm.tabPlay.mvList.length;
                     for(let i=0;i<iMax ;i++){
-                        if(vm.tabQueue.mvList.indexOf(vm.tabPlay.mvList[i])==-1){
-                            playMovie=vm.tabPlay.mvList[i];
-                            break;
+                        const isExistMv= vm.tabQueue.mvList.find((mv)=>{
+                            return mv.Id==vm.tabPlay.mvList[i].Id
+                        });
+                        if(isExistMv==undefined){
+                            playMovie =vm.tabPlay.mvList[i];
+                            break;          
                         }
-                        relatedMovieMore();
-                        iMax=vm.tabPlay.mvList.length;
+                        if(i==iMax-1){
+                            relatedMovieMore();
+                            iMax=vm.tabPlay.mvList.length;
+                        }
                     }
                 }else{
                     playMovie=vm.tabPlay.mvList[0];
