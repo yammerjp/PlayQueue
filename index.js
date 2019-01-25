@@ -3,7 +3,11 @@ const TAB_QUEUE = 1;
 const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
+<<<<<<< HEAD
 const YoutubeKey = "AIzaSyBIhSGTanPEt07EkBYizee39cqo3x8ZW-c";
+=======
+const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
+>>>>>>> release
 let player;
 //localStorage.clear();
 if(!(('localStorage' in window) && (window.localStorage !== null))) {
@@ -419,10 +423,13 @@ const playNextMovie=function () {
 }
 
 function getMovieList(tab,listReset,newWordSubmit,callback) {
-    //引数
-    //tab..tabQueue,tabPlay,tabSearch listReset..true/false [newWordSubmit..検索パラメータ 更新しない場合は指定しない,callback..リスト更新後に行いたい関数。 ない場合は無指定]
+    /*引数
+    tab..tabQueue,tabPlay,tabSearch
+    listReset..true/false 
+    [newWordSubmit..検索パラメータ 任意
+    [callback..リスト更新後に行いたい関数 任意]
 
-    /* tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
+    tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
     tab.mvListに動画をpush
     tab.nextPageTokenを更新
     */
@@ -467,6 +474,10 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
             tab.nextPageToken = res.data.nextPageToken;
             if(callback!=undefined && typeof callback =='function')
                 setTimeout(callback, 100);
+<<<<<<< HEAD
+=======
+
+>>>>>>> release
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
