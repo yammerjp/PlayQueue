@@ -209,10 +209,10 @@ const vm = new Vue({
             this.tabCommon.selectedTab = num;
             this.moveCancel();
         },
-        relatedMovieMore(){
+        relatedMovieMore(callback){//callback..リスト追加後に行われる関数 未指定も可能
             if(this.tabCommon.playerStart==false)
                 return;
-            getMovieList(this.tabPlay,false);
+            getMovieList(this.tabPlay,false,undefined,callback);
         },
         addListStorage(LSkey){
             if(showLS().indexOf(LSkey)>=0){
@@ -368,8 +368,7 @@ function playNextMovie() {
             if(vm.tQautoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
                 let playMovie;
                 if(vm.tQautoPlayNewRelatedMovie==true){//関連動画を未再生のものに限定
-                    let iMax=vm.tabPlay.mvList.length;
-                    for(let i=0;i<iMax ;i++){
+                    for(let i=0,iMax=vm.tabPlay.mvList.length; i<iMax ;i++){
                         const isExistMv= vm.tabQueue.mvList.find((mv)=>{
                             return mv.Id==vm.tabPlay.mvList[i].Id
                         });
@@ -377,10 +376,10 @@ function playNextMovie() {
                             playMovie =vm.tabPlay.mvList[i];
                             break;          
                         }
-                        if(i==iMax-1){
-                            vm.relatedMovieMore();
-                            iMax=vm.tabPlay.mvList.length;
-                        }
+                    }
+                    if(playMovie==undefined){
+                        //関連動画リストがすべて再生済みならリストの続きをロード後、コールバックでもう一度playNextMovie
+                        vm.relatedMovieMore(playNextMovie);
                     }
                 }else{
                     playMovie=vm.tabPlay.mvList[0];
@@ -414,8 +413,9 @@ function playNextMovie() {
     });
 }
 
-function getMovieList(tab,listReset,newWordSubmit) {
-    //tab..tabQueue,tabPlay,tabSearch listReset..true/false [newWordSubmit..検索パラメータ 更新しない場合は指定しない]
+function getMovieList(tab,listReset,newWordSubmit,callback) {
+    //引数
+    //tab..tabQueue,tabPlay,tabSearch listReset..true/false [newWordSubmit..検索パラメータ 更新しない場合は指定しない,callback..リスト更新後に行いたい関数。 ない場合は無指定]
 
     /* tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
     tab.mvListに動画をpush
@@ -460,6 +460,8 @@ function getMovieList(tab,listReset,newWordSubmit) {
                 tab.mvList.push(searchMovie);
             });
             tab.nextPageToken = res.data.nextPageToken;
+
+            callback();
 
         }).catch(function (err) {
             console.log(err);
