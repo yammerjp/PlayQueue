@@ -3,11 +3,7 @@ const TAB_QUEUE = 1;
 const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
-<<<<<<< HEAD
-const YoutubeKey = "AIzaSyBIhSGTanPEt07EkBYizee39cqo3x8ZW-c";
-=======
 const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
->>>>>>> release
 let player;
 //localStorage.clear();
 if(!(('localStorage' in window) && (window.localStorage !== null))) {
@@ -474,10 +470,6 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
             tab.nextPageToken = res.data.nextPageToken;
             if(callback!=undefined && typeof callback =='function')
                 setTimeout(callback, 100);
-<<<<<<< HEAD
-=======
-
->>>>>>> release
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
