@@ -229,7 +229,7 @@
               </label>
           </div>
 
-          <div class="switch" v-bind:class="{'displayNone':tQautoPlayRelatedMovie==false}">
+          <div class="switch" v-bind:class="{'displayNone':tQautoPlayRelatedMovie==false||tQloop==true}">
             <span class="switch-caption">新しい関連動画のみ:</span> 
             <label>
               Off
@@ -238,7 +238,7 @@
               On
             </label>
         </div>
-        <div class="switch" v-bind:class="{'displayNone':tQautoPlayRelatedMovie==true}">
+        <div class="switch" v-bind:class="{'displayNone':!(tQautoPlayRelatedMovie==false||tQloop==true)}">
             <span class='switch-caption strikeout'>新しい関連動画のみ:</span>  
             <label>
               Off
