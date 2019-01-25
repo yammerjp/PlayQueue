@@ -463,7 +463,8 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
             tab.nextPageToken = res.data.nextPageToken;
 
             if(callback!=undefined)
-                callback();
+                callbackWrap(callback);
+                //ここでcallback();してしまうとundefinedのときにerror
 
         }).catch(function (err) {
             console.log(err);
@@ -472,6 +473,10 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
                 message: 'Youtubeとの通信に失敗し、動画の検索結果を取得することができませんでした。'
             });
         });
+}
+
+function callbackWrap(callback){
+    callback();
 }
 
 function getMovieInformation(mv){
