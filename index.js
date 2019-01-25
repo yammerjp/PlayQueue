@@ -81,6 +81,7 @@ const vm = new Vue({
         },
         tQloop:false,
         tQautoPlayRelatedMovie:false,
+        tQautoPlayNewRelatedMovie:false,
     },
     watch: {
         tQloop: function(newVal, oldVal) {
@@ -365,7 +366,21 @@ function playNextMovie() {
     if(vm.tQloop==false){//ループがオフ
         if(vm.tabQueue.mvListCt + 1 >=vm.tabQueue.mvList.length){//リストの末尾に到達
             if(vm.tQautoPlayRelatedMovie==true){//末尾動画の関連動画再生がOn
-                            vm.addMovieQueue("PLAY_NOW", vm.tabPlay.mvList[0]);
+                let playMovie;
+                if(vm.tQautoPlayNewRelatedMovie==true){//関連動画を未再生のものに限定
+                    let iMax=vm.tabPlay.mvList.length;
+                    for(let i=0;i<iMax ;i++){
+                        if(vm.tabQueue.mvList.indexOf(vm.tabPlay.mvList[i])==-1){
+                            playMovie=vm.tabPlay.mvList[i];
+                            break;
+                        }
+                        relatedMovieMore();
+                        iMax=vm.tabPlay.mvList.length;
+                    }
+                }else{
+                    playMovie=vm.tabPlay.mvList[0];
+                }
+                vm.addMovieQueue("PLAY_NOW", playMovie);
             }else{//ループせず関連動画も再生しない
                 vm.tabCommon.playerFinish=true;
             }

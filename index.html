@@ -211,7 +211,7 @@
               </label>
           </div>
           <div class="switch" v-bind:class="{'displayNone':tQloop==true}">
-              <span class="switch-caption">最後の動画の関連動画を再生する:</span> 
+              <span class="switch-caption">末尾の関連動画を自動再生する:</span> 
               <label>
                 Off
                 <input type="checkbox" v-model="tQautoPlayRelatedMovie">
@@ -220,7 +220,7 @@
               </label>
           </div>
           <div class="switch" v-bind:class="{'displayNone':tQloop==false}">
-              <span class='switch-caption strikeout'>最後の動画の関連動画を再生する:</span>  
+              <span class='switch-caption strikeout'>末尾の関連動画を自動再生する:</span>  
               <label>
                 Off
                 <input disabled type="checkbox" v-model="tQautoPlayRelatedMovie">
@@ -228,6 +228,26 @@
                 <span class="strikeout">On</span>
               </label>
           </div>
+
+          <div class="switch" v-bind:class="{'displayNone':tQautoPlayRelatedMovie==false}">
+            <span class="switch-caption">新しい関連動画のみ:</span> 
+            <label>
+              Off
+              <input type="checkbox" v-model="tQautoPlayNewRelatedMovie">
+              <span class="lever"></span>
+              On
+            </label>
+        </div>
+        <div class="switch" v-bind:class="{'displayNone':tQautoPlayRelatedMovie==true}">
+            <span class='switch-caption strikeout'>新しい関連動画のみ:</span>  
+            <label>
+              Off
+              <input disabled type="checkbox" v-model="tQautoPlayNewRelatedMovie">
+              <span class="lever"></span>
+              <span class="strikeout">On</span>
+            </label>
+        </div>
+          
             
       </div>
       <!--リストを保存、開く機能-->
