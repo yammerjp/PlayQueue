@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Play Queue for Youtube</title>
+<meta charset="utf-8">
+<meta name="description" content="Play Queue 使い方ガイド">
+<meta name="author" content="dalchemic">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" sizes="196x196" href="favicon.ico">
+<link rel="apple-touch-icon" sizes="152x152" href="favicon.ico">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<link rel="stylesheet" href="iziToast/iziToast.min.css">
+<script src="iziToast/iziToast.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+
+<link rel="stylesheet" href="index.css">
+
+<link rel="stylesheet" href="readMe.css">
+</head>
+
+<body>
+    <div id="center-box">
+<div id="app">
+  
+    <h1><a href="index.html">Play Queue</a></h1>
+
+
+    <!--動画再生タブ-->    
+    <div id="read-me">
+
+<h2>〇Play Queueとは？</h2>
+<p>youtube動画を、連続再生するプレイヤーです。</p>
+<h2>〇タブ構成</h2>
+<h3>1.  <i class="material-icons">play_arrow</i>再生</h3>
+<p><div>動画の再生/停止、関連動画をさがすことができます。</div>
+<div>「↓」ボタンを押すと関連動画をさらに表示します。</div>
+<div>再生したい動画をクリックして、プレイリストに追加しましょう。
+「今すぐ再生」「次に再生」「最後に再生」の3つで、追加されるプレイリスト内の場所が異なります。</div></p>
+<h3>2.  <i class="material-icons">playlist_play</i>プレイリスト</h3>
+<p><div>プレイリストを編集、保存できます。再生順を並べ替えたり、動画を削除したりすることが可能です。</div>
+<div>プレイリストは上から下に順に再生されていきます。</div>
+(プレイリストに新しい動画を追加するときは他タブから行います。関連動画/検索動画から探し追加してください。)</p>
+<h4>2.1  プレイリスト終了後の動作</h4>
+<p>下のトグルボタンではプレイリストの末尾の動画が再生終了したときの動作を選べます。</p>
+<ul>
+<li>ループ<br>
+ONにすると、一番上の動画を再生開始します。</li>
+<li>末尾の関連動画を自動再生する<br> 
+ONにすると、プレイリスト末尾の関連動画の中で一番上のものを再生開始します。
+  (「ループ」がOFFになっているときのみ選べます。)</li>
+<li>新しい関連動画のみ<br>ONにすると、「末尾の関連動画を自動再生する」で再生される動画が既にプレイリストにある時、その動画ではなく次に関連する動画を再生開始します。
+  (「末尾の関連動画を自動再生する」がOFFのときのみ選べます。)</li>
+</ul>
+<h4>2.2  保存/開く</h4>
+<p><div>プレイリストを保存したり、保存したプレイリストを読み込むことができます。</div>
+<div>最も下にある「保存」ボタンを押すと、現在のプレイリストに名前を付けて保存することができます。
+また「開く」ボタンを押すと、現在保存されているプレイリストの中から一つ選び「開く」ボタンを押すと読み込むことができます。
+また「開く」ボタンを押したのち、プレイリストを一つ選んで「削除」ボタンを押すことで当該プレイリストを削除できます。</div>
+<div>保存されたプレイリストのリネーム、編集はできませんので、一度削除して再び保存してください。</div></p>
+<h3>3.  <i class="material-icons">search</i>検索</h3>
+<p><div>上部の検索バーに検索ワードを入力してEnterまたは下の「↓」ボタンを押すと、youtube動画を検索できます。</div>
+<div>再生したい動画をクリックして、プレイリストに追加しましょう。
+「今すぐ再生」「次に再生」「最後に再生」の3つで、追加されるプレイリスト内の場所が異なります。</div></p>
+        
+    </div>
+
+
+  </div>
+</div>
+
+</body>
+</html>
