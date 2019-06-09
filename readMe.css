@@ -5,6 +5,7 @@
 #read-me h2{
     font-size: 1.3em;
     color: rgb(54, 54, 54);
+    font-weight: bold;
 /*    display: inline-block;
     border: solid;
     border: 10px,20px,30px,40px;*/
@@ -27,4 +28,7 @@ p{
 }
 li{
     padding: 0.2em;
+}
+.underline{
+    text-decoration: underline;
 }
