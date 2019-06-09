@@ -139,6 +139,7 @@ const vm = new Vue({
                 case "JUMP"://itemの位置に再生キューを移動して再生
                     this.tabQueue.mvListCt = itemCt - 1;
                     playNextMovie();
+                    this.tabCommon.selectedTab = 0;//再生タブへ強制遷移 2019/6/10 add
                     break;
                 case 'DELETE'://itemを再生キューから削除
                     this.tabQueue.mvList.splice(itemCt, 1);//削除
