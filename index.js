@@ -106,26 +106,30 @@ const vm = new Vue({
 
             const date = new Date();
             let pushedMv =Object.assign({}, movie);
-            pushedMv.uniqueKey=`${date.getTime()}#added`;
+            pushedMv.uniqueKey = `${date.getTime()}#added`;
+            let messageWord; //動画を再生リストへ追加したことを通知 2019/6/9 add
             switch (msg) {
                 case "PLAY_NOW":
                     this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, pushedMv);
                     playNextMovie();
                     this.tabCommon.selectedTab = 0;//再生タブへ強制遷移 2019/6/9 add
+                    messageWord = "挿入";
                     break;
                 case "PLAY_NEXT":
                     this.tabQueue.mvList.splice(this.tabQueue.mvListCt + 1, 0, pushedMv);
                     playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
+                    messageWord = "挿入";
                     break;
                 case "PLAY_LAST":
                     this.tabQueue.mvList.push(pushedMv);
                     playRestart();//もし最後尾に再生するものが増えていたら再生してくれる。
+                    messageWord = "追加";
                     break;
 
             }
             iziToast.show({
                 title: 'Add movie for the playlist',
-                message: '再生リストに動画「' + pushedMv.title + '」を追加しました。',
+                message: '再生リストに動画「' + pushedMv.title + '」を' + messageWord +'しました。',
             }); //動画を再生リストへ追加したことを通知 2019/6/9 add
         },
         changeMovieQueue(msg, item) {
