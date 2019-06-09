@@ -128,7 +128,7 @@ const vm = new Vue({
 
             }
             iziToast.show({
-                title: 'Add movie for the playlist',
+                title: 'Add movie to the playlist',
                 message: '再生リストに動画「' + pushedMv.title + '」を' + messageWord +'しました。',
             }); //動画を再生リストへ追加したことを通知 2019/6/9 add
         },
