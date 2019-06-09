@@ -279,6 +279,14 @@ select{
     padding:1em;
     font-size:0.8em;
 }
+#read-me-button{
+    position:absolute;
+    right: 0.5em;
+    top:0.5em;
+}
+#read-me-button > a{
+    color: rgb(71, 71, 71) ;
+}
 #pre-first-messege{
     position: static;
 }
