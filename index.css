@@ -310,3 +310,7 @@ select{
 .displayNone{
     display:none;
 }
+.playlist-store-button{
+    display:inline-block;
+    margin-bottom:0.2em;
+}

@@ -54,6 +54,7 @@ const vm = new Vue({
                 inputKey:'',
                 listNameConflict:false,
                 listWindow:false,
+                listDeleteWindow:false,
                 inputWindow:false,
             },
         },
@@ -226,16 +227,16 @@ const vm = new Vue({
         },
         addListStorage(LSkey){
             if(showLS().indexOf(LSkey)>=0){
-                this.tabQueue.LSkey.listNameConflict=true;
+//                this.tabQueue.LSkey.listNameConflict=true;
                 //既に存在する リスト名
-                return;
-            }else if(LSkey===""){
-                return;
-            }else{
-                storeLS(LSkey,this.tabQueue.mvList);
-                this.openListStorageWindow('CLOSE');  
+                if(!window.confirm(`${LSkey} を上書きします。よろしいですか？`))
+                    return;
             }
-
+            if(LSkey==="")
+                return;
+            storeLS(LSkey,this.tabQueue.mvList);
+            this.openListStorageWindow('CLOSE');  
+            return ;
         },
         openListStorage(LSkey){
             if(LSkey==''){
@@ -276,7 +277,9 @@ const vm = new Vue({
                     this.tabQueue.LSkey.inputWindow = true;
                     this.tabQueue.LSkey.listWindow = false;
                     break;
-                case 'LIST' :
+                case 'LIST_DELETE':
+                    this.tabQueue.LSkey.listDeleteWindow =true;
+                case 'LIST_OPEN' :
                     this.tabQueue.LSkey.inputKey="";
                     this.tabQueue.LSkey.inputWindow = false;
                     this.tabQueue.LSkey.listWindow = true;
@@ -285,6 +288,7 @@ const vm = new Vue({
                 case 'CLOSE':
                     this.tabQueue.LSkey.inputWindow = false;
                     this.tabQueue.LSkey.listWindow = false;
+                    this.tabQueue.LSkey.listDeleteWindow =false;
                     break;
             }
         }

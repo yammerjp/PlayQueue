@@ -253,15 +253,16 @@
       </div>
       <!--リストを保存、開く機能-->
       <div class='row RW-list'>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='openListStorageWindow("INPUT")'><i class="material-icons tab-switch-bar">save</i>保存</a>
-        <a class="waves-effect waves-light btn RW-button" v-on:click='openListStorageWindow("LIST")'><i class="material-icons tab-switch-bar">folder_open</i>開く</a>
+        <a class="waves-effect waves-light btn RW-button playlist-store-button" v-on:click='openListStorageWindow("INPUT")'><i class="material-icons tab-switch-bar">save</i>現在のプレイリストを保存</a>
+        <a class="waves-effect waves-light btn RW-button playlist-store-button" v-on:click='openListStorageWindow("LIST_OPEN")'><i class="material-icons tab-switch-bar">folder_open</i>過去のプレイリストを開く</a>
+        <a class="waves-effect waves-light btn RW-button playlist-store-button" v-on:click='openListStorageWindow("LIST_DELETE")'><i class="material-icons tab-switch-bar">folder_open</i>過去のプレイリストを削除</a>
         <div class="modal-background" v-bind:class='{"displayNone":tabQueue.LSkey.inputWindow!=true && tabQueue.LSkey.listWindow!=true}' v-on:click='openListStorageWindow("CLOSE")'>
         </div>
         
         <div class='modal-window'  v-bind:class='{"displayNone":tabQueue.LSkey.inputWindow!=true}'>
             <input type="text" v-model="tabQueue.LSkey.inputKey" placeholder="list name">
           <button class="waves-effect waves-light btn RW-button" v-on:click="addListStorage(tabQueue.LSkey.inputKey)">保存</button>
-          <div v-bind:class='{"displayNone":tabQueue.LSkey.listNameConflict!=true}'>既に存在するリスト名です</div>
+<!--          <div v-bind:class='{"displayNone":tabQueue.LSkey.listNameConflict!=true}'>既に存在するリスト名です</div>-->
         </div>
 
         <div class='modal-window'  v-bind:class='{"displayNone":tabQueue.LSkey.listWindow!=true}'>
@@ -272,8 +273,8 @@
               :key='item'
               v-bind:value="item">{{item}}</option>
           </select>
-          <button class="waves-effect waves-light btn RW-button" v-on:click='openListStorage(tabQueue.LSkey.inputKey)'>開く</button>
-          <button class="waves-effect waves-light btn RW-button" v-on:click='deleteListStorage(tabQueue.LSkey.inputKey)'>削除する</button>
+          <button class="waves-effect waves-light btn RW-button" v-bind:class='{"displayNone":tabQueue.LSkey.listDeleteWindow}' v-on:click='openListStorage(tabQueue.LSkey.inputKey)'>開く</button>
+          <button class="waves-effect waves-light btn RW-button" v-bind:class='{"displayNone":!tabQueue.LSkey.listDeleteWindow}' v-on:click='deleteListStorage(tabQueue.LSkey.inputKey)'>削除する</button>
         </div>
       </div>
     </div>
