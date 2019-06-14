@@ -128,6 +128,7 @@ const vm = new Vue({
 
             }
             iziToast.show({
+                position: 'topRight',
                 title: 'Add movie to the playlist',
                 message: '再生リストに動画「' + pushedMv.title + '」を' + messageWord +'しました。',
             }); //動画を再生リストへ追加したことを通知 2019/6/9 add
@@ -324,6 +325,7 @@ function onPlayerError(event) {
         case 100://動画が見つからない(非公開含む)
             playNextMovie();
             iziToast.error({
+                position: 'topRight',
                 title: 'Skip Movie',
                 message: '動画が見つかりません。削除や非公開化によるものです。'
             });
@@ -332,6 +334,7 @@ function onPlayerError(event) {
         case 150://埋め込み不可の動画
             playNextMovie();
             iziToast.error({
+                position: 'topRight',
                 title: 'Skip Movie',
                 message: '埋め込み不可の動画です。'
             });
@@ -339,6 +342,7 @@ function onPlayerError(event) {
         case 2://リクエストが無効なパラメータ値 動画IDのフォーマットが異なる
             playNextMovie();
             iziToast.error({
+                position: 'topRight',
                 title: 'Skip Movie',
                 message: 'Youtubeへの再生リクエストに無効なパラメータが設定されました。動画IDのフォーマットが異なる可能性があります。'
             });
@@ -346,13 +350,18 @@ function onPlayerError(event) {
         case 5://HTML5プレイヤーに関するエラー
             playNextMovie();
             iziToast.error({
+                position: 'topRight',
                 title: 'Skip Movie',
                 message: 'HTML5プレイヤーに関するエラーが発生しました。'
             });
             break;
         
         default:
-            iziToast.error({ title: 'Unknown Error', message: 'Stop movie' });
+            iziToast.error({
+                position: 'topRight',
+                title: 'Unknown Error',
+                message: 'Stop movie'
+            });
     }
 }
 
@@ -483,6 +492,7 @@ function getMovieList(tab,listReset,newWordSubmit,callback) {
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
+                position: 'topRight',
                 title: 'Reject http request',
                 message: 'Youtubeとの通信に失敗し、動画の検索結果を取得することができませんでした。'
             });
@@ -506,6 +516,7 @@ function getMovieInformation(mv){
         }).catch(function (err) {
             console.log(err);
             iziToast.error({
+                position: 'topRight',
                 title: 'Reject http request',
                 message: 'Youtubeとの通信に失敗し、動画の詳細を取得することができませんでした。'
             });
