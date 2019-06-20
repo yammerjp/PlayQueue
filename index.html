@@ -260,7 +260,7 @@
         </div>
         
         <div class='modal-window'  v-bind:class='{"displayNone":tabQueue.LSkey.inputWindow!=true}'>
-            <input type="text" v-model="tabQueue.LSkey.inputKey" placeholder="プレイリスト名>
+            <input type="text" v-model="tabQueue.LSkey.inputKey" placeholder="プレイリスト名">
           <button class="waves-effect waves-light btn RW-button" v-on:click="addListStorage(tabQueue.LSkey.inputKey)">保存</button>
 <!--          <div v-bind:class='{"displayNone":tabQueue.LSkey.listNameConflict!=true}'>既に存在するリスト名です</div>-->
         </div>
