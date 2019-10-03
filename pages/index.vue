@@ -446,23 +446,21 @@
       <a href="/readMe" target="_blank">
         <i class="material-icons">help</i>
       </a>
-      <button @click="debugFunction">debug</button>
+<!--      <button @click="debugFunction">debug</button>-->
     </div>
   </div>
 </template>
 
 <script>
-const axios = require("axios");
+import fetchYoutubeDataV3 from '@/assets/js/fetch-movie-data.js'
 const iziToast = require("izitoast");
+
 
 const TAB_PLAYER = 0;
 const TAB_QUEUE = 1;
 const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
-//const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
-//const YoutubeKey = "AIzaSyANKSN8GKCbogYzLXqG4f75lwqwljA3RCU";
-const YoutubeKey = require('@/youtube-key.js')
 let player;
 
 export default {
@@ -551,11 +549,11 @@ export default {
       return this.$refs.youtube.player;
     }
   },
-  methods: {
+  methods: {/*
     debugFunction(){
       console.log(this.tabQueue)
       console.log(YoutubeKey)
-    },
+    },*/
     addMovieQueue: function(msg, movie) {
       if(this.tabQueue.mvList.length===1 && this.tabQueue.mvList[0].Id==="") {
         this.tabQueue.mvList = []
@@ -659,7 +657,7 @@ export default {
       if (active_element) {
         active_element.blur();
       }
-      getMovieList(this.tabSearch, true, this.tabSearch.word);
+      fetchYoutubeDataV3.getMovieList(this.tabSearch, true, this.tabSearch.word);
     },
     searchWordSubmittedMore() {
       if (this.tabSearch.wordSubmit == "") {
@@ -671,7 +669,7 @@ export default {
         //ちなみに何も入力せずにmoreボタンを押していたら無視
       }
 
-      getMovieList(this.tabSearch, false);
+      fetchYoutubeDataV3.getMovieList(this.tabSearch, false);
     },
     listMovieClicked(movie) {
       if (this.tabCommon.ListClickUniqueKey == movie.uniqueKey) {
@@ -688,7 +686,7 @@ export default {
     relatedMovieMore(callback) {
       //[callback..リスト追加後に行われる関数 任意]
       if (this.tabCommon.playerStart == false) return;
-      getMovieList(this.tabPlay, false, undefined, callback);
+      fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
     addListStorage(LSkey) {
       if (showLS().indexOf(LSkey) >= 0) {
@@ -827,7 +825,7 @@ export default {
         this.tabQueue.mvListCt = this.tabQueue.mvListCt + 1;
       }
 
-      getMovieInformation(this.tabQueue.mvList[this.tabQueue.mvListCt]);
+      fetchYoutubeDataV3.getMovieInformation(this.tabQueue.mvList[this.tabQueue.mvListCt]);
       this.tabPlay.fullDescription = false;
 
       //再生しようとした動画が移動操作中の場合キャンセル
@@ -839,7 +837,7 @@ export default {
       }
 
       //関連動画リストの取得
-      getMovieList(
+      fetchYoutubeDataV3.getMovieList(
         this.tabPlay,
         true,
         this.tabQueue.mvList[this.tabQueue.mvListCt].Id
@@ -894,8 +892,8 @@ export default {
       }
     },
     onPlayerReady(event) {/*
-      getMovieInformation(this.tabQueue.mvList[this.tabQueue.mvListCt]);
-      getMovieList(
+      fetchYoutubeDataV3.getMovieInformation(this.tabQueue.mvList[this.tabQueue.mvListCt]);
+      fetchYoutubeDataV3.getMovieList(
         this.tabPlay,
         true,
         this.tabQueue.mvList[this.tabQueue.mvListCt].Id
@@ -910,106 +908,7 @@ export default {
     }
   }
 };
-function getMovieList(tab, listReset, newWordSubmit, callback) {
-  /*引数
-    tab..tabQueue,tabPlay,tabSearch
-    listReset..true/false 
-    [newWordSubmit..検索パラメータ 任意
-    [callback..リスト更新後に行いたい関数 任意]
 
-    tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
-    tab.mvListに動画をpush
-    tab.nextPageTokenを更新
-    */
-
-  //初期化処理
-  if (listReset == true) {
-    tab.mvList = [];
-    tab.nextPageToken = "";
-  }
-  if (newWordSubmit != undefined) {
-    tab.wordSubmit = newWordSubmit;
-  }
-
-  const requestUrl =
-    "https://www.googleapis.com/youtube/v3/search?" +
-    tab.preWord +
-    tab.wordSubmit +
-    (tab.nextPageToken == "" ? "" : "&pageToken=" + tab.nextPageToken) +
-    "&key=" +
-    YoutubeKey +
-    "&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true";
-  const date = new Date();
-  axios
-    .get(requestUrl)
-    .then(res => {
-      res.data.items.forEach((item, index) => {
-        const dt = new Date(item.snippet.publishedAt);
-        let dsc = item.snippet.description;
-        if (dsc.length > 210)
-          //説明が長すぎる場合は210文字でカットして...を付ける
-          dsc = dsc.substring(0, 210) + "...";
-        const searchMovie = {
-          uniqueKey: `${date.getTime()}#${index}`,
-          Id: item.id.videoId,
-          title: item.snippet.title,
-          description210: dsc,
-          thumbnail: item.snippet.thumbnails.default.url,
-          publishedAt: dt.toLocaleString(),
-          description: "", //以下は検索リクエストからは取得できない値。再生時に動画毎に取得している
-          duration: "",
-          viewCount: "",
-          channelTitle: ""
-        };
-        tab.mvList.push(searchMovie);
-      });
-      tab.nextPageToken = res.data.nextPageToken;
-      if (callback != undefined && typeof callback == "function")
-        setTimeout(callback, 100);
-    })
-    .catch(function(err) {
-      console.log(err);
-      iziToast.error({
-        position: "topRight",
-        title: "Reject http request",
-        message:
-          "Youtubeとの通信に失敗し、動画の検索結果を取得することができませんでした。"
-      });
-    });
-}
-
-function getMovieInformation(mv) {
-  const requestUrl =
-    "https://www.googleapis.com/youtube/v3/videos?" +
-    "id=" +
-    mv.Id +
-    "&key=" +
-    YoutubeKey +
-    "&part=snippet,contentDetails,statistics&regionCode=jp";
-  //    const date = new Date();
-  axios
-    .get(requestUrl)
-    .then(function(res) {
-      //            mv.uniqueKey=`${date.getTime()}#added`;
-      mv.description = res.data.items[0].snippet.description;
-      mv.duration = res.data.items[0].contentDetails.duration
-        .replace("PT", "")
-        .replace("H", "hour")
-        .replace("M", "min")
-        .replace("S", "sec");
-      mv.viewCount = res.data.items[0].statistics.viewCount;
-      mv.channelTitle = res.data.items[0].snippet.channelTitle;
-    })
-    .catch(function(err) {
-      console.log(err);
-      iziToast.error({
-        position: "topRight",
-        title: "Reject http request",
-        message:
-          "Youtubeとの通信に失敗し、動画の詳細を取得することができませんでした。"
-      });
-    });
-}
 /*
 //localStorage.clear();
 if(!(('localStorage' in window) && (window.localStorage !== null))) {
