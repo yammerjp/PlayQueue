@@ -22,7 +22,6 @@ export default {
     }
     ,
     plugins: [
-//        {src:"plugins/axios.min.js"},
         {src:"plugins/materialize.min.js"},
         {src:"iziToast/iziToast.min.js"},
         {src:"LS.js"},
