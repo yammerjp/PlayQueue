@@ -452,7 +452,8 @@
 </template>
 
 <script>
-import fetchYoutubeDataV3 from '@/assets/js/fetch-movie-data.js'
+import fetchYoutubeDataV3 from '@/assets/js/fetch-youtube-data-v3.js'
+import LS from '@/assets/js/ls.js'
 const iziToast = require("izitoast");
 
 
@@ -689,14 +690,14 @@ export default {
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
     addListStorage(LSkey) {
-      if (showLS().indexOf(LSkey) >= 0) {
+      if (LS.show().indexOf(LSkey) >= 0) {
         //                this.tabQueue.LSkey.listNameConflict=true;
         //既に存在する リスト名
         if (!window.confirm(`${LSkey} を上書きします。よろしいですか？`))
           return;
       }
       if (LSkey === "") return;
-      storeLS(LSkey, this.tabQueue.mvList);
+      LS.store(LSkey, this.tabQueue.mvList);
       this.openListStorageWindow("CLOSE");
       return;
     },
@@ -710,13 +711,13 @@ export default {
         this.tabQueue.mvList.splice(1);
         this.tabQueue.mvListCt = 0;
         this.moveCancel();
-        this.tabQueue.mvList = [...this.tabQueue.mvList, ...getLS(LSkey)];
+        this.tabQueue.mvList = [...this.tabQueue.mvList, ...LS.get(LSkey)];
         this.playNextMovie();
         this.tabQueue.mvList.splice(0, 1);
         this.tabQueue.mvListCt = 0;
       } else {
         this.tabQueue.mvList = [];
-        this.tabQueue.mvList = getLS(LSkey);
+        this.tabQueue.mvList = LS.get(LSkey);
         this.playNextMovie();
       }
     },
@@ -725,8 +726,8 @@ export default {
         return;
       }
       if (window.confirm(`${LSkey} を削除します。よろしいですか？`)) {
-        deleteLS(LSkey);
-        this.tabQueue.LSkey.list = showLS();
+        LS.delete(LSkey);
+        this.tabQueue.LSkey.list = LS.show();
         this.openListStorageWindow("CLOSE");
       }
     },
@@ -746,7 +747,7 @@ export default {
           this.tabQueue.LSkey.inputKey = "";
           this.tabQueue.LSkey.inputWindow = false;
           this.tabQueue.LSkey.listWindow = true;
-          this.tabQueue.LSkey.list = showLS();
+          this.tabQueue.LSkey.list = LS.show();
           break;
         case "CLOSE":
           this.tabQueue.LSkey.inputWindow = false;
@@ -909,28 +910,6 @@ export default {
   }
 };
 
-/*
-//localStorage.clear();
-if(!(('localStorage' in window) && (window.localStorage !== null))) {
-    // ローカルストレージが使えない。。。
-    iziToast.error({
-        title: 'Local Storage Error',
-        message: '保存機能が使えません。ブラウザがHTML5 Local Storageに対応していません。'
-    });
-}*/
-
-function storeLS(listName,mvList){
-    localStorage.setItem(listName, JSON.stringify(mvList));
-}
-function showLS(){//keyの配列
-    return Object.keys(localStorage);
-}
-function getLS(listName){
-    return JSON.parse(localStorage.getItem(listName));
-}
-function deleteLS(listName){
-    localStorage.removeItem(listName);
-}
 
 </script>
 
