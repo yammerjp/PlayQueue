@@ -1,0 +1,9 @@
+{
+  "name": "PlayQueue",
+  "scripts": {
+    "dev": "nuxt"
+  },
+  "dependencies": {
+    "nuxt": "^2.10.0"
+  }
+}
