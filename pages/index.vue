@@ -461,7 +461,8 @@ const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
 //const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
-const YoutubeKey = "AIzaSyANKSN8GKCbogYzLXqG4f75lwqwljA3RCU";
+//const YoutubeKey = "AIzaSyANKSN8GKCbogYzLXqG4f75lwqwljA3RCU";
+const YoutubeKey = require('@/youtube-key.js')
 let player;
 
 export default {
@@ -552,12 +553,17 @@ export default {
   },
   methods: {
     debugFunction(){
-      console.log(this.tabPlay)
+      console.log(this.tabQueue)
+      console.log(YoutubeKey)
     },
     addMovieQueue: function(msg, movie) {
+      if(this.tabQueue.mvList.length===1 && this.tabQueue.mvList[0].Id==="") {
+        this.tabQueue.mvList = []
+      }
       const date = new Date();
       let pushedMv = Object.assign({}, movie);
       pushedMv.uniqueKey = `${date.getTime()}#added`;
+      console.log(pushedMv)
       let messageWord; //動画を再生リストへ追加したことを通知 2019/6/9 add
       switch (msg) {
         case "PLAY_NOW":
@@ -1004,6 +1010,29 @@ function getMovieInformation(mv) {
       });
     });
 }
+/*
+//localStorage.clear();
+if(!(('localStorage' in window) && (window.localStorage !== null))) {
+    // ローカルストレージが使えない。。。
+    iziToast.error({
+        title: 'Local Storage Error',
+        message: '保存機能が使えません。ブラウザがHTML5 Local Storageに対応していません。'
+    });
+}*/
+
+function storeLS(listName,mvList){
+    localStorage.setItem(listName, JSON.stringify(mvList));
+}
+function showLS(){//keyの配列
+    return Object.keys(localStorage);
+}
+function getLS(listName){
+    return JSON.parse(localStorage.getItem(listName));
+}
+function deleteLS(listName){
+    localStorage.removeItem(listName);
+}
+
 </script>
 
 <style>

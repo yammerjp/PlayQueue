@@ -1,2 +1,4 @@
 node_modules
 .nuxt
+youtube-key.js
+# module.exports = 'hogehoge'

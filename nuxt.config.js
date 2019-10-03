@@ -19,11 +19,6 @@ export default {
         ]
     },
     plugins: [
-        /*
-        {src:"plugins/materialize.min.js"},
-        {src:"iziToast/iziToast.min.js"},
-        {src:"LS.js"},
-        {src:"iframe_player.js"}*/
         "@/plugins/vue-youtube",
         "@/plugins/vue-izitoast"
     ],
