@@ -55,7 +55,7 @@
               <div>ようこそPlay Queueへ</div>
               <div>検索から動画をみつけましょう</div>
               <div class="read-me">
-                <a href="readMe.html" target="_blank">使い方ガイドはこちら</a>
+                <a href="/readMe" target="_blank">使い方ガイドはこちら</a>
               </div>
             </div>
             </div>
@@ -443,7 +443,7 @@
       </div>
     </div>
     <div id="read-me-button">
-      <a href="readMe.html" target="_blank">
+      <a href="/readMe" target="_blank">
         <i class="material-icons">help</i>
       </a>
       <button @click="debugFunction">debug</button>
