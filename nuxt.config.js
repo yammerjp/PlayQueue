@@ -15,16 +15,18 @@ export default {
             {rel:"apple-touch-icon", sizes:"152x152", href:"favicon.ico"},
             
             {href:"https://fonts.googleapis.com/icon?family=Material+Icons", rel:"stylesheet"},
-            {rel:"stylesheet", href:"iziToast/iziToast.min.css"},
             {rel:"stylesheet", href:"https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"},
             {href:"https://fonts.googleapis.com/css?family=Anton", rel:"stylesheet"}
         ]
     }
     ,
     plugins: [
+        /*
         {src:"plugins/materialize.min.js"},
         {src:"iziToast/iziToast.min.js"},
         {src:"LS.js"},
-        {src:"iframe_player.js"}
+        {src:"iframe_player.js"}*/
+        "@/plugins/vue-youtube",
+        "@/plugins/vue-izitoast"
     ]
 }
