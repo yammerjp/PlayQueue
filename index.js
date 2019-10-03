@@ -3,7 +3,8 @@ const TAB_QUEUE = 1;
 const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
-const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
+//const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
+const YoutubeKey = "AIzaSyANKSN8GKCbogYzLXqG4f75lwqwljA3RCU";
 let player;
 //localStorage.clear();
 if(!(('localStorage' in window) && (window.localStorage !== null))) {
