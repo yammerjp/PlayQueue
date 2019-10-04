@@ -384,58 +384,8 @@
             />
             <!--        <button v-on:click="searchWordSubmitted">search</button>-->
           </form>
-
-          <div
-            class="movie-list col s12 row"
-            v-for="item in tabSearch.mvList"
-            :key="item.uniqueKey"
-          >
-            <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
-              <div class="row valign-wrapper intab-row">
-                <div
-                  class="width100"
-                  v-bind:class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
-                  v-on:click="listMovieClicked(item)"
-                >
-                  <div class="col s3">
-                    <img v-bind:src="item.thumbnail" alt class="responsive-img" />
-                  </div>
-                  <div class="col s9">
-                    <span class="black-text">
-                      <div class="title">{{item.title}}</div>
-                      <div class="description">{{item.description210}}</div>
-                      <div class="information">{{item.publishedAt}}投稿</div>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="selected-movie-s12"
-                v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}"
-                v-on:click="listMovieClicked(item)"
-              >
-                <button
-                  class="btn waves-effect waves-light"
-                  v-on:click="addMovieQueue('PLAY_NOW',item)"
-                >
-                  <i class="material-icons">play_arrow</i>今すぐ再生
-                </button>
-                <button
-                  class="btn waves-effect waves-light"
-                  v-on:click="addMovieQueue('PLAY_NEXT',item)"
-                >
-                  <i class="material-icons">add</i>次に再生
-                </button>
-                <button
-                  class="btn waves-effect waves-light"
-                  v-on:click="addMovieQueue('PLAY_LAST',item)"
-                >
-                  <i class="material-icons">low_priority</i>最後に再生
-                </button>
-              </div>
-            </div>
-          </div>
-
+          <movieList :movies="tabSearch.mvList" :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey" @add-movie-queue="addMovieQueue2"/> 
+<!--          <movieList :movies="tabSearch.mvList" :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"/>-->
           <button v-on:click="searchWordSubmittedMore" class="btn waves-effect waves-light">
             <i class="material-icons">keyboard_arrow_down</i>
           </button>
@@ -453,6 +403,7 @@
 
 <script>
 import fetchYoutubeDataV3 from '@/assets/js/fetch-youtube-data-v3.js'
+import movieList from '@/components/movieList.vue'
 import LS from '@/assets/js/ls.js'
 const iziToast = require("izitoast");
 
@@ -465,6 +416,9 @@ const RELATED = 1;
 let player;
 
 export default {
+  components: {
+    movieList
+  },
   data: () => {
     return {
       tabQueue: {
@@ -555,6 +509,7 @@ export default {
       console.log(this.tabQueue)
       console.log(YoutubeKey)
     },*/
+    addMovieQueue2: function({message, movie}){this.addMovieQueue(message,movie)},
     addMovieQueue: function(msg, movie) {
       if(this.tabQueue.mvList.length===1 && this.tabQueue.mvList[0].Id==="") {
         this.tabQueue.mvList = []
