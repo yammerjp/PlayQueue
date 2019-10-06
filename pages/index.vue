@@ -4,36 +4,9 @@
       <div id="app">
         <h1>Play Queue</h1>
         <!--タブ選択バー-->
-        <div id="tab-bar" class="row tab-row">
-          <div class="col s12">
-            <div
-              class="tab col s4"
-              v-on:click="tabChange(0)"
-              v-bind:class="{'selected-tab-bar': tabCommon.selectedTab==0}"
-            >
-              <i class="material-icons tab-switch-bar">play_arrow</i>
-            </div>
-            <div
-              class="tab col s4"
-              v-on:click="tabChange(1)"
-              v-bind:class="{'selected-tab-bar': tabCommon.selectedTab==1}"
-            >
-              <i class="material-icons tab-switch-bar">playlist_play</i>
-            </div>
-            <div
-              class="tab col s4"
-              v-on:click="tabChange(2)"
-              v-bind:class="{'selected-tab-bar': tabCommon.selectedTab==2}"
-            >
-              <i class="material-icons tab-switch-bar">search</i>
-            </div>
-          </div>
-        </div>
+        <tabBar :selected-tab-number="tabCommon.selectedTab" @tab-change="tabChange"/>
         <!--動画再生タブ-->
         <div id="tab-player" v-bind:class="{'displayNone':tabCommon.selectedTab!=0}">
-          
-          
-          
           <div id="player-box">
           <div id="player-not-playing" v-bind:class="{'displayNone':tabCommon.playerStart==true}">
             <div id="pre-first-messege" >
@@ -338,6 +311,7 @@
 
 <script>
 import fetchYoutubeDataV3 from '@/assets/js/fetch-youtube-data-v3.js'
+import tabBar from '@/components/tabBar.vue'
 import movieList from '@/components/movieList.vue'
 import tabSearch from '@/components/tabSearch.vue'
 import LS from '@/assets/js/ls.js'
@@ -353,6 +327,7 @@ let player;
 
 export default {
   components: {
+    tabBar,
     movieList,
     tabSearch
   },
