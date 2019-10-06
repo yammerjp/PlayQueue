@@ -216,10 +216,11 @@
         </div>
 
         <!--検索リストタブ-->
-        <tabSearch
-          v-bind:class="{'displayNone':tabCommon.selectedTab!=2}"
-          :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"
-          @add-movie-queue="addMovieQueue2"/>
+        <div v-bind:class="{'displayNone':tabCommon.selectedTab!=2}">
+          <tabSearch
+            :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"
+            @add-movie-queue="addMovieQueue2"/>
+        </div>
       </div>
     </div>
     <div id="read-me-button">
@@ -239,6 +240,7 @@ import tabSearch from '@/components/tabSearch.vue'
 import saveList from '@/components/saveList.vue'
 import visitingDescription from '@/components/visitingDescription.vue'
 const iziToast = require("izitoast");
+const uuidv4 = require('uuid/v4')
 
 
 const TAB_PLAYER = 0;
@@ -351,9 +353,8 @@ export default {
       if(this.tabQueue.mvList.length===1 && this.tabQueue.mvList[0].Id==="") {
         this.tabQueue.mvList = []
       }
-      const date = new Date();
       let pushedMv = Object.assign({}, movie);
-      pushedMv.uniqueKey = `${date.getTime()}#added`;
+      pushedMv.uniqueKey = uuidv4();
       console.log(pushedMv)
       let messageWord; //動画を再生リストへ追加したことを通知 2019/6/9 add
       switch (msg) {
