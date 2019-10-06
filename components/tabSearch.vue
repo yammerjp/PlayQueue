@@ -68,3 +68,10 @@ export default {
   }
 };
 </script>
+<style scoped>
+.tab-search {
+  width: 98%;
+  margin: auto;
+  display: inline-block;
+}
+</style>

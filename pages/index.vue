@@ -8,33 +8,8 @@
         <!--動画再生タブ-->
         <div id="tab-player" v-bind:class="{'displayNone':tabCommon.selectedTab!=0}">
           <div id="player-box">
-          <div id="player-not-playing" v-bind:class="{'displayNone':tabCommon.playerStart==true}">
-            <div id="pre-first-messege" >
-              <div class="row">
-                  <div class="col s4">
-                      <div><i class="material-icons tab-switch-bar">arrow_upward</i></div>
-                      <div>再生</div>
-                  </div>
-                  <div class="col s4">
-                      <div><i class="material-icons tab-switch-bar">arrow_upward</i></div>
-                      <div>プレイリスト</div>
-                  </div>
-                  <div class="col s4 search">
-                      <div><i class="material-icons tab-switch-bar">arrow_upward</i></div>
-                      <div>検索</div>
-                  </div>
-              </div>
-            <div id="first-messege">
-              <div>ようこそPlay Queueへ</div>
-              <div>検索から動画をみつけましょう</div>
-              <div class="read-me">
-                <a href="/readMe" target="_blank">使い方ガイドはこちら</a>
-              </div>
-            </div>
-            </div>
-              
-            </div>
-            <div id="player-playing" v-bind:class="{'displayNone':tabCommon.playerStart!==true}">
+            <visitingDescription v-if="!tabCommon.playerStart" />
+            <div id="player-playing" v-if="tabCommon.playerStart">
             <youtube
               :video-id="videoId"
               ref="youtube"
@@ -262,6 +237,7 @@ import tabBar from '@/components/tabBar.vue'
 import movieList from '@/components/movieList.vue'
 import tabSearch from '@/components/tabSearch.vue'
 import saveList from '@/components/saveList.vue'
+import visitingDescription from '@/components/visitingDescription.vue'
 const iziToast = require("izitoast");
 
 
@@ -277,7 +253,8 @@ export default {
     tabBar,
     movieList,
     tabSearch,
-    saveList
+    saveList,
+    visitingDescription
   },
   data: () => {
     return {
@@ -664,43 +641,10 @@ h1 {
   min-height: 100vh;
   background-color: rgb(255, 255, 255);
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
-}/*
-#player-not-playing {
-  /*youtube player 16:9固定 ↓
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /*youtube player 16:9固定 ↑
-}*/
+}
 
-#player-not-playing > .row {
-  color: #8a8a8a;
-  padding: 1em;
-  font-size: 1.3em;
-}
-#player-not-playing > .row .search {
-  color: #da5019;
-}
-#tab-bar {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  user-select: none; /* Firefox */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer */
-  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
-  -webkit-user-select: none; /* Chrome, Safari, and Opera */
-  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
-}
-/*
-#player-not-playing:before {
-  /*youtube player 16:9固定 ↓
-  content: "";
-  display: block;
-  padding-top: 56.25%; /* 高さと幅の比を16:9に固定。9/16*100=56.25 
-  /*youtube player 16:9固定 ↑
-}*/
+
+
 #player-box {
   /*youtube player 16:9固定 ↓*/
   position: relative;
@@ -712,14 +656,8 @@ h1 {
   margin: auto;
   display: inline-block;
 }
-.tab-search {
-  width: 98%;
-  margin: auto;
-  display: inline-block;
-}
-.selected-tab-bar {
-  border-bottom: solid 2px #da5019;
-}
+
+
 #center-box {
   width: 100%;
   max-width: 640px;
@@ -831,10 +769,6 @@ h1 {
 .list-name {
   margin-top: 2em;
   margin-bottom: 0.25em;
-}
-.next-play {
-  text-align: left;
-  margin-left: 1em;
 }
 .settings {
   text-align: right;

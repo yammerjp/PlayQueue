@@ -27,13 +27,26 @@
 </template>
 <script>
 export default {
-  props: [
-    'selectedTabNumber'
-  ],
+  props: ["selectedTabNumber"],
   methods: {
     tabChange(tabNumber) {
-      this.$emit('tab-change',tabNumber)
+      this.$emit("tab-change", tabNumber);
     }
   }
-}
+};
 </script>
+<style scoped>
+#tab-bar {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  user-select: none; /* Firefox */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+.selected-tab-bar {
+  border-bottom: solid 2px #da5019;
+}
+</style>

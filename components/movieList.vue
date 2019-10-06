@@ -66,3 +66,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.next-play {
+  text-align: left;
+  margin-left: 1em;
+}
+</style>
