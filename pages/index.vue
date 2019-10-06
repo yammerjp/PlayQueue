@@ -104,60 +104,7 @@
           </div>
 
           <div class="list-name" v-bind:class="{'displayNone':tabCommon.playerStart!=true}">関連動画</div>
-          <div class="movie-list col s12 row" v-for="item in tabPlay.mvList" :key="item.uniqueKey">
-            <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
-              <div
-                class="next-play"
-                v-bind:class="{'displayNone':!(tQloop==false && 
-                                              tQautoPlayRelatedMovie==true &&
-                                              tabQueue.mvListCt + 1 >=tabQueue.mvList.length &&
-                                              item==tabPlay.mvList[0]
-                                              )}"
-              >次に再生:</div>
-              <div class="row valign-wrapper intab-row">
-                <div
-                  class="width100"
-                  v-bind:class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
-                  v-on:click="listMovieClicked(item)"
-                >
-                  <div class="col s3">
-                    <img v-bind:src="item.thumbnail" alt class="responsive-img" />
-                  </div>
-                  <div class="col s9">
-                    <span class="black-text">
-                      <div class="title">{{item.title}}</div>
-                      <div class="description">{{item.description210}}</div>
-                      <div class="information">{{item.publishedAt}}投稿</div>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="selected-movie-s12"
-                v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}"
-                v-on:click="listMovieClicked(item)"
-              >
-                <button
-                  class="btn waves-effect waves-light"
-                  v-on:click="addMovieQueue('PLAY_NOW',item)"
-                >
-                  <i class="material-icons">play_arrow</i>今すぐ再生
-                </button>
-                <button
-                  class="btn waves-effect waves-light"
-                  v-on:click="addMovieQueue('PLAY_NEXT',item)"
-                >
-                  <i class="material-icons">add</i>次に再生
-                </button>
-                <button
-                  class="btn waves-effect waves-light"
-                  v-on:click="addMovieQueue('PLAY_LAST',item)"
-                >
-                  <i class="material-icons">low_priority</i>最後に再生
-                </button>
-              </div>
-            </div>
-          </div>
+          <movieList :movies="tabPlay.mvList" :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey" :nextPlayUniqueKey="nextPlayUniqueKey" @add-movie-queue="addMovieQueue2"/>
 
           <button
             v-on:click="relatedMovieMore"
@@ -385,7 +332,6 @@
             <!--        <button v-on:click="searchWordSubmitted">search</button>-->
           </form>
           <movieList :movies="tabSearch.mvList" :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey" @add-movie-queue="addMovieQueue2"/> 
-<!--          <movieList :movies="tabSearch.mvList" :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"/>-->
           <button v-on:click="searchWordSubmittedMore" class="btn waves-effect waves-light">
             <i class="material-icons">keyboard_arrow_down</i>
           </button>
@@ -396,7 +342,7 @@
       <a href="/readMe" target="_blank">
         <i class="material-icons">help</i>
       </a>
-<!--      <button @click="debugFunction">debug</button>-->
+      <button @click="debugFunction">debug</button>
     </div>
   </div>
 </template>
@@ -502,13 +448,28 @@ export default {
   computed: {
     player() {
       return this.$refs.youtube.player;
+    },
+    nextPlayUniqueKey() {
+      if(this.tabPlay.mvList[0]===undefined) {
+        return undefined
+      }
+      if( this.tQloop===false 
+          && this.tQautoPlayRelatedMovie===true
+          && this.tabQueue.mvListCt + 1 >= this.tabQueue.mvList.length)
+      {
+        return this.tabPlay.mvList[0].uniqueKey
+      } else {
+        return undefined
+      }
+
     }
   },
-  methods: {/*
+  methods: {
     debugFunction(){
-      console.log(this.tabQueue)
-      console.log(YoutubeKey)
-    },*/
+//      console.log(this.tabQueue)
+//      console.log(YoutubeKey)
+      console.log(this.tabPlay.mvList)
+    },
     addMovieQueue2: function({message, movie}){this.addMovieQueue(message,movie)},
     addMovieQueue: function(msg, movie) {
       if(this.tabQueue.mvList.length===1 && this.tabQueue.mvList[0].Id==="") {

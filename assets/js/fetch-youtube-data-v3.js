@@ -2,6 +2,7 @@ const axios = require("axios");
 //const YoutubeKey = "AIzaSyAXVeNZpwqKoLvjbUaGj2Gug8IsZCm95vo";
 //const YoutubeKey = "AIzaSyANKSN8GKCbogYzLXqG4f75lwqwljA3RCU";
 const YoutubeKey = require('@/youtube-key.js')
+const iziToast = require("izitoast");
 export default {
     getMovieList:(tab, listReset, newWordSubmit, callback)=>{
     /*引数

@@ -2,6 +2,9 @@
 <div>
   <div class="movie-list col s12 row" v-for="movie in movies" :key="movie.uniqueKey">
     <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
+        <div class="next-play" v-if="movie.uniqueKey===nextPlayUniqueKey">
+          次に再生:
+        </div>
       <div class="row valign-wrapper intab-row">
         <div
           class="width100"
@@ -39,13 +42,15 @@
   </div></div>
 </template>
 <script>
+
 export default {
   data:()=>{ return {
     clickedMovieUniqueKey: undefined
   }},
   props:[
     'movies',//tabSearch.mvList
-    'emphasizedMovieUniqueKey'
+    'emphasizedMovieUniqueKey',
+    'nextPlayUniqueKey'
   ],
   methods:{
     listMovieClicked:function(movie){
