@@ -52,7 +52,7 @@
   </div>
 </template>
 <script>
-import localStorageInterface from '@/assets/js/localStorageInterface.js'
+import localStorageInterface from "@/assets/js/localStorageInterface.js";
 
 export default {
   data: () => {
@@ -66,25 +66,15 @@ export default {
     };
   },
   props: [
-    'displayedMoviesProps',
-    'nowPlayingNumberProps',
-    'tabCommonPlayerStart'
+    "displayedMoviesProps",
   ],
-  computed:{
-    displayedMovies:{
-      get: function(){
-        return this.displayedMoviesProps
+  computed: {
+    displayedMovies: {
+      get: function() {
+        return this.displayedMoviesProps;
       },
-      set: function(movies){
-        this.$emit('new-displayedMovies',movies)
-      }
-    },
-    nowPlayingNumber:{
-      get: function(){
-        return this.nowPlayingNumberProps
-      },
-      set: function(number){
-        this.$emit('update-now-playing-number',number)
+      set: function(movies) {
+        this.$emit("new-displayedMovies", movies);
       }
     }
   },
@@ -93,7 +83,9 @@ export default {
       if (localStorageInterface.show().indexOf(localStorageKey) >= 0) {
         //                this.listNameConflict=true;
         //既に存在する リスト名
-        if (!window.confirm(`${localStorageKey} を上書きします。よろしいですか？`))
+        if (
+          !window.confirm(`${localStorageKey} を上書きします。よろしいですか？`)
+        )
           return;
       }
       if (localStorageKey === "") return;
@@ -106,22 +98,9 @@ export default {
         return;
       }
       this.openListStorageWindow("CLOSE");
-      if (this.tabCommonPlayerStart == true) {
-        this.displayedMovies = this.displayedMovies.slice(0, this.nowPlayingNumber);
-        this.displayedMovies = this.displayedMovies.slice(1);
-        this.$emit('move-cancel')
-        this.displayedMovies = [...this.displayedMovies, ...localStorageInterface.get(localStorageKey)];
-
-        this.nowPlayingNumber = -1;
-        this.$emit('play-next-movie')
-        this.displayedMovies = this.displayedMovies.slice(0, 1);
-        this.nowPlayingNumber = 0;
-      } else {
-        this.displayedMovies = [];
-        this.displayedMovies = localStorageInterface.get(localStorageKey);
-        this.nowPlayingNumber = -1;
-        this.$emit('play-next-movie')
-      }
+      this.$emit("move-cancel");
+      this.displayedMovies = localStorageInterface.get(localStorageKey);
+      this.$emit("play-first-movie");
     },
     deleteListStorage(localStorageKey) {
       if (localStorageKey == "") {

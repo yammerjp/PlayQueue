@@ -11,7 +11,7 @@
             <visitingDescription v-if="!tabCommon.playerStart" />
             <div id="player-playing" v-if="tabCommon.playerStart">
             <youtube
-              :video-id="videoId"
+              :video-id="tabPlay.playingMovie.Id"
               ref="youtube"
               :resize='true'
               @ready="onPlayerReady"
@@ -207,12 +207,9 @@
           <!--リストを保存、開く機能-->
           <saveList
             :displayedMoviesProps="tabQueue.mvList"
-            :nowPlayingNumberProps="tabQueueMvListCt"
-            :tabCommonPlayerStart="tabCommon.playerStart"
             @new-displayedMovies="updateTabQueueMvList"
-            @update-now-playing-number="updateTabQueueMvListCt"
             @move-cancel="moveCancel"
-            @play-next-movie="playNextMovie" />
+            @play-first-movie="playFirstMovie" />
         </div>
 
         <!--検索リストタブ-->
@@ -300,7 +297,6 @@ export default {
       tQloop: false,
       tQautoPlayRelatedMovie: false,
       tQautoPlayNewRelatedMovie: false,
-      videoId: ""
     };
   },
   watch: {
@@ -475,6 +471,10 @@ export default {
       setTimeout(()=>{this.player.playVideo()},10)
       
     },
+    playFirstMovie(){
+      this.tabQueueMvListCt = -1
+      this.playNextMovie()
+    },
     playNextMovie() {
       console.log("playNextMovie()")/*
       //ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
@@ -560,7 +560,6 @@ export default {
         this.tabQueue.mvList[this.tabQueueMvListCt].Id
       );
 
-      this.videoId = this.tabQueue.mvList[this.tabQueueMvListCt].Id;
       this.playVideo();
     },
     onPlayerError(event) {
@@ -624,6 +623,8 @@ export default {
       }
     },
     updateTabQueueMvList(movies){
+      console.log("updateTabQueueMvList")
+      console.log(movies)
       this.tabQueue.mvList = movies
     },
     updateTabQueueMvListCt(number){
