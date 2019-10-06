@@ -230,67 +230,14 @@
             </div>
           </div>
           <!--リストを保存、開く機能-->
-          <div class="row RW-list">
-            <a
-              class="waves-effect waves-light btn RW-button playlist-store-button"
-              v-on:click="openListStorageWindow('INPUT')"
-            >
-              <i class="material-icons tab-switch-bar">save</i>現在のプレイリストを保存
-            </a>
-            <a
-              class="waves-effect waves-light btn RW-button playlist-store-button"
-              v-on:click="openListStorageWindow('LIST_OPEN')"
-            >
-              <i class="material-icons tab-switch-bar">folder_open</i>過去のプレイリストを開く
-            </a>
-            <a
-              class="waves-effect waves-light btn RW-button playlist-store-button"
-              v-on:click="openListStorageWindow('LIST_DELETE')"
-            >
-              <i class="material-icons tab-switch-bar">folder_open</i>過去のプレイリストを削除
-            </a>
-            <div
-              class="modal-background"
-              v-bind:class="{'displayNone':tabQueue.LSkey.inputWindow!=true && tabQueue.LSkey.listWindow!=true}"
-              v-on:click="openListStorageWindow('CLOSE')"
-            ></div>
-
-            <div
-              class="modal-window"
-              v-bind:class="{'displayNone':tabQueue.LSkey.inputWindow!=true}"
-            >
-              <input type="text" v-model="tabQueue.LSkey.inputKey" placeholder="プレイリスト名" />
-              <button
-                class="waves-effect waves-light btn RW-button"
-                v-on:click="addListStorage(tabQueue.LSkey.inputKey)"
-              >保存</button>
-              <!--          <div v-bind:class='{"displayNone":tabQueue.LSkey.listNameConflict!=true}'>既に存在するリスト名です</div>-->
-            </div>
-
-            <div
-              class="modal-window"
-              v-bind:class="{'displayNone':tabQueue.LSkey.listWindow!=true}"
-            >
-              <select v-model="tabQueue.LSkey.inputKey" name="LSkey-view">
-                <option value disabled selected>保存したリスト</option>
-                <option
-                  v-for="(item) in tabQueue.LSkey.list"
-                  :key="item"
-                  v-bind:value="item"
-                >{{item}}</option>
-              </select>
-              <button
-                class="waves-effect waves-light btn RW-button"
-                v-bind:class="{'displayNone':tabQueue.LSkey.listDeleteWindow}"
-                v-on:click="openListStorage(tabQueue.LSkey.inputKey)"
-              >開く</button>
-              <button
-                class="waves-effect waves-light btn RW-button"
-                v-bind:class="{'displayNone':!tabQueue.LSkey.listDeleteWindow}"
-                v-on:click="deleteListStorage(tabQueue.LSkey.inputKey)"
-              >削除する</button>
-            </div>
-          </div>
+          <saveList
+            :displayedMoviesProps="tabQueue.mvList"
+            :nowPlayingNumberProps="tabQueue.mvListCt"
+            :tabCommonPlayerStart="tabCommon.playerStart"
+            @new-displayedMovies="updateTabQueueMvList"
+            @update-now-playing-number="updateTabQueueMvListCt"
+            @move-cancel="moveCancel"
+            @play-next-movie="playNextMovie" />
         </div>
 
         <!--検索リストタブ-->
@@ -314,7 +261,7 @@ import fetchYoutubeDataV3 from '@/assets/js/fetch-youtube-data-v3.js'
 import tabBar from '@/components/tabBar.vue'
 import movieList from '@/components/movieList.vue'
 import tabSearch from '@/components/tabSearch.vue'
-import LS from '@/assets/js/ls.js'
+import saveList from '@/components/saveList.vue'
 const iziToast = require("izitoast");
 
 
@@ -329,7 +276,8 @@ export default {
   components: {
     tabBar,
     movieList,
-    tabSearch
+    tabSearch,
+    saveList
   },
   data: () => {
     return {
@@ -354,14 +302,6 @@ export default {
           able: false, //movable
           from: -1 //moveFrom
         },
-        LSkey: {
-          list: [],
-          inputKey: "",
-          listNameConflict: false,
-          listWindow: false,
-          listDeleteWindow: false,
-          inputWindow: false
-        }
       },
       tabPlay: {
         mvList: [],
@@ -543,73 +483,6 @@ export default {
       if (this.tabCommon.playerStart == false) return;
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
-    addListStorage(LSkey) {
-      if (LS.show().indexOf(LSkey) >= 0) {
-        //                this.tabQueue.LSkey.listNameConflict=true;
-        //既に存在する リスト名
-        if (!window.confirm(`${LSkey} を上書きします。よろしいですか？`))
-          return;
-      }
-      if (LSkey === "") return;
-      LS.store(LSkey, this.tabQueue.mvList);
-      this.openListStorageWindow("CLOSE");
-      return;
-    },
-    openListStorage(LSkey) {
-      if (LSkey == "") {
-        return;
-      }
-      this.openListStorageWindow("CLOSE");
-      if (this.tabCommon.playerStart == true) {
-        this.tabQueue.mvList.splice(0, this.tabQueue.mvListCt);
-        this.tabQueue.mvList.splice(1);
-        this.tabQueue.mvListCt = 0;
-        this.moveCancel();
-        this.tabQueue.mvList = [...this.tabQueue.mvList, ...LS.get(LSkey)];
-        this.playNextMovie();
-        this.tabQueue.mvList.splice(0, 1);
-        this.tabQueue.mvListCt = 0;
-      } else {
-        this.tabQueue.mvList = [];
-        this.tabQueue.mvList = LS.get(LSkey);
-        this.playNextMovie();
-      }
-    },
-    deleteListStorage(LSkey) {
-      if (LSkey == "") {
-        return;
-      }
-      if (window.confirm(`${LSkey} を削除します。よろしいですか？`)) {
-        LS.delete(LSkey);
-        this.tabQueue.LSkey.list = LS.show();
-        this.openListStorageWindow("CLOSE");
-      }
-    },
-    openListStorageWindow(window) {
-      //selectLS
-      //playerStart==falseに非対応
-      switch (window) {
-        case "INPUT":
-          this.tabQueue.LSkey.inputKey = "";
-          this.tabQueue.LSkey.listNameConflict = false;
-          this.tabQueue.LSkey.inputWindow = true;
-          this.tabQueue.LSkey.listWindow = false;
-          break;
-        case "LIST_DELETE":
-          this.tabQueue.LSkey.listDeleteWindow = true;
-        case "LIST_OPEN":
-          this.tabQueue.LSkey.inputKey = "";
-          this.tabQueue.LSkey.inputWindow = false;
-          this.tabQueue.LSkey.listWindow = true;
-          this.tabQueue.LSkey.list = LS.show();
-          break;
-        case "CLOSE":
-          this.tabQueue.LSkey.inputWindow = false;
-          this.tabQueue.LSkey.listWindow = false;
-          this.tabQueue.LSkey.listDeleteWindow = false;
-          break;
-      }
-    },
     playVideo(){
       setTimeout(()=>{this.player.playVideo()},10)
       
@@ -760,6 +633,12 @@ export default {
         this.tabCommon.playerFinish = false;
         this.playNextMovie();
       }
+    },
+    updateTabQueueMvList(movies){
+      this.tabQueue.mvList = movies
+    },
+    updateTabQueueMvListCt(number){
+      this.tabQueue.mvListCt = number
     }
   }
 };
@@ -982,63 +861,6 @@ h1 {
   white-space: pre-wrap;
 }
 
-.RW-list {
-  margin-top: 1em;
-}
-.RW-button {
-  padding-right: 1em;
-  padding-left: 1em;
-}
-.modal-title {
-  padding: 0.5em;
-}
-.modal-background {
-  position: fixed;
-  top: 0px;
-  right: 0px;
-  width: 100%;
-  min-height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1;
-  text-align: center;
-
-  display: table-cell;
-  vertical-align: middle;
-}
-.modal-window {
-  position: fixed;
-
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-
-  width: auto;
-  height: auto;
-
-  margin: auto;
-  background-color: rgb(255, 255, 255);
-  width: auto;
-
-  z-index: 2;
-  padding: 1em;
-}
-
-.LS-key {
-  width: 80%;
-  display: inline-block;
-  border-style: solid;
-  border-radius: 1em;
-  border-width: thin;
-  margin: 0.2em;
-}
-select {
-  display: block;
-}
-
 .read-me {
   padding: 1em;
   font-size: 0.8em;
@@ -1074,8 +896,5 @@ select {
 .displayNone {
   display: none;
 }
-.playlist-store-button {
-  display: inline-block;
-  margin-bottom: 0.2em;
-}
+
 </style>

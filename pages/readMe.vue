@@ -305,61 +305,6 @@ h1{
     white-space: pre-wrap;
 }
 
-.RW-list{
-    margin-top:1em;    
-}
-.RW-button{
-    padding-right: 1em;
-    padding-left: 1em;
-}
-.modal-title{
-    padding:0.5em;
-}
-.modal-background{
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    width:100%;
-    min-height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1;
-    text-align: center;
-
-    display: table-cell;
-    vertical-align: middle;
-}
-.modal-window{
-    position: fixed;
-
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%,-50%);
-    -moz-transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
-    -o-transform: translate(-50%,-50%);
-    transform: translate(-50%,-50%);
-    
-    width:auto;
-    height:auto; 
-
-    margin: auto;
-    background-color: rgb(255,255,255);
-    width:auto;
-    
-    z-index: 2;
-    padding: 1em;
-}
-
-.LS-key{
-    width:80%;
-    display:inline-block;
-    border-style:solid;
-    border-radius: 1em;
-    border-width: thin;
-    margin: 0.2em;
-
-
-}
 select{
     display: block;
 }
@@ -398,10 +343,6 @@ select{
 }
 .displayNone{
     display:none;
-}
-.playlist-store-button{
-    display:inline-block;
-    margin-bottom:0.2em;
 }
 
 
