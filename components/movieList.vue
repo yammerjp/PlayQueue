@@ -8,11 +8,11 @@
       <div class="row valign-wrapper intab-row">
         <div
           class="width100"
-          v-bind:class="{'selected':movie.uniqueKey===emphasizedMovieUniqueKey}"
-          v-on:click="listMovieClicked(movie)"
+          :class="{'selected':movie.uniqueKey===emphasizedMovieUniqueKey}"
+          @click="listMovieClicked(movie)"
         >
           <div class="col s3">
-            <img v-bind:src="movie.thumbnail" alt class="responsive-img" />
+            <img :src="movie.thumbnail" alt class="responsive-img" />
           </div>
           <div class="col s9">
             <span class="black-text">
@@ -25,16 +25,16 @@
       </div>
       <div
         class="selected-movie-s12"
-        v-bind:class="{'displayNone':!(movie.uniqueKey===clickedMovieUniqueKey)}"
-        v-on:click="listMovieClicked(movie)"
+        v-if="movie.uniqueKey===clickedMovieUniqueKey"
+        @click="listMovieClicked(movie)"
       >
-        <button class="btn waves-effect waves-light" v-on:click="addMovieQueue('PLAY_NOW',movie)">
+        <button class="btn waves-effect waves-light" @click="addMovieQueue('PLAY_NOW',movie)">
           <i class="material-icons">play_arrow</i>今すぐ再生
         </button>
-        <button class="btn waves-effect waves-light" v-on:click="addMovieQueue('PLAY_NEXT',movie)">
+        <button class="btn waves-effect waves-light" @click="addMovieQueue('PLAY_NEXT',movie)">
           <i class="material-icons">add</i>次に再生
         </button>
-        <button class="btn waves-effect waves-light" v-on:click="addMovieQueue('PLAY_LAST',movie)">
+        <button class="btn waves-effect waves-light" @click="addMovieQueue('PLAY_LAST',movie)">
           <i class="material-icons">low_priority</i>最後に再生
         </button>
       </div>

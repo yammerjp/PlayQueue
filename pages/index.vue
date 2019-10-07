@@ -8,112 +8,112 @@
         <!--動画再生タブ-->
         <div :class="{'displayNone':tabCommon.selectedTab!=0}">
           <tabPlay
-          :playerStart="tabCommon.playerStart"
-          :playerFinish="tabCommon.playerFinish"
-          :ListClickUniqueKey="tabCommon.ListClickUniqueKey"
-          :tabQueueMvListCt="tabQueueMvListCt"
-          :tabQueueMvList="tabQueue.mvList"
-          :tabQueueMoveAble="tabQueue.move.able"
-          :tabQueueMoveFrom="tabQueue.move.from"
-          :tQloop="this.tQloop"
-          @add-movie-queue="addMovieQueue2"
-          @move-cancel="moveCancel"
-          @update-player-finish="updatePlayerFinish"
-          @update-player-start="updatePlayerStart"
-          @update-playing-movie="updatePlayingMovie"
-          @update-tab-queue-mv-list="updateTabQueueMvList"
-          @tab-change="tabChange"
-          ref="tabPlayRef"
+            :playerStart="tabCommon.playerStart"
+            :playerFinish="tabCommon.playerFinish"
+            :ListClickUniqueKey="tabCommon.ListClickUniqueKey"
+            :tabQueueMvListCt="tabQueueMvListCt"
+            :tabQueueMvList="tabQueue.mvList"
+            :tabQueueMoveAble="tabQueue.move.able"
+            :tabQueueMoveFrom="tabQueue.move.from"
+            :tQloop="this.tQloop"
+            @add-movie-queue="addMovieQueue2"
+            @move-cancel="moveCancel"
+            @update-player-finish="updatePlayerFinish"
+            @update-player-start="updatePlayerStart"
+            @update-playing-movie="updatePlayingMovie"
+            @update-tab-queue-mv-list="updateTabQueueMvList"
+            @tab-change="tabChange"
+            ref="tabPlayRef"
           />
         </div>
 
         <!--プレイリストタブ-->
-        <div class="tab-queue" v-bind:class="{'displayNone':tabCommon.selectedTab!=1}">
+        <div class="tab-queue" :class="{'displayNone':tabCommon.selectedTab!=1}">
           <div>プレイリスト</div>
-          <div
-            class="move-here"
-            v-bind:class="{'displayNone':tabQueue.move.able==false}"
-            v-on:click="moveHere(0)"
-          >here</div>
-          <div
-            class="movie-list col s12 row"
-            v-bind:class="{'displayNone':tabCommon.playerStart==false}"
-            v-for="item in tabQueue.mvList"
-            :key="item.uniqueKey"
-          >
+          <div class="move-here" v-if="tabQueue.move.able" @click="moveHere(0)">here</div>
+          <template v-if="tabCommon.playerStart">
             <div
-              class="card-panel grey lighten-5 z-depth-1 intab-card-panel"
-              v-bind:class="{'now-play-movie':item.uniqueKey==playingMovie.uniqueKey}"
+              class="movie-list col s12 row"
+              v-for="item in tabQueue.mvList"
+              :key="item.uniqueKey"
             >
               <div
-                class="row valign-wrapper intab-row"
-                v-bind:class="{'now-move-movie':item==tabQueue.mvList[tabQueue.move.from]}"
+                class="card-panel grey lighten-5 z-depth-1 intab-card-panel"
+                :class="{'now-play-movie':item.uniqueKey==playingMovie.uniqueKey}"
               >
                 <div
-                  class="width100"
-                  v-bind:class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
-                  v-on:click="listMovieClicked(item)"
+                  class="row valign-wrapper intab-row"
+                  :class="{'now-move-movie':item==tabQueue.mvList[tabQueue.move.from]}"
                 >
-                  <div class="col s3">
-                    <img v-bind:src="item.thumbnail" alt class="responsive-img" />
+                  <div
+                    class="width100"
+                    :class="{'selected':item.uniqueKey==tabCommon.ListClickUniqueKey}"
+                    @click="listMovieClicked(item)"
+                  >
+                    <div class="col s3">
+                      <img :src="item.thumbnail" alt class="responsive-img" />
+                    </div>
+                    <div class="col s9">
+                      <span class="black-text">
+                        <div class="title">{{item.title}}</div>
+                        <div class="description">{{item.description210}}</div>
+                        <div class="information">{{item.publishedAt}}投稿</div>
+                      </span>
+                    </div>
                   </div>
-                  <div class="col s9">
-                    <span class="black-text">
-                      <div class="title">{{item.title}}</div>
-                      <div class="description">{{item.description210}}</div>
-                      <div class="information">{{item.publishedAt}}投稿</div>
-                    </span>
+                </div>
+                <div
+                  class="selected-movie-s12"
+                  v-if="item.uniqueKey==tabCommon.ListClickUniqueKey"
+                  @click="listMovieClicked(item)"
+                >
+                  <!--クリックされている∧再生中でない⇒表示-->
+                  <div
+                    v-if="item.uniqueKey!==playingMovie.uniqueKey"
+                    :id="item.uniqueKey+'-not-playing'"
+                  >
+                    <button
+                      class="btn waves-effect waves-light"
+                      @click="changeMovieQueue('JUMP',item)"
+                    >
+                      <i class="material-icons">play_arrow</i>今すぐ再生
+                    </button>
+                    <button
+                      class="btn waves-effect waves-light"
+                      @click="changeMovieQueue('DELETE',item)"
+                    >
+                      <i class="material-icons">clear</i>リストから削除
+                    </button>
+                    <button
+                      class="btn waves-effect waves-light"
+                      @click="changeMovieQueue('MOVE',item)"
+                    >
+                      <i class="material-icons">format_line_spacing</i>移動
+                    </button>
+                  </div>
+                  <div v-else :id="item.uniqueKey+'-playing'">
+                    <button
+                      class="btn waves-effect waves-light"
+                      @click="changeMovieQueue('JUMP',item)"
+                    >
+                      <i class="material-icons">play_arrow</i>最初から再生
+                    </button>
+                    <button class="btn waves-effect waves-light disabled">
+                      <i class="material-icons">clear</i>リストから削除
+                    </button>
+                    <button class="btn waves-effect waves-light disabled">
+                      <i class="material-icons">format_line_spacing</i>移動
+                    </button>
                   </div>
                 </div>
               </div>
               <div
-                class="selected-movie-s12"
-                v-bind:class="{'displayNone':!(item.uniqueKey==tabCommon.ListClickUniqueKey)}"
-                v-on:click="listMovieClicked(item)"
-              >
-                <!--クリックされている∧再生中でない⇒表示-->
-                <div v-if="item.uniqueKey!==playingMovie.uniqueKey" :id="item.uniqueKey+'-not-playing'">
-                  <button
-                    class="btn waves-effect waves-light"
-                    v-on:click="changeMovieQueue('JUMP',item)"
-                  >
-                    <i class="material-icons">play_arrow</i>今すぐ再生
-                  </button>
-                  <button
-                    class="btn waves-effect waves-light"
-                    v-on:click="changeMovieQueue('DELETE',item)"
-                  >
-                    <i class="material-icons">clear</i>リストから削除
-                  </button>
-                  <button
-                    class="btn waves-effect waves-light"
-                    v-on:click="changeMovieQueue('MOVE',item)"
-                  >
-                    <i class="material-icons">format_line_spacing</i>移動
-                  </button>
-                </div>
-                <div v-else :id="item.uniqueKey+'-playing'">
-                  <button
-                    class="btn waves-effect waves-light"
-                    v-on:click="changeMovieQueue('JUMP',item)"
-                  >
-                    <i class="material-icons">play_arrow</i>最初から再生
-                  </button>
-                  <button class="btn waves-effect waves-light disabled">
-                    <i class="material-icons">clear</i>リストから削除
-                  </button>
-                  <button class="btn waves-effect waves-light disabled">
-                    <i class="material-icons">format_line_spacing</i>移動
-                  </button>
-                </div>
-              </div>
+                class="move-here"
+                v-if="tabQueue.move.able"
+                @click="moveHere(item)"
+              >here</div>
             </div>
-            <div
-              class="move-here"
-              v-bind:class="{'displayNone':tabQueue.move.able==false}"
-              v-on:click="moveHere(item)"
-            >here</div>
-          </div>
+          </template>
           <div class="settings">
             <div class="switch">
               <span class="switch-caption">ループ:</span>
@@ -124,7 +124,7 @@
                 On
               </label>
             </div>
-            <div class="switch" v-bind:class="{'displayNone':tQloop==true}">
+            <div class="switch" v-if="!tQloop" id="switch-related-movie-tQloop-false">
               <span class="switch-caption">末尾の関連動画を自動再生する:</span>
               <label>
                 Off
@@ -133,7 +133,7 @@
                 On
               </label>
             </div>
-            <div class="switch" v-bind:class="{'displayNone':tQloop==false}">
+            <div class="switch" v-else id="switch-related-movie-tQloop-true">
               <span class="switch-caption strikeout">末尾の関連動画を自動再生する:</span>
               <label>
                 Off
@@ -145,7 +145,8 @@
 
             <div
               class="switch"
-              v-bind:class="{'displayNone':tQautoPlayRelatedMovie==false||tQloop==true}"
+              v-if="tQautoPlayRelatedMovie && !tQloop"
+              id="switch-related-new-movie-if"
             >
               <span class="switch-caption">新しい関連動画のみ:</span>
               <label>
@@ -157,7 +158,8 @@
             </div>
             <div
               class="switch"
-              v-bind:class="{'displayNone':tQautoPlayRelatedMovie==true&&tQloop==false}"
+              v-else
+              id="switch-related-new-movie-else"
             >
               <span class="switch-caption strikeout">新しい関連動画のみ:</span>
               <label>
@@ -178,7 +180,7 @@
         </div>
 
         <!--検索リストタブ-->
-        <div v-bind:class="{'displayNone':tabCommon.selectedTab!=2}">
+        <div :class="{'displayNone':tabCommon.selectedTab!=2}">
           <tabSearch
             :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"
             @add-movie-queue="addMovieQueue2"
@@ -200,7 +202,7 @@ import fetchYoutubeDataV3 from "@/assets/js/fetch-youtube-data-v3.js";
 import emptyMovie from "@/assets/js/emptyMovie.js";
 import tabBar from "@/components/tabBar.vue";
 import movieList from "@/components/movieList.vue";
-import tabPlay from "@/components/tabPlay.vue"
+import tabPlay from "@/components/tabPlay.vue";
 import tabSearch from "@/components/tabSearch.vue";
 import saveList from "@/components/saveList.vue";
 const iziToast = require("izitoast");
@@ -213,7 +215,7 @@ export default {
     movieList,
     tabPlay,
     tabSearch,
-    saveList,
+    saveList
   },
   data: () => {
     return {
@@ -262,7 +264,6 @@ export default {
   /*mounted(){
   },*/
   computed: {
-
     tabQueueMvListCt() {
       return this.tabQueue.mvList.findIndex(movie => {
         return movie.uniqueKey === this.playingMovie.uniqueKey;
@@ -297,7 +298,10 @@ export default {
             pushedMv
           );
           this.tabCommon.selectedTab = 0; //再生タブへ強制遷移 2019/6/9 add
-          this.manipulatePlayer("playSpecifyMovieOfTabQueue",pushedMv.uniqueKey)
+          this.manipulatePlayer(
+            "playSpecifyMovieOfTabQueue",
+            pushedMv.uniqueKey
+          );
           messageWord = "挿入";
           break;
         case "PLAY_NEXT":
@@ -341,13 +345,13 @@ export default {
       }
     },
     changeMovieQueue(msg, item) {
-      const itemCt = this.tabQueue.mvList.findIndex(
-        movie=> {return movie.uniqueKey === item.uniqueKey}
-      );
+      const itemCt = this.tabQueue.mvList.findIndex(movie => {
+        return movie.uniqueKey === item.uniqueKey;
+      });
       /*↑uniqueキーが一致するtabQueue.mvListの配列番号 つまりitemが存在するtabQueue.mvList配列内の位置 */
       switch (msg) {
         case "JUMP": //itemの位置に再生キューを移動して再生
-          this.manipulatePlayer("playSpecifyMovieOfTabQueue",item.uniqueKey)
+          this.manipulatePlayer("playSpecifyMovieOfTabQueue", item.uniqueKey);
           this.tabCommon.selectedTab = 0; //再生タブへ強制遷移 2019/6/10 add
           break;
         case "DELETE": //itemを再生キューから削除
@@ -406,27 +410,27 @@ export default {
       console.log(movies);
       this.tabQueue.mvList = movies;
     },
-    updatePlayerFinish(boolean){
-      this.tabCommon.playerFinish= boolean
+    updatePlayerFinish(boolean) {
+      this.tabCommon.playerFinish = boolean;
     },
-    updatePlayerStart(boolean){
-      this.tabCommon.playerStart = boolean
+    updatePlayerStart(boolean) {
+      this.tabCommon.playerStart = boolean;
     },
-    updatePlayingMovie(movie){
-      this.playingMovie = movie  
+    updatePlayingMovie(movie) {
+      this.playingMovie = movie;
     },
-    manipulatePlayer(msg, uniqueKey=undefined) {
+    manipulatePlayer(msg, uniqueKey = undefined) {
       switch (msg) {
         case "playFirstMovie":
-          console.log("playFirstMovie of manipulatePlayer")
+          console.log("playFirstMovie of manipulatePlayer");
           this.$refs.tabPlayRef.playFirstMovie();
           break;
         case "playSpecifyMovieOfTabQueue":
-          if(uniqueKey===undefined){
-            this.$refs.tabPlayRef.playFirstMovie()
-            return
+          if (uniqueKey === undefined) {
+            this.$refs.tabPlayRef.playFirstMovie();
+            return;
           }
-          this.$refs.tabPlayRef.playSpecifyMovie(uniqueKey)
+          this.$refs.tabPlayRef.playSpecifyMovie(uniqueKey);
           break;
         case "playNextMovie":
           this.$refs.tabPlayRef.playNextMovie();

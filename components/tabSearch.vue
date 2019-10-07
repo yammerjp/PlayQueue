@@ -2,14 +2,14 @@
   <div class="tab-search">
     <form @submit.prevent="searchWordSubmitted">
       <input type="text" v-model="tabSearch.word" placeholder="search word" class="searchWordInput" />
-      <!--        <button v-on:click="searchWordSubmitted">search</button>-->
+      <!--        <button @click="searchWordSubmitted">search</button>-->
     </form>
     <movieList
       :movies="tabSearch.mvList"
       :emphasizedMovieUniqueKey="emphasizedMovieUniqueKey"
       @add-movie-queue="addMovieQueue"
     />
-    <button v-on:click="searchWordSubmittedMore" class="btn waves-effect waves-light">
+    <button @click="searchWordSubmittedMore" class="btn waves-effect waves-light">
       <i class="material-icons">keyboard_arrow_down</i>
     </button>
   </div>

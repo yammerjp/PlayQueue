@@ -15,44 +15,45 @@
     </div>
     <div class="title">{{playingMovie.title}}</div>
     <div class="description">
-      <span class="short-description" v-bind:class="{'displayNone':tabPlay.fullDescription==true}">
+      <span id="short-description" v-if="!tabPlay.fullDescription">
         {{playingMovie.description210}}
         <span
           class="description-button"
-          v-bind:class="{'displayNone':playingMovie.description210==playingMovie.description}"
-          v-on:click="tabPlay.fullDescription=true"
+          v-if="playingMovie.description210!==playingMovie.description"
+          @click="tabPlay.fullDescription=true"
         >[全文表示&gt;&gt;]</span>
       </span>
-      <span class="full-description" v-bind:class="{'displayNone':tabPlay.fullDescription==false}">
+      <span id="full-description" v-else>
         {{playingMovie.description}}
         <span
           class="description-button"
-          v-on:click="tabPlay.fullDescription=false"
+          @click="tabPlay.fullDescription=false"
         >[隠す&lt;&lt;]</span>
       </span>
     </div>
-    <div class="information" v-bind:class="{'displayNone':playerStart!=true}">
+    <template v-if="playerStart">
+    <div class="information">
       <span class="publishedAt">{{playingMovie.publishedAt}}投稿 /</span>
       <span class="duration">再生時間:{{playingMovie.duration}} /</span>
       <span class="viewCount">再生回数:{{playingMovie.viewCount}}回/</span>
       <span class="channelTitle">Channel: {{playingMovie.channelTitle}}</span>
     </div>
 
-    <div class="list-name" v-bind:class="{'displayNone':playerStart!=true}">関連動画</div>
+    <div class="list-name">関連動画</div>
     <movieList
-      :movies="tabPlayMvListComputed"
+      :movies="tabPlay.mvList"
       :emphasizedMovieUniqueKey="ListClickUniqueKey"
       :nextPlayUniqueKey="nextPlayUniqueKey"
       @add-movie-queue="addMovieQueue2"
     />
 
     <button
-      v-on:click="relatedMovieMore"
+      @click="relatedMovieMore"
       class="btn waves-effect waves-light"
-      v-bind:class="{'displayNone':playerStart==false}"
     >
       <i class="material-icons">keyboard_arrow_down</i>
     </button>
+    </template>
   </div>
 </template>
 <script>
@@ -95,15 +96,6 @@ export default {
         return undefined;
       }
       return movie.uniqueKey;
-    },
-    tabPlayMvListComputed() {
-      if (
-        this.tabPlay.mvList.length === 1 &&
-        this.tabPlay.mvList[0].uniqueKey === ""
-      ) {
-        return [];
-      }
-      return this.tabPlay.mvList;
     },
     playingMovie:{
       get: function(){

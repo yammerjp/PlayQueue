@@ -2,51 +2,53 @@
   <div class="row RW-list">
     <a
       class="waves-effect waves-light btn RW-button playlist-store-button"
-      v-on:click="openListStorageWindow('INPUT')"
+      @click="openListStorageWindow('INPUT')"
     >
       <i class="material-icons tab-switch-bar">save</i>現在のプレイリストを保存
     </a>
     <a
       class="waves-effect waves-light btn RW-button playlist-store-button"
-      v-on:click="openListStorageWindow('LIST_OPEN')"
+      @click="openListStorageWindow('LIST_OPEN')"
     >
       <i class="material-icons tab-switch-bar">folder_open</i>過去のプレイリストを開く
     </a>
     <a
       class="waves-effect waves-light btn RW-button playlist-store-button"
-      v-on:click="openListStorageWindow('LIST_DELETE')"
+      @click="openListStorageWindow('LIST_DELETE')"
     >
       <i class="material-icons tab-switch-bar">folder_open</i>過去のプレイリストを削除
     </a>
     <div
       class="modal-background"
       v-if="inputWindow || listWindow"
-      v-on:click="openListStorageWindow('CLOSE')"
+      @click="openListStorageWindow('CLOSE')"
     ></div>
 
     <div class="modal-window" v-if="inputWindow">
       <input type="text" v-model="inputKey" placeholder="プレイリスト名" />
       <button
         class="waves-effect waves-light btn RW-button"
-        v-on:click="addListStorage(inputKey)"
+        @click="addListStorage(inputKey)"
       >保存</button>
-      <!--          <div v-bind:class='{"displayNone":listNameConflict!=true}'>既に存在するリスト名です</div>-->
+      <!--          <div :class='{"displayNone":listNameConflict!=true}'>既に存在するリスト名です</div>-->
     </div>
 
     <div class="modal-window" v-if="listWindow">
       <select v-model="inputKey" name="local-storage-key-view">
         <option value disabled selected>保存したリスト</option>
-        <option v-for="(item) in list" :key="item" v-bind:value="item">{{item}}</option>
+        <option v-for="(item) in list" :key="item" :value="item">{{item}}</option>
       </select>
       <button
         class="waves-effect waves-light btn RW-button"
+        id="not-list-delete-window"
         v-if="!listDeleteWindow"
-        v-on:click="openListStorage(inputKey)"
+        @click="openListStorage(inputKey)"
       >開く</button>
       <button
         class="waves-effect waves-light btn RW-button"
-        vv-if="listDeleteWindow"
-        v-on:click="deleteListStorage(inputKey)"
+        id="list-delete-window"
+        v-else
+        @click="deleteListStorage(inputKey)"
       >削除する</button>
     </div>
   </div>
