@@ -4,20 +4,20 @@
       <div id="app">
         <h1>Play Queue</h1>
         <!--タブ選択バー-->
-        <tabBar :selected-tab-number="tabCommon.selectedTab" @tab-change="tabChange"/>
+        <tabBar :selected-tab-number="tabCommon.selectedTab" @tab-change="tabChange" />
         <!--動画再生タブ-->
         <div id="tab-player" v-bind:class="{'displayNone':tabCommon.selectedTab!=0}">
           <div id="player-box">
             <visitingDescription v-if="!tabCommon.playerStart" />
             <div id="player-playing" v-if="tabCommon.playerStart">
-            <youtube
-              :video-id="tabPlay.playingMovie.Id"
-              ref="youtube"
-              :resize='true'
-              @ready="onPlayerReady"
-              @error="onPlayerError"
-              @ended="playNextMovie"
-            ></youtube>
+              <youtube
+                :video-id="tabPlay.playingMovie.Id"
+                ref="youtube"
+                :resize="true"
+                @ready="onPlayerReady"
+                @error="onPlayerError"
+                @ended="onPlayerEnded"
+              ></youtube>
             </div>
           </div>
           <div class="title">{{tabPlay.playingMovie.title}}</div>
@@ -52,7 +52,12 @@
           </div>
 
           <div class="list-name" v-bind:class="{'displayNone':tabCommon.playerStart!=true}">関連動画</div>
-          <movieList :movies="tabPlay.mvList" :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey" :nextPlayUniqueKey="nextPlayUniqueKey" @add-movie-queue="addMovieQueue2"/>
+          <movieList
+            :movies="tabPlayMvListComputed"
+            :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"
+            :nextPlayUniqueKey="nextPlayUniqueKey"
+            @add-movie-queue="addMovieQueue2"
+          />
 
           <button
             v-on:click="relatedMovieMore"
@@ -209,14 +214,16 @@
             :displayedMoviesProps="tabQueue.mvList"
             @new-displayedMovies="updateTabQueueMvList"
             @move-cancel="moveCancel"
-            @play-first-movie="playFirstMovie" />
+            @play-first-movie="playFirstMovie"
+          />
         </div>
 
         <!--検索リストタブ-->
         <div v-bind:class="{'displayNone':tabCommon.selectedTab!=2}">
           <tabSearch
             :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"
-            @add-movie-queue="addMovieQueue2"/>
+            @add-movie-queue="addMovieQueue2"
+          />
         </div>
       </div>
     </div>
@@ -230,15 +237,14 @@
 </template>
 
 <script>
-import fetchYoutubeDataV3 from '@/assets/js/fetch-youtube-data-v3.js'
-import tabBar from '@/components/tabBar.vue'
-import movieList from '@/components/movieList.vue'
-import tabSearch from '@/components/tabSearch.vue'
-import saveList from '@/components/saveList.vue'
-import visitingDescription from '@/components/visitingDescription.vue'
+import fetchYoutubeDataV3 from "@/assets/js/fetch-youtube-data-v3.js";
+import tabBar from "@/components/tabBar.vue";
+import movieList from "@/components/movieList.vue";
+import tabSearch from "@/components/tabSearch.vue";
+import saveList from "@/components/saveList.vue";
+import visitingDescription from "@/components/visitingDescription.vue";
 const iziToast = require("izitoast");
-const uuidv4 = require('uuid/v4')
-
+const uuidv4 = require("uuid/v4");
 
 const TAB_PLAYER = 0;
 const TAB_QUEUE = 1;
@@ -246,19 +252,19 @@ const TAB_SEARCH = 2;
 const SEARCHED = 0;
 const RELATED = 1;
 let player;
-const emptyMovie =           {
-            Id: "",
-            uniqueKey: "",
-            description210: "",
-            thumbnail: "",
-            title: "",
-            uniqueKey: "",
-            publishedAt: "",
-            description: "",
-            duration: "",
-            viewCount: "",
-            channelTitle: ""
-          }
+const emptyMovie = {
+  Id: "",
+  uniqueKey: "",
+  description210: "",
+  thumbnail: "",
+  title: "",
+  uniqueKey: "",
+  publishedAt: "",
+  description: "",
+  duration: "",
+  viewCount: "",
+  channelTitle: ""
+};
 export default {
   components: {
     tabBar,
@@ -269,7 +275,6 @@ export default {
   },
   data: () => {
     return {
-      tabQueueMvListCt_ : 0,
       tabQueue: {
         mvList: [
           //movieQueue
@@ -278,11 +283,11 @@ export default {
         move: {
           able: false, //movable
           from: -1 //moveFrom
-        },
+        }
       },
       tabPlay: {
-        playingMovie:emptyMovie,
-        mvList: [],
+        playingMovie: emptyMovie,
+        mvList: [emptyMovie],
         nextPageToken: "",
         preWord: "relatedToVideoId=",
         wordSubmit: "", //
@@ -296,7 +301,7 @@ export default {
       },
       tQloop: false,
       tQautoPlayRelatedMovie: false,
-      tQautoPlayNewRelatedMovie: false,
+      tQautoPlayNewRelatedMovie: false
     };
   },
   watch: {
@@ -325,53 +330,75 @@ export default {
     player() {
       return this.$refs.youtube.player;
     },
-    nextPlayUniqueKey() {
-      if(this.tabPlay.mvList[0]===undefined) {
-        return undefined
-      }
-      if( this.tQloop===false 
-          && this.tQautoPlayRelatedMovie===true
-          && this.tabQueueMvListCt + 1 >= this.tabQueue.mvList.length)
-      {
-        return this.tabPlay.mvList[0].uniqueKey
-      } else {
-        return undefined
+    nextPlayUniqueKey: {
+      get: function() {
+        const movie = this.getNextMovieOfTabQueue();
+        if (movie === undefined || movie === null) {
+          return undefined;
+        }
+        return movie.uniqueKey;
       }
     },
-    tabQueueMvListCt:{
-      get:function(){
-        return this.tabQueueMvListCt_
-      },
-      set:function(ct){
-        this.tabQueueMvListCt_ = ct
-        this.tabPlay.playingMovie = this.tabQueue.mvList[ct]
+    tabQueueMvListCt: {
+      get: function() {
+        return this.tabQueue.mvList.findIndex(movie => {
+          return;
+          movue.uniqueKey === this.tabPlay.playingMovie.uniqueKey;
+        });
+      }/*,
+      set: function(ct) {
+        this.tabPlay.playingMovie = this.tabQueue.mvList[ct];
+      }*/
+    },
+    tabPlayMvListComputed: {
+      get: function() {
+        if (
+          this.tabPlay.mvList.length === 1 &&
+          this.tabPlay.mvList[0].uniqueKey === ""
+        ) {
+          return [];
+        }
+        return this.tabPlay.mvList;
       }
     }
   },
   methods: {
-    debugFunction(){
-//      console.log(this.tabQueue)
-//      console.log(YoutubeKey)
-      console.log(this.tabPlay.mvList)
+    debugFunction() {
+      //      console.log(this.tabQueue)
+      //      console.log(YoutubeKey)
+      console.log(this.tabPlay.mvList);
     },
-    addMovieQueue2: function({message, movie}){this.addMovieQueue(message,movie)},
+    addMovieQueue2: function({ message, movie }) {
+      this.addMovieQueue(message, movie);
+    },
     addMovieQueue: function(msg, movie) {
-      if(this.tabQueue.mvList.length===1 && this.tabQueue.mvList[0].Id==="") {
-        this.tabQueue.mvList = []
+      if (
+        this.tabQueue.mvList.length === 1 &&
+        this.tabQueue.mvList[0].Id === ""
+      ) {
+        this.tabQueue.mvList = [];
       }
       let pushedMv = Object.assign({}, movie);
       pushedMv.uniqueKey = uuidv4();
-      console.log(pushedMv)
+      console.log(pushedMv);
       let messageWord; //動画を再生リストへ追加したことを通知 2019/6/9 add
       switch (msg) {
         case "PLAY_NOW":
-          this.tabQueue.mvList.splice(this.tabQueueMvListCt + 1, 0, pushedMv);
+          this.tabQueue.mvList = insert2list(
+            this.tabQueue.mvList,
+            this.tabQueueMvListCt + 1,
+            pushedMv
+          );
           this.playNextMovie();
           this.tabCommon.selectedTab = 0; //再生タブへ強制遷移 2019/6/9 add
           messageWord = "挿入";
           break;
         case "PLAY_NEXT":
-          this.tabQueue.mvList.splice(this.tabQueueMvListCt + 1, 0, pushedMv);
+          this.tabQueue.mvList = insert2list(
+            this.tabQueue.mvList,
+            this.tabQueueMvListCt + 1,
+            pushedMv
+          );
           this.playRestart(); //もし最後尾に再生するものが増えていたら再生してくれる。
           messageWord = "挿入";
           break;
@@ -384,13 +411,27 @@ export default {
       iziToast.show({
         position: "topRight",
         title: "Add movie to the playlist",
-        message:
-          "再生リストに動画「" +
-          pushedMv.title +
-          "」を" +
-          messageWord +
-          "しました。"
+        message: `再生リストに動画「${pushedMv.title}」を${messageWord}しました。`
       }); //動画を再生リストへ追加したことを通知 2019/6/9 add
+
+      function insert2list(list = [], indexInsert = 0, item) {
+        if (indexInsert < 0 || indexInsert > list.length) {
+          console.log("insert2list's argument 'indexInsert' is invalid");
+          console.log(indexInsert);
+          return undefined;
+        }
+        if (indexInsert === 0) {
+          return [item, ...list];
+        }
+        if (indexInsert === list.length - 1) {
+          return [...list, item];
+        }
+        return [
+          ...list.slice(0, indexInsert),
+          item,
+          ...list.slice(indexInsert)
+        ];
+      }
     },
     changeMovieQueue(msg, item) {
       const itemCt = this.tabQueue.mvList.findIndex(
@@ -399,19 +440,15 @@ export default {
       /*↑uniqueキーが一致するtabQueue.mvListの配列番号 つまりitemが存在するtabQueue.mvList配列内の位置 */
       switch (msg) {
         case "JUMP": //itemの位置に再生キューを移動して再生
-          this.tabQueueMvListCt = itemCt - 1;
+          this.tabPlay.playingMovie = this.tabQueue.mvList[itemCt - 1];
           this.playNextMovie();
           this.tabCommon.selectedTab = 0; //再生タブへ強制遷移 2019/6/10 add
           break;
         case "DELETE": //itemを再生キューから削除
           this.tabQueue.mvList.splice(itemCt, 1); //削除
-          if (this.tabQueueMvListCt > itemCt)
-            //削除に合わせてtabQueueMvListCtも現在再生しているものを指すように適切に変更
-            this.tabQueueMvListCt--;
           break;
-
         case "MOVE": //itemの位置を移動して再生キュー内の順番を変更
-          if (this.tabQueue.move.able == true) this.moveCancel();
+          if (this.tabQueue.move.able) this.moveCancel();
           this.tabQueue.move.from = itemCt;
           //削除前に、移動する動画の場所を保存しておく
           this.tabQueue.move.able = true;
@@ -427,9 +464,6 @@ export default {
         return 0;
       }
       this.tabQueue.mvList.splice(this.tabQueue.move.from, 1); //削除
-      if (this.tabQueueMvListCt > this.tabQueue.move.from)
-        //削除に合わせてtabQueueMvListCtも現在再生しているものを指すように適切に変更
-        this.tabQueueMvListCt--;
 
       let itemCt;
       if (item === 0) {
@@ -440,7 +474,6 @@ export default {
         );
       }
       this.tabQueue.mvList.splice(itemCt + 1, 0, itemFrom); //予め保存していたデータをリストに挿入
-      if (this.tabQueueMvListCt > itemCt) this.tabQueueMvListCt++; //挿入後はthis.tabQueueMvListCtも適切に変更する必要がある
       this.tabQueue.move.from = -1;
       this.tabQueue.move.able = false;
 
@@ -467,84 +500,7 @@ export default {
       if (this.tabCommon.playerStart == false) return;
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
-    playVideo(){
-      setTimeout(()=>{this.player.playVideo()},10)
-      
-    },
-    playFirstMovie(){
-      this.tabQueueMvListCt = -1
-      this.playNextMovie()
-    },
-    playNextMovie() {
-      console.log("playNextMovie()")/*
-      //ページロード後最初の再生時にプレイヤーはプレイヤーを読み込む。
-      if (this.tabCommon.playerStart == false) {
-        console.log("this.tabCommon.playerStart == false")
-        console.log(this.player)
-        //this.tabQueue.mvListに初めて動画が追加されたとき
-        //divをiframe置き換えてプレイヤー設置
-        //(準備が整ったらイベントトリガーでonPlayerReady()が実行される。)
-        //つまり初回にこの関数が呼ばれたときは、再生処理はこの関数ではなくonPlayerReady()で行われる
-        this.tabQueue.mvList.shift();
-        this.tabQueueMvListCt = 0;
-        //        replacePlayer();
-        this.videoId = this.tabQueue.mvList[0].Id; // 挿入した
-        this.playVideo()
-        this.tabCommon.playerStart = true;
-        this.tabCommon.playerFinish = false;
-        return;
-      }*/
-      if (this.tabCommon.playerStart == false) {
-        this.tabCommon.playerStart = true
-        this.tabPlay.playingMovie = this.tabQueue.mvList[this.tabQueueMvListCt]
-      }
-
-      //this.tabQueueMvListCtの更新
-      if (this.tQloop == true) {
-        //ループ
-        this.tabQueueMvListCt =
-          (this.tabQueueMvListCt + 1) % this.tabQueue.mvList.length;
-      } else {
-        if (this.tabQueueMvListCt + 1 >= this.tabQueue.mvList.length) {
-          //リストの末尾に到達
-          if (this.tQautoPlayRelatedMovie == true) {
-            //末尾動画の関連動画再生がOn
-            let playMovie;
-            if (this.tQautoPlayNewRelatedMovie == true) {
-              //関連動画を未再生のものに限定
-              for (
-                let i = 0, iMax = this.tabPlay.mvList.length;
-                i < iMax;
-                i++
-              ) {
-                const isExistMv = this.tabQueue.mvList.find(mv => {
-                  return mv.Id == this.tabPlay.mvList[i].Id;
-                });
-                if (isExistMv == undefined) {
-                  playMovie = this.tabPlay.mvList[i];
-                  break;
-                }
-              } //関連動画リストがすべて再生済みならリストの続きをロード後、コールバックでもう一度playNextMovie
-              if (playMovie == undefined) {
-                this.relatedMovieMore(this.playNextMovie);
-                return;
-              }
-            } else {
-              playMovie = this.tabPlay.mvList[0];
-            }
-            this.addMovieQueue("PLAY_NOW", playMovie);
-          } else {
-            //ループせず関連動画も再生しない
-            this.tabCommon.playerFinish = true;
-          }
-          return 0;
-        }
-        this.tabQueueMvListCt = this.tabQueueMvListCt + 1;
-      }
-
-      fetchYoutubeDataV3.getMovieInformation(this.tabQueue.mvList[this.tabQueueMvListCt]);
-      this.tabPlay.fullDescription = false;
-
+    playVideo() {
       //再生しようとした動画が移動操作中の場合キャンセル
       if (
         this.tabQueue.move.able == true &&
@@ -557,10 +513,91 @@ export default {
       fetchYoutubeDataV3.getMovieList(
         this.tabPlay,
         true,
-        this.tabQueue.mvList[this.tabQueueMvListCt].Id
+        this.tabPlay.playingMovie.Id
       );
 
+      fetchYoutubeDataV3.getMovieInformation(this.tabPlay.playingMovie);
+      this.tabPlay.fullDescription = false;
+
+      this.tabCommon.playerFinish = false;
+      setTimeout(() => {
+        this.player.playVideo();
+      }, 10);
+    },
+    playFirstMovie() {
+      if (this.tabCommon.playerStart == false) {
+        this.tabCommon.playerStart = true;
+      }
+      this.tabPlay.playingMovie = this.tabQueue.mvList[0];
       this.playVideo();
+    },
+    getNextMovieOfTabQueue() {
+      const i = this.tabQueueMvListCt
+
+      console.log(i);
+      if (i === -1) {
+        return undefined;
+      }
+      // リスト末尾でないなら
+      if (i < this.tabQueue.mvList.length - 1) {
+        return this.tabQueue.mvList[i + 1];
+      }
+      if (this.tQloop === true) {
+        return this.tabQueue.mvList[0];
+      }
+
+      return null;
+    },
+    playNextMovie() {
+      console.log("playNextMovie()");
+      if (this.tabCommon.playerStart == false) {
+        this.playFirstMovie();
+      }
+
+      // tabQueue上に次に再生すべきものがあればそれを再生
+      let nextMovie = this.getNextMovieOfTabQueue();
+      if (nextMovie === undefined) {
+        return;
+      }
+      if (nextMovie !== null) {
+        this.tabPlay.playingMovie = nextMovie;
+        this.playVideo();
+        return;
+      }
+
+      // ループせず関連動画も再生しない
+      if (this.tQautoPlayRelatedMovie === false) {
+        return;
+      }
+
+      // 最上位の関連動画を再生
+      if (this.tQautoPlayNewRelatedMovie === false) {
+        nextMovie = this.tabPlay.mvList[0];
+        if (nextMovie === undefined) {
+          return;
+        }
+        this.tabQueue.mvList.push(nextMovie);
+        this.tabPlay.playingMovie = nextMovie;
+        this.playVideo();
+        return;
+      }
+
+      // 未再生の関連動画を再生
+      nextMovie = this.tabPlay.mvList.find(movieT => {
+        return (
+          this.tabQueue.mvList.find(movieQ => {
+            return movieT.Id === movieQ.Id;
+          }) === undefined
+        );
+      });
+      // 存在しなければ続きを読み込んで再度playNextMovie()
+      if (nextMovie === undefined) {
+        this.relatedMovieMore(this.playNextMovie);
+        return;
+      }
+      // 存在すれば続きを再生リストに追加してplayNextMovie()
+      this.addMovieQueue("PLAY_NOW", nextMovie);
+      this.playNextMovie();
     },
     onPlayerError(event) {
       switch (event.data) {
@@ -607,33 +644,28 @@ export default {
           });
       }
     },
-    onPlayerReady(event) {/*
-      fetchYoutubeDataV3.getMovieInformation(this.tabQueue.mvList[this.tabQueueMvListCt]);
-      fetchYoutubeDataV3.getMovieList(
-        this.tabPlay,
-        true,
-        this.tabQueue.mvList[this.tabQueueMvListCt].Id
-      );
-      this.playVideo();*/
+    onPlayerReady(event) {
+      console.log("player ready");
+      this.tabChange(0)
+      this.playVideo();
+    },
+    onPlayerEnded() {
+      this.tabCommon.playerFinish = true;
+      this.playNextMovie();
     },
     playRestart() {
-      if (this.tabCommon.playerFinish == true) {
-        this.tabCommon.playerFinish = false;
-        this.playNextMovie();
+      if (!this.tabCommon.playerFinish) {
+        return;
       }
+      this.playNextMovie();
     },
-    updateTabQueueMvList(movies){
-      console.log("updateTabQueueMvList")
-      console.log(movies)
-      this.tabQueue.mvList = movies
-    },
-    updateTabQueueMvListCt(number){
-      this.tabQueueMvListCt = number
+    updateTabQueueMvList(movies) {
+      console.log("updateTabQueueMvList");
+      console.log(movies);
+      this.tabQueue.mvList = movies;
     }
   }
 };
-
-
 </script>
 
 <style>
@@ -656,8 +688,6 @@ h1 {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
-
-
 #player-box {
   /*youtube player 16:9固定 ↓*/
   position: relative;
@@ -669,7 +699,6 @@ h1 {
   margin: auto;
   display: inline-block;
 }
-
 
 #center-box {
   width: 100%;
@@ -823,7 +852,8 @@ h1 {
 #pre-first-messege {
   position: static;
 }
-#first-messege {/*
+#first-messege {
+  /*
   position: absolute;
   top: 52%;
   left: 50%;
@@ -843,5 +873,4 @@ h1 {
 .displayNone {
   display: none;
 }
-
 </style>

@@ -3,6 +3,8 @@ const axios = require("axios");
 //const YoutubeKey = "AIzaSyANKSN8GKCbogYzLXqG4f75lwqwljA3RCU";
 const YoutubeKey = require('@/youtube-key.js')
 const iziToast = require("izitoast");
+const uuidv4 = require("uuid/v4");
+
 export default {
     getMovieList:(tab, listReset, newWordSubmit, callback)=>{
     /*引数
@@ -33,7 +35,6 @@ export default {
       "&key=" +
       YoutubeKey +
       "&part=snippet&order=relevance&regionCode=jp&type=video&videoEmbeddable=true";
-    const date = new Date();
     axios
       .get(requestUrl)
       .then(res => {
@@ -44,7 +45,7 @@ export default {
             //説明が長すぎる場合は210文字でカットして...を付ける
             dsc = dsc.substring(0, 210) + "...";
           const searchMovie = {
-            uniqueKey: `${date.getTime()}#${index}`,
+            uniqueKey: uuidv4(),
             Id: item.id.videoId,
             title: item.snippet.title,
             description210: dsc,
