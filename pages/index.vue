@@ -113,7 +113,7 @@
                 v-on:click="listMovieClicked(item)"
               >
                 <!--クリックされている∧再生中でない⇒表示-->
-                <div v-bind:class="{'displayNone':item==tabPlay.playingMovie }">
+                <div v-if="item.uniqueKey!==tabPlay.playingMovie.uniqueKey" :id="item.nextPlayUniqueKey+'-not-playing'">
                   <button
                     class="btn waves-effect waves-light"
                     v-on:click="changeMovieQueue('JUMP',item)"
@@ -133,7 +133,7 @@
                     <i class="material-icons">format_line_spacing</i>移動
                   </button>
                 </div>
-                <div v-bind:class="{'displayNone':item!=tabPlay.playingMovie}">
+                <div v-else :id="item.nextPlayUniqueKey+'-playing'">
                   <button
                     class="btn waves-effect waves-light"
                     v-on:click="changeMovieQueue('JUMP',item)"
@@ -214,7 +214,7 @@
             :displayedMoviesProps="tabQueue.mvList"
             @new-displayedMovies="updateTabQueueMvList"
             @move-cancel="moveCancel"
-            @play-first-movie="playFirstMovie"
+            @play-first-movie="manipulatePlayer('playFirstMovie')"
           />
         </div>
 
@@ -238,7 +238,7 @@
 
 <script>
 import fetchYoutubeDataV3 from "@/assets/js/fetch-youtube-data-v3.js";
-import emptyMovie from "@/assets/js/emptyMovie.js"
+import emptyMovie from "@/assets/js/emptyMovie.js";
 import tabBar from "@/components/tabBar.vue";
 import movieList from "@/components/movieList.vue";
 import tabSearch from "@/components/tabSearch.vue";
@@ -294,7 +294,7 @@ export default {
         oldVal == false &&
         this.tabCommon.playerStart == true
       ) {
-        this.playRestart();
+        this.manipulatePlayer("playRestart");
       }
     },
     tQautoPlayRelatedMovie: function(newVal, oldVal) {
@@ -303,7 +303,7 @@ export default {
         oldVal == false &&
         this.tabCommon.playerStart == true
       ) {
-        this.playRestart();
+        this.manipulatePlayer("playRestart");
       }
     }
   },
@@ -313,36 +313,26 @@ export default {
     player() {
       return this.$refs.youtube.player;
     },
-    nextPlayUniqueKey: {
-      get: function() {
-        const movie = this.getNextMovieOfTabQueue();
-        if (movie === undefined || movie === null) {
-          return undefined;
-        }
-        return movie.uniqueKey;
+    nextPlayUniqueKey() {
+      const movie = this.getNextMovieOfTabQueue();
+      if (movie === undefined || movie === null) {
+        return undefined;
       }
+      return movie.uniqueKey;
     },
-    tabQueueMvListCt: {
-      get: function() {
-        return this.tabQueue.mvList.findIndex(movie => {
-          return;
-          movue.uniqueKey === this.tabPlay.playingMovie.uniqueKey;
-        });
-      }/*,
-      set: function(ct) {
-        this.tabPlay.playingMovie = this.tabQueue.mvList[ct];
-      }*/
+    tabQueueMvListCt() {
+      return this.tabQueue.mvList.findIndex(movie => {
+        return movie.uniqueKey === this.tabPlay.playingMovie.uniqueKey;
+      });
     },
-    tabPlayMvListComputed: {
-      get: function() {
-        if (
-          this.tabPlay.mvList.length === 1 &&
-          this.tabPlay.mvList[0].uniqueKey === ""
-        ) {
-          return [];
-        }
-        return this.tabPlay.mvList;
+    tabPlayMvListComputed() {
+      if (
+        this.tabPlay.mvList.length === 1 &&
+        this.tabPlay.mvList[0].uniqueKey === ""
+      ) {
+        return [];
       }
+      return this.tabPlay.mvList;
     }
   },
   methods: {
@@ -372,7 +362,7 @@ export default {
             this.tabQueueMvListCt + 1,
             pushedMv
           );
-          this.playNextMovie();
+          this.manipulatePlayer("playNextMovie");
           this.tabCommon.selectedTab = 0; //再生タブへ強制遷移 2019/6/9 add
           messageWord = "挿入";
           break;
@@ -382,12 +372,12 @@ export default {
             this.tabQueueMvListCt + 1,
             pushedMv
           );
-          this.playRestart(); //もし最後尾に再生するものが増えていたら再生してくれる。
+          this.manipulatePlayer("playRestart"); //もし最後尾に再生するものが増えていたら再生してくれる。
           messageWord = "挿入";
           break;
         case "PLAY_LAST":
           this.tabQueue.mvList.push(pushedMv);
-          this.playRestart(); //もし最後尾に再生するものが増えていたら再生してくれる。
+          this.manipulatePlayer("playRestart"); //もし最後尾に再生するものが増えていたら再生してくれる。
           messageWord = "追加";
           break;
       }
@@ -418,13 +408,12 @@ export default {
     },
     changeMovieQueue(msg, item) {
       const itemCt = this.tabQueue.mvList.findIndex(
-        ({ uniqueKey }) => uniqueKey === item.uniqueKey
+        movie=> {return movie.uniqueKey === item.uniqueKey}
       );
       /*↑uniqueキーが一致するtabQueue.mvListの配列番号 つまりitemが存在するtabQueue.mvList配列内の位置 */
       switch (msg) {
         case "JUMP": //itemの位置に再生キューを移動して再生
-          this.tabPlay.playingMovie = this.tabQueue.mvList[itemCt - 1];
-          this.playNextMovie();
+          this.manipulatePlayer("playSpecifyMovieOfTabQueue",itemCt);
           this.tabCommon.selectedTab = 0; //再生タブへ強制遷移 2019/6/10 add
           break;
         case "DELETE": //itemを再生キューから削除
@@ -460,7 +449,7 @@ export default {
       this.tabQueue.move.from = -1;
       this.tabQueue.move.able = false;
 
-      this.playRestart(); //もし最後尾に再生するものが増えていたら再生してくれる。
+      this.manipulatePlayer("playRestart"); //もし最後尾に再生するものが増えていたら再生してくれる。
     },
     moveCancel() {
       this.tabQueue.move.able = false;
@@ -515,7 +504,7 @@ export default {
       this.playVideo();
     },
     getNextMovieOfTabQueue() {
-      const i = this.tabQueueMvListCt
+      const i = this.tabQueueMvListCt;
 
       console.log(i);
       if (i === -1) {
@@ -559,7 +548,7 @@ export default {
         if (nextMovie === undefined) {
           return;
         }
-        this.tabQueue.mvList.push(nextMovie);
+        this.updateTabQueueMvList([...this.tabQueue.mvList, nextMovie]);
         this.tabPlay.playingMovie = nextMovie;
         this.playVideo();
         return;
@@ -629,7 +618,7 @@ export default {
     },
     onPlayerReady(event) {
       console.log("player ready");
-      this.tabChange(0)
+      this.tabChange(0);
       this.playVideo();
     },
     onPlayerEnded() {
@@ -646,6 +635,25 @@ export default {
       console.log("updateTabQueueMvList");
       console.log(movies);
       this.tabQueue.mvList = movies;
+    },
+    manipulatePlayer(msg, number=undefined) {
+      switch (msg) {
+        case "playFirstMovie":
+          this.playFirstMovie();
+          break;
+        case "playSpecifyMovieOfTabQueue":
+          if(number===0){
+            this.playFirstMovie()
+            break
+          }
+          this.tabPlay.playingMovie = this.tabQueue.mvList[number - 1];
+        case "playNextMovie":
+          this.playNextMovie();
+          break;
+        case "playRestart":
+          this.playRestart();
+          break;
+      }
     }
   }
 };
