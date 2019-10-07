@@ -238,6 +238,7 @@
 
 <script>
 import fetchYoutubeDataV3 from "@/assets/js/fetch-youtube-data-v3.js";
+import emptyMovie from "@/assets/js/emptyMovie.js"
 import tabBar from "@/components/tabBar.vue";
 import movieList from "@/components/movieList.vue";
 import tabSearch from "@/components/tabSearch.vue";
@@ -246,25 +247,7 @@ import visitingDescription from "@/components/visitingDescription.vue";
 const iziToast = require("izitoast");
 const uuidv4 = require("uuid/v4");
 
-const TAB_PLAYER = 0;
-const TAB_QUEUE = 1;
-const TAB_SEARCH = 2;
-const SEARCHED = 0;
-const RELATED = 1;
 let player;
-const emptyMovie = {
-  Id: "",
-  uniqueKey: "",
-  description210: "",
-  thumbnail: "",
-  title: "",
-  uniqueKey: "",
-  publishedAt: "",
-  description: "",
-  duration: "",
-  viewCount: "",
-  channelTitle: ""
-};
 export default {
   components: {
     tabBar,
