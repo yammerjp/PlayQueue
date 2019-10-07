@@ -15,7 +15,7 @@
             :tabQueueMvList="tabQueue.mvList"
             :tabQueueMoveAble="tabQueue.move.able"
             :tabQueueMoveFrom="tabQueue.move.from"
-            :tQloop="this.tQloop"
+            :tQloop="tQloop"
             @add-movie-queue="addMovieQueue2"
             @move-cancel="moveCancel"
             @update-player-finish="updatePlayerFinish"
@@ -124,49 +124,22 @@
                 On
               </label>
             </div>
-            <div class="switch" v-if="!tQloop" id="switch-related-movie-tQloop-false">
-              <span class="switch-caption">末尾の関連動画を自動再生する:</span>
+            <div class="switch">
+              <span class="switch-caption" :class="{strikeout:tQloop}">末尾の関連動画を自動再生する:</span>
               <label>
                 Off
-                <input type="checkbox" v-model="tQautoPlayRelatedMovie" />
+                <input :disabled="tQloop" type="checkbox" v-model="tQautoPlayRelatedMovie" />
                 <span class="lever"></span>
-                On
+                <span :class="{strikeout:tQloop}">On</span>
               </label>
             </div>
-            <div class="switch" v-else id="switch-related-movie-tQloop-true">
-              <span class="switch-caption strikeout">末尾の関連動画を自動再生する:</span>
+            <div class="switch">
+              <span class="switch-caption" :class="{strikeout: !tQautoPlayRelatedMovie || tQloop}">新しい関連動画のみ:</span>
               <label>
                 Off
-                <input disabled type="checkbox" v-model="tQautoPlayRelatedMovie" />
+                <input :disabled="!tQautoPlayRelatedMovie || tQloop" type="checkbox" v-model="tQautoPlayNewRelatedMovie" />
                 <span class="lever"></span>
-                <span class="strikeout">On</span>
-              </label>
-            </div>
-
-            <div
-              class="switch"
-              v-if="tQautoPlayRelatedMovie && !tQloop"
-              id="switch-related-new-movie-if"
-            >
-              <span class="switch-caption">新しい関連動画のみ:</span>
-              <label>
-                Off
-                <input type="checkbox" v-model="tQautoPlayNewRelatedMovie" />
-                <span class="lever"></span>
-                On
-              </label>
-            </div>
-            <div
-              class="switch"
-              v-else
-              id="switch-related-new-movie-else"
-            >
-              <span class="switch-caption strikeout">新しい関連動画のみ:</span>
-              <label>
-                Off
-                <input disabled type="checkbox" v-model="tQautoPlayNewRelatedMovie" />
-                <span class="lever"></span>
-                <span class="strikeout">On</span>
+                <span :class="{strikeout: !tQautoPlayRelatedMovie || tQloop}">On</span>
               </label>
             </div>
           </div>
