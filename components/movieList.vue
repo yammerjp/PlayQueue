@@ -60,8 +60,8 @@ export default {
         this.clickedMovieUniqueKey = movie.uniqueKey; //this.tabCommon.ListClickUniqueKey
       }
     },
-    addMovieQueue:function(msg, movie){
-      this.$emit('add-movie-queue',{message:msg, movie})
+    addMovieQueue:function(message, movie){
+      this.$emit('add-movie-queue',{message, movie})
     }
   }
 }

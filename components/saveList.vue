@@ -65,9 +65,7 @@ export default {
       inputWindow: false
     };
   },
-  props: [
-    "displayedMoviesProps",
-  ],
+  props: ["displayedMoviesProps"],
   computed: {
     displayedMovies: {
       get: function() {
@@ -100,7 +98,7 @@ export default {
       this.openListStorageWindow("CLOSE");
       this.$emit("move-cancel");
       this.displayedMovies = localStorageInterface.get(localStorageKey);
-      this.$emit("play-first-movie");
+      this.$emit("manipulate-player", "playFirstMovie");
     },
     deleteListStorage(localStorageKey) {
       if (localStorageKey == "") {
