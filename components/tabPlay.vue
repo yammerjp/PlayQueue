@@ -1,8 +1,8 @@
 <template>
   <div id="tab-player">
     <div id="player-box">
-      <div id="player-not-playing" v-if="!playerStart" >
-      <visitingDescription />
+      <div id="player-not-playing" v-if="!playerStart">
+        <visitingDescription />
       </div>
       <div id="player-playing" v-else>
         <youtube
@@ -115,7 +115,6 @@ export default {
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
     playVideo() {
-
       if (this.playerStart == false) {
         this.$emit("update-player-start", true);
       }
@@ -138,9 +137,10 @@ export default {
       }, 10);
     },
     playFirstMovie() {
-      console.log("playFirstMovie");
-      this.playingMovie = this.tabQueueMvList[0];
-      this.playVideo();
+      setTimeout(() => {
+        this.playingMovie = this.tabQueueMvList[0];
+        this.playVideo();
+      });
     },
     getNextMovieOfTabQueue() {
       const i = this.tabQueueMvList.findIndex(({ uniqueKey }) => {
@@ -300,3 +300,26 @@ export default {
   }
 };
 </script>
+<style scoped>
+#player-box {
+  /*youtube player 16:9固定 ↓*/
+  position: relative;
+  width: 100%;
+  /*youtube player 16:9固定 ↑*/
+}
+#tab-player > .title {
+  margin: 0.25em 1em;
+  font-style: bold;
+}
+#tab-player > .description {
+  padding: 0.25em 1em;
+
+  box-sizing: border-box;
+}
+#tab-player .information {
+  padding: 0.25em;
+}
+#full-description {
+  white-space: pre-wrap;
+}
+</style>

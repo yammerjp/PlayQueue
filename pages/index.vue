@@ -419,12 +419,7 @@ h1 {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
-#player-box {
-  /*youtube player 16:9固定 ↓*/
-  position: relative;
-  width: 100%;
-  /*youtube player 16:9固定 ↑*/
-}
+
 .tab-queue {
   width: 98%;
   margin: auto;
@@ -459,10 +454,7 @@ h1 {
   font-size: 1em;
 }
 
-#tab-player > .title {
-  margin: 0.25em 1em;
-  font-style: bold;
-}
+
 .movie-list .title {
   width: 100%;
   text-overflow: ellipsis;
@@ -489,14 +481,6 @@ h1 {
 
   width: 100%;
   overflow-wrap: break-word;
-}
-#tab-player > .description {
-  padding: 0.25em 1em;
-
-  box-sizing: border-box;
-}
-#tab-player .information {
-  padding: 0.25em;
 }
 .movie-list .description {
   width: 100%;
@@ -563,9 +547,6 @@ h1 {
 
 .description .description-button {
   text-decoration: underline;
-}
-.full-description {
-  white-space: pre-wrap;
 }
 
 .read-me {
