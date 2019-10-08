@@ -43,43 +43,29 @@
             @click="listMovieClicked(movie)"
           >
             <!--クリックされている∧再生中でない⇒表示-->
-            <div
-              v-if="movie.uniqueKey!==playingMovie.uniqueKey"
-              :id="movie.uniqueKey+'-not-playing'"
+
+            <button
+              class="btn waves-effect waves-light"
+              @click="changeMovieQueue({message:'JUMP',movie,index})"
             >
-              <button
-                class="btn waves-effect waves-light"
-                @click="changeMovieQueue({message:'JUMP',movie,index})"
-              >
-                <i class="material-icons">play_arrow</i>今すぐ再生
-              </button>
-              <button
-                class="btn waves-effect waves-light"
-                @click="changeMovieQueue({message:'DELETE',movie,index})"
-              >
-                <i class="material-icons">clear</i>リストから削除
-              </button>
-              <button
-                class="btn waves-effect waves-light"
-                @click="changeMovieQueue({message:'MOVE',movie,index})"
-              >
-                <i class="material-icons">format_line_spacing</i>移動
-              </button>
-            </div>
-            <div v-else :id="movie.uniqueKey+'-playing'">
-              <button
-                class="btn waves-effect waves-light"
-                @click="changeMovieQueue({message:'JUMP',movie,index})"
-              >
-                <i class="material-icons">play_arrow</i>最初から再生
-              </button>
-              <button class="btn waves-effect waves-light disabled">
-                <i class="material-icons">clear</i>リストから削除
-              </button>
-              <button class="btn waves-effect waves-light disabled">
-                <i class="material-icons">format_line_spacing</i>移動
-              </button>
-            </div>
+              <i class="material-icons">play_arrow</i>
+              <template v-if="movie.uniqueKey===playingMovie.uniqueKey">最初から再生</template>
+              <template v-else>今すぐ再生</template>
+            </button>
+            <button
+              class="btn waves-effect waves-light"
+              :class="{disabled:movie.uniqueKey===playingMovie.uniqueKey}"
+              @click="movie.uniqueKey!==playingMovie.uniqueKey && changeMovieQueue({message:'DELETE',movie,index})"
+            >
+              <i class="material-icons">clear</i>リストから削除
+            </button>
+            <button
+              class="btn waves-effect waves-light"
+              :class="{disabled:movie.uniqueKey===playingMovie.uniqueKey}"
+              @click="movie.uniqueKey!==playingMovie.uniqueKey && changeMovieQueue({message:'MOVE',movie,index})"
+            >
+              <i class="material-icons">format_line_spacing</i>移動
+            </button>
           </div>
         </div>
         <div
