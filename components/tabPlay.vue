@@ -1,8 +1,10 @@
 <template>
   <div id="tab-player">
     <div id="player-box">
-      <visitingDescription v-if="!playerStart" />
-      <div id="player-playing" v-if="playerStart">
+      <div id="player-not-playing" v-if="!playerStart" >
+      <visitingDescription />
+      </div>
+      <div id="player-playing" v-else>
         <youtube
           :video-id="playingMovie.Id"
           ref="youtube"
@@ -32,27 +34,24 @@
       </span>
     </div>
     <template v-if="playerStart">
-    <div class="information">
-      <span class="publishedAt">{{playingMovie.publishedAt}}投稿 /</span>
-      <span class="duration">再生時間:{{playingMovie.duration}} /</span>
-      <span class="viewCount">再生回数:{{playingMovie.viewCount}}回/</span>
-      <span class="channelTitle">Channel: {{playingMovie.channelTitle}}</span>
-    </div>
+      <div class="information">
+        <span class="publishedAt">{{playingMovie.publishedAt}}投稿 /</span>
+        <span class="duration">再生時間:{{playingMovie.duration}} /</span>
+        <span class="viewCount">再生回数:{{playingMovie.viewCount}}回/</span>
+        <span class="channelTitle">Channel: {{playingMovie.channelTitle}}</span>
+      </div>
 
-    <div class="list-name">関連動画</div>
-    <movieList
-      :movies="tabPlay.mvList"
-      :emphasizedMovieUniqueKey="ListClickUniqueKey"
-      :nextPlayUniqueKey="nextPlayUniqueKey"
-      @add-movie-queue="addMovieQueue2"
-    />
+      <div class="list-name">関連動画</div>
+      <movieList
+        :movies="tabPlay.mvList"
+        :emphasizedMovieUniqueKey="ListClickUniqueKey"
+        :nextPlayUniqueKey="nextPlayUniqueKey"
+        @add-movie-queue="addMovieQueue2"
+      />
 
-    <button
-      @click="relatedMovieMore"
-      class="btn waves-effect waves-light"
-    >
-      <i class="material-icons">keyboard_arrow_down</i>
-    </button>
+      <button @click="relatedMovieMore" class="btn waves-effect waves-light">
+        <i class="material-icons">keyboard_arrow_down</i>
+      </button>
     </template>
   </div>
 </template>
@@ -64,7 +63,6 @@ import visitingDescription from "@/components/visitingDescription.vue";
 const iziToast = require("izitoast");
 
 export default {
-  
   components: {
     movieList,
     visitingDescription
@@ -79,13 +77,16 @@ export default {
         fullDescription: false
       },
       playingMovie_: emptyMovie,
-      playerIsReady: false
+      playerIsReady: false,
+      playerFinish: true //playerStop
     };
   },
-  props:[
-    'playerStart','ListClickUniqueKey','tabQueueMoveAble','tabQueueMoveFrom','tabQueueMvListCt',
-    'playerFinish', 'tabQueueMvList', 'tQloop'
-  ],
+  props: {
+    playerStart: Boolean,
+    tQloop: Boolean,
+    ListClickUniqueKey: String,
+    tabQueueMvList: Array
+  },
   computed: {
     player() {
       return this.$refs.youtube.player;
@@ -97,13 +98,13 @@ export default {
       }
       return movie.uniqueKey;
     },
-    playingMovie:{
-      get: function(){
-        return this.playingMovie_
+    playingMovie: {
+      get: function() {
+        return this.playingMovie_;
       },
-      set: function(movie){
-        this.$emit('update-playing-movie',movie)
-        this.playingMovie_ = movie
+      set: function(movie) {
+        this.$emit("update-playing-movie", movie);
+        this.playingMovie_ = movie;
       }
     }
   },
@@ -114,44 +115,37 @@ export default {
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
     playVideo() {
-      // onPlayerReady()が実行されたらもう一度playVideo()される
-      if(!this.playerIsReady){
-        return
+
+      if (this.playerStart == false) {
+        this.$emit("update-player-start", true);
       }
-      //再生しようとした動画が移動操作中の場合キャンセル
-      if (
-        this.tabQueueMoveAble == true &&
-        this.tabQueueMoveFrom == this.tabQueueMvListCt
-      ) {
-        this.$emit('move-cancel')
+      // onPlayerReady()が実行されたらもう一度playFirstMovie()内でplayVideo()される
+      if (!this.playerIsReady) {
+        return;
       }
+      this.$emit("move-cancel");
 
       //関連動画リストの取得
-      fetchYoutubeDataV3.getMovieList(
-        this.tabPlay,
-        true,
-        this.playingMovie.Id
-      );
-      let movie = this.playingMovie
+      fetchYoutubeDataV3.getMovieList(this.tabPlay, true, this.playingMovie.Id);
+      let movie = this.playingMovie;
       fetchYoutubeDataV3.getMovieInformation(movie);
-      this.playingMovie = movie
+      this.playingMovie = movie;
       this.tabPlay.fullDescription = false;
 
-      this.$emit('update-player-finish',false)
+      this.playerFinish = false;
       setTimeout(() => {
         this.player.playVideo();
       }, 10);
     },
     playFirstMovie() {
-      console.log("playFirstMovie")
-      if (this.playerStart == false) {
-        this.$emit('update-player-start',true)
-      }
+      console.log("playFirstMovie");
       this.playingMovie = this.tabQueueMvList[0];
       this.playVideo();
     },
     getNextMovieOfTabQueue() {
-      const i = this.tabQueueMvListCt;
+      const i = this.tabQueueMvList.findIndex(({ uniqueKey }) => {
+        return uniqueKey === this.playingMovie.uniqueKey;
+      });
 
       console.log(i);
       if (i === -1) {
@@ -215,7 +209,7 @@ export default {
         return;
       }
       // 存在すれば続きを再生リストに追加してplayNextMovie()
-//      this.addMovieQueue2({message:"PLAY_NOW", movie:nextMovie});
+      //      this.addMovieQueue2({message:"PLAY_NOW", movie:nextMovie});
       this.updateTabQueueMvList([...this.tabQueueMvList, nextMovie]);
       this.playingMovie = nextMovie;
       this.playVideo();
@@ -267,14 +261,14 @@ export default {
     },
     onPlayerReady(event) {
       console.log("player ready");
-      if(!this.playerIsReady){
-        this.playerIsReady = true
+      if (!this.playerIsReady) {
+        this.playerIsReady = true;
       }
-      this.$emit('tab-change',0)
-      this.playFirstMovie()
+      this.$emit("tab-change", 0);
+      this.playFirstMovie();
     },
     onPlayerEnded() {
-      this.$emit('update-player-finish',true)
+      this.playerFinish = true;
       this.playNextMovie();
     },
     playRestart() {
@@ -283,23 +277,25 @@ export default {
       }
       this.playNextMovie();
     },
-    addMovieQueue2:function(obj){
-      this.$emit('add-movie-queue',obj)
+    addMovieQueue2: function(obj) {
+      this.$emit("add-movie-queue", obj);
     },
-    playSpecifyMovie(uniqueKey){
-      setTimeout(()=>{
-              const movie = this.tabQueueMvList.find(mv=>{return mv.uniqueKey === uniqueKey})
-      if(movie===undefined){
-        console.log("ret")
-        console.log(uniqueKey)
-        return
-      }
-      this.playingMovie = movie
-      this.playVideo()
-      },100)
+    playSpecifyMovie(key) {
+      setTimeout(() => {
+        const movie = this.tabQueueMvList.find(({ uniqueKey }) => {
+          return uniqueKey === key;
+        });
+        if (movie === undefined) {
+          console.log("ret");
+          console.log(key);
+          return;
+        }
+        this.playingMovie = movie;
+        this.playVideo();
+      }, 100);
     },
-    updateTabQueueMvList(movies){
-      this.$emit('update-tab-queue-mv-list',movies)
+    updateTabQueueMvList(movies) {
+      this.$emit("update-tab-queue-mv-list", movies);
     }
   }
 };

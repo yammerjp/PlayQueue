@@ -26,10 +26,7 @@
 
     <div class="modal-window" v-if="inputWindow">
       <input type="text" v-model="inputKey" placeholder="プレイリスト名" />
-      <button
-        class="waves-effect waves-light btn RW-button"
-        @click="addListStorage(inputKey)"
-      >保存</button>
+      <button class="waves-effect waves-light btn RW-button" @click="addListStorage(inputKey)">保存</button>
       <!--          <div :class='{"displayNone":listNameConflict!=true}'>既に存在するリスト名です</div>-->
     </div>
 
@@ -67,7 +64,9 @@ export default {
       inputWindow: false
     };
   },
-  props: ["displayedMoviesProps"],
+  props: {
+    displayedMoviesProps: Array
+  },
   computed: {
     displayedMovies: {
       get: function() {

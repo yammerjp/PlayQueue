@@ -27,7 +27,9 @@
 </template>
 <script>
 export default {
-  props: ["selectedTabNumber"],
+  props: {
+    selectedTabNumber: Number
+  },
   methods: {
     tabChange(tabNumber) {
       this.$emit("tab-change", tabNumber);

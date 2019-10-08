@@ -1,5 +1,4 @@
 <template>
-  <div id="player-not-playing">
     <div id="pre-first-messege">
       <div class="row">
         <div class="col s4">
@@ -29,7 +28,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 <style scoped>
 /*

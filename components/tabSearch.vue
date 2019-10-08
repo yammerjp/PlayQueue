@@ -33,9 +33,9 @@ export default {
       }
     };
   },
-  props: [
-    'emphasizedMovieUniqueKey',
-  ],
+  props: {
+    emphasizedMovieUniqueKey:String
+  },
   methods: {
     searchWordSubmitted() {
       if (this.tabSearch.word == "") return 0;
