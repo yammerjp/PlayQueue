@@ -45,7 +45,7 @@ export default {
             //説明が長すぎる場合は210文字でカットして...を付ける
             dsc = dsc.substring(0, 210) + "...";
           const searchMovie = {
-            uniqueKey: uuidv4(),
+            key: uuidv4(),
             Id: item.id.videoId,
             title: item.snippet.title,
             description210: dsc,
@@ -81,11 +81,9 @@ export default {
       "&key=" +
       YoutubeKey +
       "&part=snippet,contentDetails,statistics&regionCode=jp";
-    //    const date = new Date();
     axios
       .get(requestUrl)
       .then(function(res) {
-        //            mv.uniqueKey=`${date.getTime()}#added`;
         mv.description = res.data.items[0].snippet.description;
         mv.duration = res.data.items[0].contentDetails.duration
           .replace("PT", "")

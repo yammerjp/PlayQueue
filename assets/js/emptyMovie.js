@@ -1,10 +1,9 @@
 export default {
   Id: "",
-  uniqueKey: "",
+  key: "",
   description210: "",
   thumbnail: "",
   title: "",
-  uniqueKey: "",
   publishedAt: "",
   description: "",
   duration: "",

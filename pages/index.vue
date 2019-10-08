@@ -115,7 +115,7 @@ export default {
     moveCancel() {
       this.$refs.tabQueueRef.moveCancel();
     },
-    manipulatePlayer({ message, uniqueKey = undefined, movie = undefined }) {
+    manipulatePlayer({ message, key = undefined, movie = undefined }) {
       switch (message) {
         case "playSpecifyAddedMovieOfTabQueue":
           if (movie === undefined) {

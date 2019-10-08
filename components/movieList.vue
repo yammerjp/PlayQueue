@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="movie-list col s12 row" v-for="movie in movies" :key="movie.uniqueKey">
+    <div class="movie-list col s12 row" v-for="movie in movies" :key="movie.key">
       <div class="card-panel grey lighten-5 z-depth-1 intab-card-panel">
-        <div class="next-play" v-if="movie.uniqueKey===nextPlayUniqueKey">次に再生:</div>
+        <div class="next-play" v-if="movie.key===nextPlayKey">次に再生:</div>
         <div class="row valign-wrapper intab-row">
           <div
             class="width100"
-            :class="{'selected':movie.uniqueKey===emphasizedMovieUniqueKey}"
+            :class="{'selected':movie.key===emphasizedMovieKey}"
             @click="listMovieClicked(movie)"
           >
             <div class="col s3">
@@ -23,7 +23,7 @@
         </div>
         <div
           class="selected-movie-s12"
-          v-if="movie.uniqueKey===clickedMovieUniqueKey"
+          v-if="movie.key===clickedMovieKey"
           @click="listMovieClicked(movie)"
         >
           <button class="btn waves-effect waves-light" @click="addMovieQueue({message:'PLAY_NOW',movie})">
@@ -44,20 +44,20 @@
 export default {
   data: () => {
     return {
-      clickedMovieUniqueKey: undefined
+      clickedMovieKey: undefined
     };
   },
   props: {
     movies: Array, //tabSearch.mvList
-    emphasizedMovieUniqueKey: String,
-    nextPlayUniqueKey: String
+    emphasizedMovieKey: String,
+    nextPlayKey: String
   },
   methods: {
     listMovieClicked(movie) {
-      if (this.clickedMovieUniqueKey === movie.uniqueKey) {
-        this.clickedMovieUniqueKey = undefined;
+      if (this.clickedMovieKey === movie.key) {
+        this.clickedMovieKey = undefined;
       } else {
-        this.clickedMovieUniqueKey = movie.uniqueKey; 
+        this.clickedMovieKey = movie.key; 
       }
     },
     addMovieQueue({ message, movie }) {

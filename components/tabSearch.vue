@@ -6,7 +6,7 @@
     </form>
     <movieList
       :movies="tabSearch.mvList"
-      :emphasizedMovieUniqueKey="''"
+      :emphasizedMovieKey="''"
       @add-movie-queue="addMovieQueue"
     />
     <button @click="searchWordSubmittedMore" class="btn waves-effect waves-light">

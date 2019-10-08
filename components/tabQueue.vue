@@ -10,11 +10,11 @@
       <div
         class="movie-list col s12 row"
         v-for="(movie,index) in tabQueueMvList"
-        :key="movie.uniqueKey"
+        :key="movie.key"
       >
         <div
           class="card-panel grey lighten-5 z-depth-1 intab-card-panel"
-          :class="{'now-play-movie':movie.uniqueKey===playingMovie.uniqueKey}"
+          :class="{'now-play-movie':movie.key===playingMovie.key}"
         >
           <div
             class="row valign-wrapper intab-row"
@@ -22,7 +22,7 @@
           >
             <div
               class="width100"
-              :class="{'selected':movie.uniqueKey===listClickUniqueKey}"
+              :class="{'selected':movie.key===listClickKey}"
               @click="listMovieClicked(movie)"
             >
               <div class="col s3">
@@ -37,32 +37,32 @@
               </div>
             </div>
           </div>
+          
           <div
             class="selected-movie-s12"
-            v-if="movie.uniqueKey===listClickUniqueKey"
+            v-if="movie.key===listClickKey"
             @click="listMovieClicked(movie)"
           >
-            <!--クリックされている∧再生中でない⇒表示-->
-
+            <!--クリックされている-->
             <button
               class="btn waves-effect waves-light"
               @click="changeMovieQueue({message:'JUMP',movie,index})"
             >
               <i class="material-icons">play_arrow</i>
-              <template v-if="movie.uniqueKey===playingMovie.uniqueKey">最初から再生</template>
+              <template v-if="movie.key===playingMovie.key">最初から再生</template>
               <template v-else>今すぐ再生</template>
             </button>
             <button
               class="btn waves-effect waves-light"
-              :class="{disabled:movie.uniqueKey===playingMovie.uniqueKey}"
-              @click="movie.uniqueKey!==playingMovie.uniqueKey && changeMovieQueue({message:'DELETE',movie,index})"
+              :class="{disabled:movie.key===playingMovie.key}"
+              @click="movie.key!==playingMovie.key && changeMovieQueue({message:'DELETE',movie,index})"
             >
               <i class="material-icons">clear</i>リストから削除
             </button>
             <button
               class="btn waves-effect waves-light"
-              :class="{disabled:movie.uniqueKey===playingMovie.uniqueKey}"
-              @click="movie.uniqueKey!==playingMovie.uniqueKey && changeMovieQueue({message:'MOVE',movie,index})"
+              :class="{disabled:movie.key===playingMovie.key}"
+              @click="movie.key!==playingMovie.key && changeMovieQueue({message:'MOVE',movie,index})"
             >
               <i class="material-icons">format_line_spacing</i>移動
             </button>
@@ -142,7 +142,7 @@ export default {
       tQloop: false,
       tQautoPlayRelatedMovie: false,
       tQautoPlayNewRelatedMovie: false,
-      listClickUniqueKey: ""
+      listClickKey: ""
     };
   },
   watch: {
@@ -183,11 +183,11 @@ export default {
         this.tabQueueMvList = [];
       }
       let pushedMv = Object.assign({}, movie);
-      pushedMv.uniqueKey = uuidv4();
+      pushedMv.key = uuidv4();
       console.log(pushedMv);
       let messageWord; //動画を再生リストへ追加したことを通知 2019/6/9 add
-      const i = this.tabQueueMvList.findIndex(({ uniqueKey }) => {
-        return uniqueKey === this.playingMovie.uniqueKey;
+      const i = this.tabQueueMvList.findIndex(({ key }) => {
+        return key === this.playingMovie.key;
       });
       switch (message) {
         case "PLAY_NOW":
@@ -298,10 +298,10 @@ export default {
       this.$emit("tab-change", tabName);
     },
     listMovieClicked(movie) {
-      if (this.listClickUniqueKey === movie.uniqueKey) {
-        this.listClickUniqueKey = "";
+      if (this.listClickKey === movie.key) {
+        this.listClickKey = "";
       } else {
-        this.listClickUniqueKey = movie.uniqueKey;
+        this.listClickKey = movie.key;
       }
     }
   }

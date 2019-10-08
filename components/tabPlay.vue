@@ -44,8 +44,8 @@
       <div class="list-name">関連動画</div>
       <movieList
         :movies="tabPlay.mvList"
-        :emphasizedMovieUniqueKey="playingMovie.uniqueKey"
-        :nextPlayUniqueKey="nextPlayUniqueKey"
+        :emphasizedMovieKey="playingMovie.key"
+        :nextPlayKey="nextPlayKey"
         @add-movie-queue="addMovieQueue"
       />
 
@@ -91,12 +91,12 @@ export default {
     player() {
       return this.$refs.youtube.player;
     },
-    nextPlayUniqueKey() {
+    nextPlayKey() {
       const movie = this.getNextMovieOfTabQueue();
       if (movie === undefined || movie === null) {
         return undefined;
       }
-      return movie.uniqueKey;
+      return movie.key;
     },
     playingMovie: {
       get: function() {
@@ -132,8 +132,8 @@ export default {
       setTimeout(this.player.playVideo,100)
     },
     getNextMovieOfTabQueue() {
-      const i = this.tabQueueMvList.findIndex(({ uniqueKey }) => {
-        return uniqueKey === this.playingMovie.uniqueKey;
+      const i = this.tabQueueMvList.findIndex(({ key }) => {
+        return key === this.playingMovie.key;
       });
 
       console.log(i);
