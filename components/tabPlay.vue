@@ -44,7 +44,7 @@
       <div class="list-name">関連動画</div>
       <movieList
         :movies="tabPlay.mvList"
-        :emphasizedMovieUniqueKey="listClickUniqueKey"
+        :emphasizedMovieUniqueKey="playingMovie.uniqueKey"
         :nextPlayUniqueKey="nextPlayUniqueKey"
         @add-movie-queue="addMovieQueue"
       />
@@ -84,7 +84,7 @@ export default {
   props: {
     playerStart: Boolean,
     tQloop: Boolean,
-    listClickUniqueKey: String,
+    tQautoPlayRelatedMovie: Boolean,
     tabQueueMvList: Array
   },
   computed: {
@@ -118,7 +118,6 @@ export default {
       if (this.playerStart == false) {
         this.$emit("update-player-start", true);
       }
-      // onPlayerReady()が実行されたらもう一度playFirstMovie()内でplayVideo()される
       if (!this.playerIsReady) {
         return;
       }
@@ -126,21 +125,11 @@ export default {
 
       //関連動画リストの取得
       fetchYoutubeDataV3.getMovieList(this.tabPlay, true, this.playingMovie.Id);
-      let movie = this.playingMovie;
-      fetchYoutubeDataV3.getMovieInformation(movie);
-      this.playingMovie = movie;
+      fetchYoutubeDataV3.getMovieInformation(this.playingMovie);
       this.tabPlay.fullDescription = false;
 
       this.playerFinish = false;
-      setTimeout(() => {
-        this.player.playVideo();
-      }, 10);
-    },
-    playFirstMovie() {
-      setTimeout(() => {
-        this.playingMovie = this.tabQueueMvList[0];
-        this.playVideo();
-      });
+      setTimeout(this.player.playVideo,100)
     },
     getNextMovieOfTabQueue() {
       const i = this.tabQueueMvList.findIndex(({ uniqueKey }) => {
@@ -164,7 +153,9 @@ export default {
     playNextMovie() {
       console.log("playNextMovie()");
       if (this.playerStart == false) {
-        this.playFirstMovie();
+        this.playingMovie = this.tabQueueMvList[0]
+        this.playVideo()
+
       }
 
       // tabQueue上に次に再生すべきものがあればそれを再生
@@ -189,7 +180,7 @@ export default {
         if (nextMovie === undefined) {
           return;
         }
-        this.updateTabQueueMvList([...this.tabQueueMvList, nextMovie]);
+        this.pushTabQueueMvList(nextMovie);
         this.playingMovie = nextMovie;
         this.playVideo();
         return;
@@ -210,7 +201,7 @@ export default {
       }
       // 存在すれば続きを再生リストに追加してplayNextMovie()
       //      this.addMovieQueue({message:"PLAY_NOW", movie:nextMovie});
-      this.updateTabQueueMvList([...this.tabQueueMvList, nextMovie]);
+      this.pushTabQueueMvList(nextMovie);
       this.playingMovie = nextMovie;
       this.playVideo();
     },
@@ -265,7 +256,7 @@ export default {
         this.playerIsReady = true;
       }
       this.tabChange("TAB_PLAY");
-      this.playFirstMovie();
+      this.playSpecifyAddedMovie(this.tabQueueMvList[0])
     },
     onPlayerEnded() {
       this.playerFinish = true;
@@ -280,22 +271,12 @@ export default {
     addMovieQueue(obj) {
       this.$emit("add-movie-queue", obj);
     },
-    playSpecifyMovie(key) {
-      setTimeout(() => {
-        const movie = this.tabQueueMvList.find(({ uniqueKey }) => {
-          return uniqueKey === key;
-        });
-        if (movie === undefined) {
-          console.log("ret");
-          console.log(key);
-          return;
-        }
-        this.playingMovie = movie;
-        this.playVideo();
-      }, 100);
+    playSpecifyAddedMovie(movie){
+      this.playingMovie = movie
+      this.playVideo()
     },
-    updateTabQueueMvList(movies) {
-      this.$emit("update-tab-queue-mv-list", movies);
+    pushTabQueueMvList(movie) {
+      this.$emit("push-tab-queue-mv-list", movie);
     },
     tabChange(tabName) {
       this.$emit("tab-change", tabName);

@@ -6,7 +6,7 @@
     </form>
     <movieList
       :movies="tabSearch.mvList"
-      :emphasizedMovieUniqueKey="emphasizedMovieUniqueKey"
+      :emphasizedMovieUniqueKey="''"
       @add-movie-queue="addMovieQueue"
     />
     <button @click="searchWordSubmittedMore" class="btn waves-effect waves-light">
@@ -32,9 +32,6 @@ export default {
         wordSubmit: ""
       }
     };
-  },
-  props: {
-    emphasizedMovieUniqueKey:String
   },
   methods: {
     searchWordSubmitted() {

@@ -99,7 +99,7 @@ export default {
       this.openListStorageWindow("CLOSE");
       this.$emit("move-cancel");
       this.displayedMovies = localStorageInterface.get(localStorageKey);
-      this.$emit("manipulate-player", "playFirstMovie");
+      this.$emit("play-first-movie");
     },
     deleteListStorage(localStorageKey) {
       if (localStorageKey == "") {
