@@ -5,7 +5,7 @@
       <!--        <button @click="searchWordSubmitted">search</button>-->
     </form>
     <movieList
-      :movies="tabSearch.mvList"
+      :movies="tabSearch.movies"
       :emphasizedMovieKey="''"
       @add-movie-queue="addMovieQueue"
     />
@@ -25,7 +25,7 @@ export default {
   data: () => {
     return {
       tabSearch: {
-        mvList: [], // movieSearchList
+        movies: [], // movieSearchList
         nextPageToken: "", //nextPageToken:
         preWord: "q=",
         word: "", // searchWord

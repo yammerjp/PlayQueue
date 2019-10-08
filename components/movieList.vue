@@ -48,7 +48,7 @@ export default {
     };
   },
   props: {
-    movies: Array, //tabSearch.mvList
+    movies: Array,
     emphasizedMovieKey: String,
     nextPlayKey: String
   },

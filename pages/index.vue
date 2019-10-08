@@ -11,12 +11,12 @@
             :playerStart="playerStart"
             :tQloop="tQloop"
             :tQautoPlayRelatedMovie="tQautoPlayRelatedMovie"
-            :tabQueueMvList="tabQueueMvList"
+            :moviesQueue="moviesQueue"
             @add-movie-queue="addMovieQueue"
             @move-cancel="moveCancel"
             @update-player-start="updatePlayerStart"
             @update-playing-movie="updatePlayingMovie"
-            @push-tab-queue-mv-list="pushTabQueueMvList"
+            @push-movies-queue="pushMoviesQueue"
             @tab-change="tabChange"
             ref="tabPlayRef"
           />
@@ -30,7 +30,7 @@
             @manipulatePlayer="manipulatePlayer"
             @update-tQloop="updateTQloop"
             @update-tQautoPlayRelatedMovie="updateTQautoPlayRelatedMovie"
-            @update-tabQueueMvList="updatedTabQueueMvList"
+            @update-moviesQueue="updatedMoviesQueue"
             @tab-change="tabChange"
             ref="tabQueueRef"
           />
@@ -75,7 +75,7 @@ export default {
       playerStart: false,
       tQloop: false,
       tQautoPlayRelatedMovie: false,
-      tabQueueMvList: [emptyMovie]
+      moviesQueue: [emptyMovie]
     };
   },
   /*mounted(){
@@ -84,7 +84,7 @@ export default {
     debugFunction() {
       //      console.log(this.tabQueue)
       //      console.log(YoutubeKey)
-      console.log(this.tabQueueMvList);
+      console.log(this.moviesQueue);
     },
     tabChange(tabName) {
       this.selectedTab = tabName;
@@ -103,11 +103,11 @@ export default {
     updateTQautoPlayRelatedMovie(newVal) {
       this.tQautoPlayRelatedMovie = newVal;
     },
-    updatedTabQueueMvList(movies) {
-      this.tabQueueMvList = movies;
+    updatedMoviesQueue(movies) {
+      this.moviesQueue = movies;
     },
-    pushTabQueueMvList(movies) {
-      this.$refs.tabQueueRef.pushTabQueueMvList(movies);
+    pushMoviesQueue(movies) {
+      this.$refs.tabQueueRef.pushMoviesQueue(movies);
     },
     addMovieQueue(obj) {
       this.$refs.tabQueueRef.addMovieQueue(obj);
@@ -117,17 +117,12 @@ export default {
     },
     manipulatePlayer({ message, key = undefined, movie = undefined }) {
       switch (message) {
-        case "playSpecifyAddedMovieOfTabQueue":
+        case "playSpecifyMovie":
           if (movie === undefined) {
             return;
           }
-          this.$refs.tabPlayRef.playSpecifyAddedMovie(movie);
+          this.$refs.tabPlayRef.playSpecifyMovie(movie);
           break;
-          /*
-        case "playNextMovie":
-          this.$refs.tabPlayRef.playNextMovie();
-          break;
-          */
         case "playRestart":
           this.$refs.tabPlayRef.playRestart();
           break;

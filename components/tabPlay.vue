@@ -43,13 +43,13 @@
 
       <div class="list-name">関連動画</div>
       <movieList
-        :movies="tabPlay.mvList"
+        :movies="tabPlay.movies"
         :emphasizedMovieKey="playingMovie.key"
         :nextPlayKey="nextPlayKey"
         @add-movie-queue="addMovieQueue"
       />
 
-      <button @click="relatedMovieMore" class="btn waves-effect waves-light">
+      <button @click="fetchMoreRelatedMovies" class="btn waves-effect waves-light">
         <i class="material-icons">keyboard_arrow_down</i>
       </button>
     </template>
@@ -70,7 +70,7 @@ export default {
   data: () => {
     return {
       tabPlay: {
-        mvList: [emptyMovie],
+        movies: [emptyMovie],
         nextPageToken: "",
         preWord: "relatedToVideoId=",
         wordSubmit: "", //
@@ -85,7 +85,7 @@ export default {
     playerStart: Boolean,
     tQloop: Boolean,
     tQautoPlayRelatedMovie: Boolean,
-    tabQueueMvList: Array
+    moviesQueue: Array
   },
   computed: {
     player() {
@@ -109,11 +109,31 @@ export default {
     }
   },
   methods: {
-    relatedMovieMore(callback) {
+    fetchMoreRelatedMovies(callback) {
       //[callback..リスト追加後に行われる関数 任意]
       if (this.playerStart == false) return;
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
+    getNextMovieOfTabQueue() {
+      const i = this.moviesQueue.findIndex(({ key }) => {
+        return key === this.playingMovie.key;
+      });
+
+      console.log(i);
+      if (i === -1) {
+        return undefined;
+      }
+      // リスト末尾でないなら
+      if (i < this.moviesQueue.length - 1) {
+        return this.moviesQueue[i + 1];
+      }
+      if (this.tQloop === true) {
+        return this.moviesQueue[0];
+      }
+
+      return null;
+    },
+
     playVideo() {
       if (this.playerStart == false) {
         this.$emit("update-player-start", true);
@@ -131,31 +151,11 @@ export default {
       this.playerFinish = false;
       setTimeout(this.player.playVideo,100)
     },
-    getNextMovieOfTabQueue() {
-      const i = this.tabQueueMvList.findIndex(({ key }) => {
-        return key === this.playingMovie.key;
-      });
-
-      console.log(i);
-      if (i === -1) {
-        return undefined;
-      }
-      // リスト末尾でないなら
-      if (i < this.tabQueueMvList.length - 1) {
-        return this.tabQueueMvList[i + 1];
-      }
-      if (this.tQloop === true) {
-        return this.tabQueueMvList[0];
-      }
-
-      return null;
-    },
     playNextMovie() {
       console.log("playNextMovie()");
       if (this.playerStart == false) {
-        this.playingMovie = this.tabQueueMvList[0]
+        this.playingMovie = this.moviesQueue[0]
         this.playVideo()
-
       }
 
       // tabQueue上に次に再生すべきものがあればそれを再生
@@ -176,35 +176,45 @@ export default {
 
       // 最上位の関連動画を再生
       if (this.tQautoPlayNewRelatedMovie === false) {
-        nextMovie = this.tabPlay.mvList[0];
+        nextMovie = this.tabPlay.movies[0];
         if (nextMovie === undefined) {
           return;
         }
-        this.pushTabQueueMvList(nextMovie);
+        this.pushMoviesQueue(nextMovie);
         this.playingMovie = nextMovie;
         this.playVideo();
         return;
       }
 
       // 未再生の関連動画を再生
-      nextMovie = this.tabPlay.mvList.find(movieT => {
+      nextMovie = this.tabPlay.movies.find(movieT => {
         return (
-          this.tabQueueMvList.find(movieQ => {
+          this.moviesQueue.find(movieQ => {
             return movieT.Id === movieQ.Id;
           }) === undefined
         );
       });
       // 存在しなければ続きを読み込んで再度playNextMovie()
       if (nextMovie === undefined) {
-        this.relatedMovieMore(this.playNextMovie);
+        this.fetchMoreRelatedMovies(this.playNextMovie);
         return;
       }
-      // 存在すれば続きを再生リストに追加してplayNextMovie()
-      //      this.addMovieQueue({message:"PLAY_NOW", movie:nextMovie});
-      this.pushTabQueueMvList(nextMovie);
+      // 存在すれば続きを再生リストに追加してplay
+      this.pushMoviesQueue(nextMovie);
       this.playingMovie = nextMovie;
       this.playVideo();
     },
+    playSpecifyMovie(movie){
+      this.playingMovie = movie
+      this.playVideo()
+    },
+    playRestart() {
+      if (!this.playerFinish) {
+        return;
+      }
+      this.playNextMovie();
+    },
+
     onPlayerError(event) {
       switch (event.data) {
         case 100: //動画が見つからない(非公開含む)
@@ -256,27 +266,18 @@ export default {
         this.playerIsReady = true;
       }
       this.tabChange("TAB_PLAY");
-      this.playSpecifyAddedMovie(this.tabQueueMvList[0])
+      this.playSpecifyMovie(this.moviesQueue[0])
     },
     onPlayerEnded() {
       this.playerFinish = true;
       this.playNextMovie();
     },
-    playRestart() {
-      if (!this.playerFinish) {
-        return;
-      }
-      this.playNextMovie();
-    },
+    
     addMovieQueue(obj) {
       this.$emit("add-movie-queue", obj);
     },
-    playSpecifyAddedMovie(movie){
-      this.playingMovie = movie
-      this.playVideo()
-    },
-    pushTabQueueMvList(movie) {
-      this.$emit("push-tab-queue-mv-list", movie);
+    pushMoviesQueue(movie) {
+      this.$emit("push-movies-queue", movie);
     },
     tabChange(tabName) {
       this.$emit("tab-change", tabName);

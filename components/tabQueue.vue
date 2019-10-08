@@ -1,24 +1,16 @@
 <template>
   <div>
     <div>プレイリスト</div>
-    <div
-      class="move-here"
-      v-if="tabQueue.move.able && tabQueue.move.from!==0"
-      @click="moveHere(-1)"
-    >here</div>
+    <div class="move-here" v-if="move.able && move.from!==0" @click="moveHere(-1)">here</div>
     <template v-if="playerStart">
-      <div
-        class="movie-list col s12 row"
-        v-for="(movie,index) in tabQueueMvList"
-        :key="movie.key"
-      >
+      <div class="movie-list col s12 row" v-for="(movie,index) in moviesQueue" :key="movie.key">
         <div
           class="card-panel grey lighten-5 z-depth-1 intab-card-panel"
           :class="{'now-play-movie':movie.key===playingMovie.key}"
         >
           <div
             class="row valign-wrapper intab-row"
-            :class="{'now-move-movie':movie===tabQueueMvList[tabQueue.move.from]}"
+            :class="{'now-move-movie':movie===moviesQueue[move.from]}"
           >
             <div
               class="width100"
@@ -37,7 +29,7 @@
               </div>
             </div>
           </div>
-          
+
           <div
             class="selected-movie-s12"
             v-if="movie.key===listClickKey"
@@ -70,7 +62,7 @@
         </div>
         <div
           class="move-here"
-          v-if="tabQueue.move.able && index!==tabQueue.move.from && index!==tabQueue.move.from-1"
+          v-if="move.able && index!==move.from && index!==move.from-1"
           @click="moveHere(index)"
         >here</div>
       </div>
@@ -113,8 +105,8 @@
     </div>
     <!--リストを保存、開く機能-->
     <saveList
-      :displayedMoviesProps="tabQueueMvList"
-      @new-displayedMovies="updateTabQueueMvList"
+      :displayedMoviesProps="moviesQueue"
+      @new-displayedMovies="updateMoviesQueue"
       @move-cancel="moveCancel"
       @play-first-movie="playFirstMovie"
     />
@@ -132,13 +124,11 @@ export default {
   },
   data: () => {
     return {
-      tabQueue: {
-        move: {
-          able: false, //movable
-          from: -1 //moveFrom
-        }
+      move: {
+        able: false,
+        from: -1
       },
-      tabQueueMvList_: [emptyMovie],
+      moviesQueue_: [emptyMovie],
       tQloop: false,
       tQautoPlayRelatedMovie: false,
       tQautoPlayNewRelatedMovie: false,
@@ -164,48 +154,48 @@ export default {
     playingMovie: Object
   },
   computed: {
-    tabQueueMvList: {
+    moviesQueue: {
       set: function(movies) {
-        this.tabQueueMvList_ = movies;
-        this.$emit("update-tabQueueMvList", movies);
+        this.moviesQueue_ = movies;
+        this.$emit("update-moviesQueue", movies);
       },
       get: function() {
-        return this.tabQueueMvList_;
+        return this.moviesQueue_;
       }
     }
   },
   methods: {
     addMovieQueue({ message, movie }) {
       if (
-        this.tabQueueMvList.length === 1 &&
-        this.tabQueueMvList[0].Id === ""
+        this.moviesQueue.length === 1 &&
+        this.moviesQueue[0].Id === ""
       ) {
-        this.tabQueueMvList = [];
+        this.moviesQueue = [];
       }
       let pushedMv = Object.assign({}, movie);
       pushedMv.key = uuidv4();
       console.log(pushedMv);
-      let messageWord; //動画を再生リストへ追加したことを通知 2019/6/9 add
-      const i = this.tabQueueMvList.findIndex(({ key }) => {
+      let messageWord; //動画を再生リストへ追加したことを通知
+      const i = this.moviesQueue.findIndex(({ key }) => {
         return key === this.playingMovie.key;
       });
       switch (message) {
         case "PLAY_NOW":
-          this.tabQueueMvList = insert2list(
-            this.tabQueueMvList,
+          this.moviesQueue = insert2list(
+            this.moviesQueue,
             i + 1,
             pushedMv
           );
-          this.tabChange("TAB_PLAY"); //再生タブへ強制遷移 2019/6/9 add
+          this.tabChange("TAB_PLAY"); //再生タブへ強制遷移
           this.manipulatePlayer({
-            message: "playSpecifyAddedMovieOfTabQueue",
+            message: "playSpecifyMovie",
             movie: pushedMv
           });
           messageWord = "挿入";
           break;
         case "PLAY_NEXT":
-          this.tabQueueMvList = insert2list(
-            this.tabQueueMvList,
+          this.moviesQueue = insert2list(
+            this.moviesQueue,
             i + 1,
             pushedMv
           );
@@ -213,7 +203,7 @@ export default {
           messageWord = "挿入";
           break;
         case "PLAY_LAST":
-          this.tabQueueMvList.push(pushedMv);
+          this.moviesQueue.push(pushedMv);
           this.manipulatePlayer({ message: "playRestart" }); //もし最後尾に再生するものが増えていたら再生してくれる。
           messageWord = "追加";
           break;
@@ -222,7 +212,7 @@ export default {
         position: "topRight",
         title: "Add movie to the playlist",
         message: `再生リストに動画「${pushedMv.title}」を${messageWord}しました。`
-      }); //動画を再生リストへ追加したことを通知 2019/6/9 add
+      }); //動画を再生リストへ追加したことを通知
 
       function insert2list(list = [], indexInsert = 0, movie) {
         if (indexInsert < 0 || indexInsert > list.length) {
@@ -244,51 +234,51 @@ export default {
       }
     },
     changeMovieQueue({ message, movie, index }) {
-      /*↑uniqueキーが一致するtabQueueMvListの配列番号 つまりmovieが存在するtabQueueMvList配列内の位置 */
+      /*↑uniqueキーが一致するmoviesQueueの配列番号 つまりmovieが存在するmoviesQueue配列内の位置 */
       switch (message) {
         case "JUMP": //movieの位置に再生キューを移動して再生
           this.manipulatePlayer({
-            message: "playSpecifyAddedMovieOfTabQueue",
+            message: "playSpecifyMovie",
             movie
           });
           this.tabChange("TAB_PLAY"); //再生タブへ強制遷移 2019/6/10 add
           break;
         case "DELETE": //movieを再生キューから削除
-          this.tabQueueMvList.splice(index, 1); //削除
+          this.moviesQueue.splice(index, 1); //削除
           break;
         case "MOVE": //movieの位置を移動して再生キュー内の順番を変更
-          if (this.tabQueue.move.able) this.moveCancel();
-          this.tabQueue.move.from = index;
+          if (this.move.able) this.moveCancel();
+          this.move.from = index;
           //削除前に、移動する動画の場所を保存しておく
-          this.tabQueue.move.able = true;
+          this.move.able = true;
           /*選択画面を挟んでから移動先が決定 */
           break;
       }
     },
     moveHere(index) {
-      const movieFrom = this.tabQueueMvList[this.tabQueue.move.from];
-      this.tabQueueMvList.splice(this.tabQueue.move.from, 1); //削除
-      const offset = index > this.tabQueue.move.from ? 0 : 1;
-      this.tabQueueMvList.splice(index + offset, 0, movieFrom); //予め保存していたデータをリストに挿入
+      const movieFrom = this.moviesQueue[this.move.from];
+      this.moviesQueue.splice(this.move.from, 1); //削除
+      const offset = index > this.move.from ? 0 : 1;
+      this.moviesQueue.splice(index + offset, 0, movieFrom); //予め保存していたデータをリストに挿入
       this.moveCancel();
       this.manipulatePlayer({ message: "playRestart" }); //もし最後尾に再生するものが増えていたら再生してくれる。
     },
     moveCancel() {
-      this.tabQueue.move.able = false;
-      this.tabQueue.move.from = -1;
+      this.move.able = false;
+      this.move.from = -1;
     },
-    pushTabQueueMvList(movie) {
-      this.tabQueueMvList.push(movie);
+    pushMoviesQueue(movie) {
+      this.moviesQueue.push(movie);
     },
-    updateTabQueueMvList(movies) {
-      console.log("updateTabQueueMvList");
+    updateMoviesQueue(movies) {
+      console.log("updateMoviesQueue");
       console.log(movies);
-      this.tabQueueMvList = movies;
+      this.moviesQueue = movies;
     },
     playFirstMovie() {
       this.manipulatePlayer({
-        message: "playSpecifyAddedMovieOfTabQueue",
-        movie: this.tabQueueMvList[0]
+        message: "playSpecifyMovie",
+        movie: this.moviesQueue[0]
       });
     },
     manipulatePlayer(obj) {

@@ -14,13 +14,12 @@ export default {
       [callback..リスト更新後に行いたい関数 任意]
   
       tab.preWord+tab.wordSubmit (とnextPageTokenがあればこれも)をGETでyoutubeに送信
-      tab.mvListに動画をpush
+      tab.moviesに動画をpush
       tab.nextPageTokenを更新
       */
-  
     //初期化処理
     if (listReset == true) {
-      tab.mvList = [];
+      tab.movies = [];
       tab.nextPageToken = "";
     }
     if (newWordSubmit != undefined) {
@@ -56,7 +55,7 @@ export default {
             viewCount: "",
             channelTitle: ""
           };
-          tab.mvList.push(searchMovie);
+          tab.movies.push(searchMovie);
         });
         tab.nextPageToken = res.data.nextPageToken;
         if (callback != undefined && typeof callback == "function")
