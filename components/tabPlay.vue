@@ -44,7 +44,7 @@
       <div class="list-name">関連動画</div>
       <movieList
         :movies="tabPlay.mvList"
-        :emphasizedMovieUniqueKey="ListClickUniqueKey"
+        :emphasizedMovieUniqueKey="listClickUniqueKey"
         :nextPlayUniqueKey="nextPlayUniqueKey"
         @add-movie-queue="addMovieQueue"
       />
@@ -84,7 +84,7 @@ export default {
   props: {
     playerStart: Boolean,
     tQloop: Boolean,
-    ListClickUniqueKey: String,
+    listClickUniqueKey: String,
     tabQueueMvList: Array
   },
   computed: {

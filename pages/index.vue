@@ -10,7 +10,7 @@
           <tabPlay
             :playerStart="playerStart"
             :tQloop="tQloop"
-            :ListClickUniqueKey="listClickUniqueKey"
+            :listClickUniqueKey="listClickUniqueKey"
             :tabQueueMvList="tabQueue.mvList"
             @add-movie-queue="addMovieQueue"
             @move-cancel="moveCancel"
@@ -179,7 +179,6 @@ import saveList from "@/components/saveList.vue";
 const iziToast = require("izitoast");
 const uuidv4 = require("uuid/v4");
 
-let player;
 export default {
   components: {
     tabBar,

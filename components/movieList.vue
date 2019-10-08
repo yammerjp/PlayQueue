@@ -57,7 +57,7 @@ export default {
       if (this.clickedMovieUniqueKey === movie.uniqueKey) {
         this.clickedMovieUniqueKey = undefined;
       } else {
-        this.clickedMovieUniqueKey = movie.uniqueKey; //this.tabCommon.ListClickUniqueKey
+        this.clickedMovieUniqueKey = movie.uniqueKey; //this.tabCommon.listClickUniqueKey
       }
     },
     addMovieQueue({ message, movie }) {
