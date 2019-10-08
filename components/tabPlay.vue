@@ -264,7 +264,7 @@ export default {
       if (!this.playerIsReady) {
         this.playerIsReady = true;
       }
-      this.$emit("tab-change", 0);
+      this.tabChange("TAB_PLAY");
       this.playFirstMovie();
     },
     onPlayerEnded() {
@@ -296,6 +296,9 @@ export default {
     },
     updateTabQueueMvList(movies) {
       this.$emit("update-tab-queue-mv-list", movies);
+    },
+    tabChange(tabName) {
+      this.$emit("tab-change", tabName);
     }
   }
 };
@@ -304,7 +307,6 @@ export default {
 #player-box {
   /*youtube player 16:9固定 ↓*/
   position: relative;
-  width: 100%;
   /*youtube player 16:9固定 ↑*/
 }
 #tab-player > .title {

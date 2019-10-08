@@ -3,22 +3,22 @@
     <div class="col s12">
       <div
         class="tab col s4"
-        @click="tabChange(0)"
-        :class="{'selected-tab-bar': selectedTabNumber==0}"
+        @click="tabChange('TAB_PLAY')"
+        :class="{'selected-tab-bar': selectedTab==='TAB_PLAY'}"
       >
         <i class="material-icons tab-switch-bar">play_arrow</i>
       </div>
       <div
         class="tab col s4"
-        @click="tabChange(1)"
-        :class="{'selected-tab-bar': selectedTabNumber==1}"
+        @click="tabChange('TAB_QUEUE')"
+        :class="{'selected-tab-bar': selectedTab==='TAB_QUEUE'}"
       >
         <i class="material-icons tab-switch-bar">playlist_play</i>
       </div>
       <div
         class="tab col s4"
-        @click="tabChange(2)"
-        :class="{'selected-tab-bar': selectedTabNumber==2}"
+        @click="tabChange('TAB_SEARCH')"
+        :class="{'selected-tab-bar': selectedTab==='TAB_SEARCH'}"
       >
         <i class="material-icons tab-switch-bar">search</i>
       </div>
@@ -28,11 +28,11 @@
 <script>
 export default {
   props: {
-    selectedTabNumber: Number
+    selectedTab: String
   },
   methods: {
-    tabChange(tabNumber) {
-      this.$emit("tab-change", tabNumber);
+    tabChange(tabName) {
+      this.$emit("tab-change", tabName);
     }
   }
 };
