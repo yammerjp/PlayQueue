@@ -26,13 +26,13 @@
           v-if="movie.uniqueKey===clickedMovieUniqueKey"
           @click="listMovieClicked(movie)"
         >
-          <button class="btn waves-effect waves-light" @click="addMovieQueue('PLAY_NOW',movie)">
+          <button class="btn waves-effect waves-light" @click="addMovieQueue({message:'PLAY_NOW',movie})">
             <i class="material-icons">play_arrow</i>今すぐ再生
           </button>
-          <button class="btn waves-effect waves-light" @click="addMovieQueue('PLAY_NEXT',movie)">
+          <button class="btn waves-effect waves-light" @click="addMovieQueue({message:'PLAY_NEXT',movie})">
             <i class="material-icons">add</i>次に再生
           </button>
-          <button class="btn waves-effect waves-light" @click="addMovieQueue('PLAY_LAST',movie)">
+          <button class="btn waves-effect waves-light" @click="addMovieQueue({message:'PLAY_LAST',movie})">
             <i class="material-icons">low_priority</i>最後に再生
           </button>
         </div>
@@ -60,7 +60,7 @@ export default {
         this.clickedMovieUniqueKey = movie.uniqueKey; //this.tabCommon.ListClickUniqueKey
       }
     },
-    addMovieQueue(message, movie) {
+    addMovieQueue({ message, movie }) {
       this.$emit("add-movie-queue", { message, movie });
     }
   }

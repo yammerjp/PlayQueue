@@ -12,7 +12,7 @@
             :tQloop="tQloop"
             :ListClickUniqueKey="tabCommon.ListClickUniqueKey"
             :tabQueueMvList="tabQueue.mvList"
-            @add-movie-queue="addMovieQueue2"
+            @add-movie-queue="addMovieQueue"
             @move-cancel="moveCancel"
             @update-player-finish="updatePlayerFinish"
             @update-player-start="updatePlayerStart"
@@ -70,19 +70,19 @@
                   >
                     <button
                       class="btn waves-effect waves-light"
-                      @click="changeMovieQueue('JUMP',movie)"
+                      @click="changeMovieQueue({message:'JUMP',movie})"
                     >
                       <i class="material-icons">play_arrow</i>今すぐ再生
                     </button>
                     <button
                       class="btn waves-effect waves-light"
-                      @click="changeMovieQueue('DELETE',movie)"
+                      @click="changeMovieQueue({message:'DELETE',movie})"
                     >
                       <i class="material-icons">clear</i>リストから削除
                     </button>
                     <button
                       class="btn waves-effect waves-light"
-                      @click="changeMovieQueue('MOVE',movie)"
+                      @click="changeMovieQueue({message:'MOVE',movie})"
                     >
                       <i class="material-icons">format_line_spacing</i>移動
                     </button>
@@ -90,7 +90,7 @@
                   <div v-else :id="movie.uniqueKey+'-playing'">
                     <button
                       class="btn waves-effect waves-light"
-                      @click="changeMovieQueue('JUMP',movie)"
+                      @click="changeMovieQueue({message:'JUMP',movie})"
                     >
                       <i class="material-icons">play_arrow</i>最初から再生
                     </button>
@@ -155,7 +155,7 @@
         <div :class="{'displayNone':tabCommon.selectedTab!=2}">
           <tabSearch
             :emphasizedMovieUniqueKey="tabCommon.ListClickUniqueKey"
-            @add-movie-queue="addMovieQueue2"
+            @add-movie-queue="addMovieQueue"
           />
         </div>
       </div>
@@ -232,10 +232,7 @@ export default {
       //      console.log(YoutubeKey)
       console.log(this.tabQueue.mvList);
     },
-    addMovieQueue2: function({ message, movie }) {
-      this.addMovieQueue(message, movie);
-    },
-    addMovieQueue: function(msg, movie) {
+    addMovieQueue({ message, movie }) {
       if (
         this.tabQueue.mvList.length === 1 &&
         this.tabQueue.mvList[0].Id === ""
@@ -249,7 +246,7 @@ export default {
       const i = this.tabQueue.mvList.findIndex(({uniqueKey}) => {
         return uniqueKey === this.playingMovie.uniqueKey;
       });
-      switch (msg) {
+      switch (message) {
         case "PLAY_NOW":
           this.tabQueue.mvList = insert2list(
             this.tabQueue.mvList,
@@ -303,12 +300,12 @@ export default {
         ];
       }
     },
-    changeMovieQueue(msg, movie) {
+    changeMovieQueue({message, movie}) {
       const movieCt = this.tabQueue.mvList.findIndex(movie => {
         return movie.uniqueKey === movie.uniqueKey;
       });
       /*↑uniqueキーが一致するtabQueue.mvListの配列番号 つまりmovieが存在するtabQueue.mvList配列内の位置 */
-      switch (msg) {
+      switch (message) {
         case "JUMP": //movieの位置に再生キューを移動して再生
           this.manipulatePlayer("playSpecifyMovieOfTabQueue", movie.uniqueKey);
           this.tabChange(0); //再生タブへ強制遷移 2019/6/10 add
@@ -374,8 +371,8 @@ export default {
     updatePlayingMovie(movie) {
       this.playingMovie = movie;
     },
-    manipulatePlayer(msg, uniqueKey = undefined) {
-      switch (msg) {
+    manipulatePlayer(message, uniqueKey = undefined) {
+      switch (message) {
         case "playFirstMovie":
           console.log("playFirstMovie of manipulatePlayer");
           this.$refs.tabPlayRef.playFirstMovie();

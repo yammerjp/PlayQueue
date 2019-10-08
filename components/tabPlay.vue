@@ -46,7 +46,7 @@
         :movies="tabPlay.mvList"
         :emphasizedMovieUniqueKey="ListClickUniqueKey"
         :nextPlayUniqueKey="nextPlayUniqueKey"
-        @add-movie-queue="addMovieQueue2"
+        @add-movie-queue="addMovieQueue"
       />
 
       <button @click="relatedMovieMore" class="btn waves-effect waves-light">
@@ -209,7 +209,7 @@ export default {
         return;
       }
       // 存在すれば続きを再生リストに追加してplayNextMovie()
-      //      this.addMovieQueue2({message:"PLAY_NOW", movie:nextMovie});
+      //      this.addMovieQueue({message:"PLAY_NOW", movie:nextMovie});
       this.updateTabQueueMvList([...this.tabQueueMvList, nextMovie]);
       this.playingMovie = nextMovie;
       this.playVideo();
@@ -277,7 +277,7 @@ export default {
       }
       this.playNextMovie();
     },
-    addMovieQueue2: function(obj) {
+    addMovieQueue(obj) {
       this.$emit("add-movie-queue", obj);
     },
     playSpecifyMovie(key) {
