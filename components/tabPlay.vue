@@ -46,7 +46,7 @@
         :movies="tabPlay.movies"
         :emphasizedMovieKey="playingMovie.key"
         :nextPlayKey="nextPlayKey"
-        @add-movie-queue="addMovieQueue"
+        @add-movies-queue="addMoviesQueue"
       />
 
       <button @click="fetchMoreRelatedMovies" class="btn waves-effect waves-light">
@@ -60,6 +60,7 @@ import fetchYoutubeDataV3 from "@/assets/js/fetch-youtube-data-v3.js";
 import emptyMovie from "@/assets/js/emptyMovie.js";
 import movieList from "@/components/movieList.vue";
 import visitingDescription from "@/components/visitingDescription.vue";
+const uuidv4 = require("uuid/v4");
 const iziToast = require("izitoast");
 
 export default {
@@ -83,8 +84,7 @@ export default {
   },
   props: {
     playerStart: Boolean,
-    tQloop: Boolean,
-    tQautoPlayRelatedMovie: Boolean,
+    atEndingQueue: String,
     moviesQueue: Array
   },
   computed: {
@@ -92,11 +92,12 @@ export default {
       return this.$refs.youtube.player;
     },
     nextPlayKey() {
-      const movie = this.getNextMovieOfTabQueue();
-      if (movie === undefined || movie === null) {
-        return undefined;
+      console.log("called computed nextPlayKey")
+      const movie = this.getNextMovie()
+      if(movie === undefined || movie===null){
+        return undefined
       }
-      return movie.key;
+      return movie.key
     },
     playingMovie: {
       get: function() {
@@ -114,26 +115,6 @@ export default {
       if (this.playerStart == false) return;
       fetchYoutubeDataV3.getMovieList(this.tabPlay, false, undefined, callback);
     },
-    getNextMovieOfTabQueue() {
-      const i = this.moviesQueue.findIndex(({ key }) => {
-        return key === this.playingMovie.key;
-      });
-
-      console.log(i);
-      if (i === -1) {
-        return undefined;
-      }
-      // リスト末尾でないなら
-      if (i < this.moviesQueue.length - 1) {
-        return this.moviesQueue[i + 1];
-      }
-      if (this.tQloop === true) {
-        return this.moviesQueue[0];
-      }
-
-      return null;
-    },
-
     playVideo() {
       if (this.playerStart == false) {
         this.$emit("update-player-start", true);
@@ -149,64 +130,91 @@ export default {
       this.tabPlay.fullDescription = false;
 
       this.playerFinish = false;
-      setTimeout(this.player.playVideo,100)
+      setTimeout(this.player.playVideo, 100);
     },
-    playNextMovie() {
-      console.log("playNextMovie()");
+    getNextMovie() {
       if (this.playerStart == false) {
-        this.playingMovie = this.moviesQueue[0]
-        this.playVideo()
+        return this.moviesQueue[0];
       }
 
       // tabQueue上に次に再生すべきものがあればそれを再生
-      let nextMovie = this.getNextMovieOfTabQueue();
-      if (nextMovie === undefined) {
-        return;
-      }
-      if (nextMovie !== null) {
-        this.playingMovie = nextMovie;
-        this.playVideo();
-        return;
+      const i = this.moviesQueue.findIndex(({ key }) => {
+        return key === this.playingMovie.key;
+      });
+      if (i === -1) {
+        console.log("error playingMovie is not found in moviesQueue");
+        return null;
       }
 
+      // リスト末尾でない
+      if (i < this.moviesQueue.length - 1) {
+        return this.moviesQueue[i + 1];
+      }
+
+      // リスト末尾
+
       // ループせず関連動画も再生しない
-      if (this.tQautoPlayRelatedMovie === false) {
-        return;
+      if (this.atEndingQueue === "STOP") {
+        return null;
+      }
+
+      // ループ
+      if (this.atEndingQueue === "PLAY_QUEUE_TOP") {
+        return this.moviesQueue[0];
       }
 
       // 最上位の関連動画を再生
-      if (this.tQautoPlayNewRelatedMovie === false) {
-        nextMovie = this.tabPlay.movies[0];
+      if (this.atEndingQueue === "PLAY_RELATED_MOVIE") {
+        const nextMovie = this.tabPlay.movies[0];
         if (nextMovie === undefined) {
-          return;
+          console.log("not found to of related movie");
+          return null;
         }
-        this.pushMoviesQueue(nextMovie);
-        this.playingMovie = nextMovie;
-        this.playVideo();
-        return;
+        return nextMovie;
       }
 
       // 未再生の関連動画を再生
-      nextMovie = this.tabPlay.movies.find(movieT => {
-        return (
-          this.moviesQueue.find(movieQ => {
-            return movieT.Id === movieQ.Id;
-          }) === undefined
-        );
-      });
-      // 存在しなければ続きを読み込んで再度playNextMovie()
+      if (this.atEndingQueue === "PLAY_NEW_RELATED_MOVIE") {
+        const nextMovie = this.tabPlay.movies.find(movieT => {
+          return (
+            this.moviesQueue.find(movieQ => {
+              return movieT.Id === movieQ.Id;
+            }) === undefined
+          );
+        });
+        // 未再生の関連動画がリストにない場合はundefined
+        return nextMovie;
+      }
+      console.log("unknown error");
+      return null;
+    },
+
+    playNextMovie() {
+      console.log("playNextMovie()");
+      const nextMovie = this.getNextMovie();
+
+      if (nextMovie === null) {
+        return;
+      }
       if (nextMovie === undefined) {
+        // 未再生の関連動画を再生したいが、読み込み済みのものの中には存在しないので、続きを読み込んで再度playNextMovie()
         this.fetchMoreRelatedMovies(this.playNextMovie);
         return;
       }
-      // 存在すれば続きを再生リストに追加してplay
-      this.pushMoviesQueue(nextMovie);
+
+      const nextMovieIsInMovieQueue = this.moviesQueue.find(({ key }) => {
+        return key === nextMovie.key;
+      });
+      if (nextMovieIsInMovieQueue === undefined) {
+        nextMovie.key = uuidv4();
+        this.pushMoviesQueue(nextMovie);
+      }
       this.playingMovie = nextMovie;
       this.playVideo();
     },
-    playSpecifyMovie(movie){
-      this.playingMovie = movie
-      this.playVideo()
+    playSpecifyMovie(movie) {
+      this.playingMovie = movie;
+      this.playVideo();
     },
     playRestart() {
       if (!this.playerFinish) {
@@ -266,18 +274,19 @@ export default {
         this.playerIsReady = true;
       }
       this.tabChange("TAB_PLAY");
-      this.playSpecifyMovie(this.moviesQueue[0])
+      this.playSpecifyMovie(this.moviesQueue[0]);
     },
     onPlayerEnded() {
       this.playerFinish = true;
       this.playNextMovie();
     },
-    
-    addMovieQueue(obj) {
-      this.$emit("add-movie-queue", obj);
-    },
+
     pushMoviesQueue(movie) {
       this.$emit("push-movies-queue", movie);
+      //      this.addMoviesQueue({ message: "PLAY_LAST", movie });
+    },
+    addMoviesQueue(obj) {
+      this.$emit("add-movies-queue", obj);
     },
     tabChange(tabName) {
       this.$emit("tab-change", tabName);

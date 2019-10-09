@@ -9,14 +9,13 @@
         <div :class="{'displayNone':selectedTab!='TAB_PLAY'}">
           <tabPlay
             :playerStart="playerStart"
-            :tQloop="tQloop"
-            :tQautoPlayRelatedMovie="tQautoPlayRelatedMovie"
+            :atEndingQueue="atEndingQueue"
             :moviesQueue="moviesQueue"
-            @add-movie-queue="addMovieQueue"
+            @add-movies-queue="addMoviesQueue"
+            @push-movies-queue="pushMoviesQueue"
             @move-cancel="moveCancel"
             @update-player-start="updatePlayerStart"
             @update-playing-movie="updatePlayingMovie"
-            @push-movies-queue="pushMoviesQueue"
             @tab-change="tabChange"
             ref="tabPlayRef"
           />
@@ -28,8 +27,7 @@
             :playerStart="playerStart"
             :playingMovie="playingMovie"
             @manipulatePlayer="manipulatePlayer"
-            @update-tQloop="updateTQloop"
-            @update-tQautoPlayRelatedMovie="updateTQautoPlayRelatedMovie"
+            @update-at-ending-queue="updateAtEndingQueue"
             @update-moviesQueue="updatedMoviesQueue"
             @tab-change="tabChange"
             ref="tabQueueRef"
@@ -38,7 +36,7 @@
 
         <!--検索リストタブ-->
         <div :class="{'displayNone':selectedTab!='TAB_SEARCH'}">
-          <tabSearch @add-movie-queue="addMovieQueue" />
+          <tabSearch @add-movies-queue="addMoviesQueue" />
         </div>
       </div>
     </div>
@@ -52,10 +50,8 @@
 </template>
 
 <script>
-import fetchYoutubeDataV3 from "@/assets/js/fetch-youtube-data-v3.js";
 import emptyMovie from "@/assets/js/emptyMovie.js";
 import tabBar from "@/components/tabBar.vue";
-import movieList from "@/components/movieList.vue";
 import tabPlay from "@/components/tabPlay.vue";
 import tabQueue from "@/components/tabQueue.vue";
 import tabSearch from "@/components/tabSearch.vue";
@@ -63,7 +59,6 @@ import tabSearch from "@/components/tabSearch.vue";
 export default {
   components: {
     tabBar,
-    movieList,
     tabPlay,
     tabQueue,
     tabSearch
@@ -71,20 +66,15 @@ export default {
   data: () => {
     return {
       playingMovie: emptyMovie,
-      selectedTab: "TAB_PLAY", // selectedTab
+      selectedTab: "TAB_PLAY",
       playerStart: false,
-      tQloop: false,
-      tQautoPlayRelatedMovie: false,
+      atEndingQueue: "STOP",
       moviesQueue: [emptyMovie]
     };
   },
-  /*mounted(){
-  },*/
   methods: {
     debugFunction() {
-      //      console.log(this.tabQueue)
-      //      console.log(YoutubeKey)
-      console.log(this.moviesQueue);
+      console.log(this.atEndingQueue);
     },
     tabChange(tabName) {
       this.selectedTab = tabName;
@@ -97,25 +87,22 @@ export default {
     updatePlayingMovie(movie) {
       this.playingMovie = movie;
     },
-    updateTQloop(newVal) {
-      this.tQloop = newVal;
-    },
-    updateTQautoPlayRelatedMovie(newVal) {
-      this.tQautoPlayRelatedMovie = newVal;
+    updateAtEndingQueue(newVal) {
+      this.atEndingQueue = newVal;
     },
     updatedMoviesQueue(movies) {
       this.moviesQueue = movies;
     },
-    pushMoviesQueue(movies) {
-      this.$refs.tabQueueRef.pushMoviesQueue(movies);
+    addMoviesQueue(obj) {
+      this.$refs.tabQueueRef.addMoviesQueue(obj);
     },
-    addMovieQueue(obj) {
-      this.$refs.tabQueueRef.addMovieQueue(obj);
+    pushMoviesQueue(movie){
+      this.$refs.tabQueueRef.pushMoviesQueue(movie)
     },
     moveCancel() {
       this.$refs.tabQueueRef.moveCancel();
     },
-    manipulatePlayer({ message, key = undefined, movie = undefined }) {
+    manipulatePlayer({ message, movie = undefined }) {
       switch (message) {
         case "playSpecifyMovie":
           if (movie === undefined) {

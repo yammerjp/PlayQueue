@@ -78,28 +78,28 @@
         </label>
       </div>
       <div class="switch">
-        <span class="switch-caption" :class="{strikeout:tQloop}">末尾の関連動画を自動再生する:</span>
+        <span class="switch-caption">末尾の関連動画を自動再生する:</span>
         <label>
           Off
-          <input :disabled="tQloop" type="checkbox" v-model="tQautoPlayRelatedMovie" />
+          <input type="checkbox" v-model="tQautoPlayRelatedMovie" />
           <span class="lever"></span>
-          <span :class="{strikeout:tQloop}">On</span>
+          <span>On</span>
         </label>
       </div>
       <div class="switch">
         <span
           class="switch-caption"
-          :class="{strikeout: !tQautoPlayRelatedMovie || tQloop}"
+          :class="{strikeout: isDisabledNewRelatedMovieToggle}"
         >新しい関連動画のみ:</span>
         <label>
           Off
           <input
-            :disabled="!tQautoPlayRelatedMovie || tQloop"
+            :disabled="isDisabledNewRelatedMovieToggle"
             type="checkbox"
             v-model="tQautoPlayNewRelatedMovie"
           />
           <span class="lever"></span>
-          <span :class="{strikeout: !tQautoPlayRelatedMovie || tQloop}">On</span>
+          <span :class="{strikeout: isDisabledNewRelatedMovieToggle}">On</span>
         </label>
       </div>
     </div>
@@ -129,6 +129,7 @@ export default {
         from: -1
       },
       moviesQueue_: [emptyMovie],
+      atEndingQueue: "STOP", //STOP, PLAY_QUEUE_TOP, PLAY_RELATED_MOVIE, PLAY_NEW_RELATED_MOVIE
       tQloop: false,
       tQautoPlayRelatedMovie: false,
       tQautoPlayNewRelatedMovie: false,
@@ -137,13 +138,29 @@ export default {
   },
   watch: {
     tQloop: function(newVal, oldVal) {
-      this.$emit("update-tQloop", newVal);
-      if (newVal && !oldVal && this.playerStart) {
-        this.manipulatePlayer({ message: "playRestart" });
+      if (newVal && !oldVal) {
+        this.tQautoPlayRelatedMovie = false;
+        this.tQautoPlayNewRelatedMovie = false;
+        if (this.playerStart) {
+          this.manipulatePlayer({ message: "playRestart" });
+        }
       }
+      this.changedToggleAtEndingQueue();
     },
     tQautoPlayRelatedMovie: function(newVal, oldVal) {
-      this.$emit("update-tQautoPlayRelatedMovie", newVal);
+      if (newVal && !oldVal) {
+        this.tQloop = false;
+        if (this.playerStart) {
+          this.manipulatePlayer({ message: "playRestart" });
+        }
+      } else {
+        this.tQautoPlayNewRelatedMovie = false;
+      }
+
+      this.changedToggleAtEndingQueue();
+    },
+    tQautoPlayNewRelatedMovie: function(newVal, oldVal) {
+      this.changedToggleAtEndingQueue();
       if (newVal && !oldVal && this.playerStart) {
         this.manipulatePlayer({ message: "playRestart" });
       }
@@ -162,48 +179,40 @@ export default {
       get: function() {
         return this.moviesQueue_;
       }
+    },
+    isDisabledNewRelatedMovieToggle(){
+      return this.atEndingQueue==='STOP'|| this.atEndingQueue=='PLAY_QUEUE_TOP'
     }
   },
   methods: {
-    addMovieQueue({ message, movie }) {
-      if (
-        this.moviesQueue.length === 1 &&
-        this.moviesQueue[0].Id === ""
-      ) {
+    addMoviesQueue({ message, movie: mv }) {
+      if (this.moviesQueue.length === 1 && this.moviesQueue[0].Id === "") {
         this.moviesQueue = [];
       }
-      let pushedMv = Object.assign({}, movie);
-      pushedMv.key = uuidv4();
-      console.log(pushedMv);
-      let messageWord; //動画を再生リストへ追加したことを通知
+      let movie = Object.assign({}, mv);
+      movie.key = uuidv4();
+
+      let messageWord;
       const i = this.moviesQueue.findIndex(({ key }) => {
         return key === this.playingMovie.key;
       });
       switch (message) {
         case "PLAY_NOW":
-          this.moviesQueue = insert2list(
-            this.moviesQueue,
-            i + 1,
-            pushedMv
-          );
+          this.moviesQueue = insert2list(this.moviesQueue, i + 1, movie);
           this.tabChange("TAB_PLAY"); //再生タブへ強制遷移
           this.manipulatePlayer({
             message: "playSpecifyMovie",
-            movie: pushedMv
+            movie
           });
           messageWord = "挿入";
           break;
         case "PLAY_NEXT":
-          this.moviesQueue = insert2list(
-            this.moviesQueue,
-            i + 1,
-            pushedMv
-          );
+          this.moviesQueue = insert2list(this.moviesQueue, i + 1, movie);
           this.manipulatePlayer({ message: "playRestart" }); //もし最後尾に再生するものが増えていたら再生してくれる。
           messageWord = "挿入";
           break;
         case "PLAY_LAST":
-          this.moviesQueue.push(pushedMv);
+          this.moviesQueue.push(movie);
           this.manipulatePlayer({ message: "playRestart" }); //もし最後尾に再生するものが増えていたら再生してくれる。
           messageWord = "追加";
           break;
@@ -211,8 +220,8 @@ export default {
       iziToast.show({
         position: "topRight",
         title: "Add movie to the playlist",
-        message: `再生リストに動画「${pushedMv.title}」を${messageWord}しました。`
-      }); //動画を再生リストへ追加したことを通知
+        message: `再生リストに動画「${movie.title}」を${messageWord}しました。`
+      });
 
       function insert2list(list = [], indexInsert = 0, movie) {
         if (indexInsert < 0 || indexInsert > list.length) {
@@ -232,6 +241,9 @@ export default {
           ...list.slice(indexInsert)
         ];
       }
+    },
+    pushMoviesQueue(movie) {
+      this.moviesQueue.push(movie);
     },
     changeMovieQueue({ message, movie, index }) {
       /*↑uniqueキーが一致するmoviesQueueの配列番号 つまりmovieが存在するmoviesQueue配列内の位置 */
@@ -267,13 +279,33 @@ export default {
       this.move.able = false;
       this.move.from = -1;
     },
-    pushMoviesQueue(movie) {
-      this.moviesQueue.push(movie);
+    changedToggleAtEndingQueue() {
+      const retNewAtEndingQueue = () => {
+        if (this.tQloop) {
+          return "PLAY_QUEUE_TOP";
+        }
+        if (this.tQautoPlayRelatedMovie) {
+          if (this.tQautoPlayNewRelatedMovie) {
+            return "PLAY_NEW_RELATED_MOVIE";
+          }
+          return "PLAY_RELATED_MOVIE";
+        }
+        return "STOP";
+      };
+
+      this.atEndingQueue = retNewAtEndingQueue();
+      this.$emit("update-at-ending-queue", this.atEndingQueue);
     },
     updateMoviesQueue(movies) {
-      console.log("updateMoviesQueue");
-      console.log(movies);
       this.moviesQueue = movies;
+    },
+
+    listMovieClicked(movie) {
+      if (this.listClickKey === movie.key) {
+        this.listClickKey = "";
+      } else {
+        this.listClickKey = movie.key;
+      }
     },
     playFirstMovie() {
       this.manipulatePlayer({
@@ -286,13 +318,6 @@ export default {
     },
     tabChange(tabName) {
       this.$emit("tab-change", tabName);
-    },
-    listMovieClicked(movie) {
-      if (this.listClickKey === movie.key) {
-        this.listClickKey = "";
-      } else {
-        this.listClickKey = movie.key;
-      }
     }
   }
 };

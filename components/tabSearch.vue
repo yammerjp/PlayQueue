@@ -7,7 +7,7 @@
     <movieList
       :movies="tabSearch.movies"
       :emphasizedMovieKey="''"
-      @add-movie-queue="addMovieQueue"
+      @add-movies-queue="addMoviesQueue"
     />
     <button @click="searchWordSubmittedMore" class="btn waves-effect waves-light">
       <i class="material-icons">keyboard_arrow_down</i>
@@ -59,8 +59,8 @@ export default {
 
       fetchYoutubeDataV3.getMovieList(this.tabSearch, false);
     },
-    addMovieQueue(obj){
-      this.$emit('add-movie-queue',obj)
+    addMoviesQueue(obj){
+      this.$emit('add-movies-queue',obj)
     }
   }
 };
