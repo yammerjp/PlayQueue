@@ -12,6 +12,8 @@
           @ready="onPlayerReady"
           @error="onPlayerError"
           @ended="onPlayerEnded"
+          :width="windowSize.width"
+          :height="windowSize.height"
         ></youtube>
       </div>
     </div>
@@ -85,19 +87,20 @@ export default {
   props: {
     playerStart: Boolean,
     atEndingQueue: String,
-    moviesQueue: Array
+    moviesQueue: Array,
+    windowSizeProps: Object
   },
   computed: {
     player() {
       return this.$refs.youtube.player;
     },
     nextPlayKey() {
-      console.log("called computed nextPlayKey")
-      const movie = this.getNextMovie()
-      if(movie === undefined || movie===null){
-        return undefined
+      console.log("called computed nextPlayKey");
+      const movie = this.getNextMovie();
+      if (movie === undefined || movie === null) {
+        return undefined;
       }
-      return movie.key
+      return movie.key;
     },
     playingMovie: {
       get: function() {
@@ -106,6 +109,29 @@ export default {
       set: function(movie) {
         this.$emit("update-playing-movie", movie);
         this.playingMovie_ = movie;
+      }
+    },
+    windowSize() {
+      const movieSizeMax = {
+        width: 640,
+        height: 360
+      };
+      if (
+        this.windowSizeProps.width >= movieSizeMax.width &&
+        this.windowSizeProps.height >= movieSizeMax.height
+      ) {
+        return movieSizeMax;
+      }
+      if (this.windowSizeProps.width * 9 > this.windowSizeProps.height * 16) {
+        return {
+          width: Math.floor((this.windowSizeProps.height * 16) / 9),
+          height: this.windowSizeProps.height
+        };
+      } else {
+        return {
+          width: this.windowSizeProps.width,
+          height: Math.floor((this.windowSizeProps.width * 9) / 16)
+        };
       }
     }
   },

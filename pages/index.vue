@@ -11,6 +11,7 @@
             :playerStart="playerStart"
             :atEndingQueue="atEndingQueue"
             :moviesQueue="moviesQueue"
+            :windowSizeProps="windowSize"
             @add-movies-queue="addMoviesQueue"
             @push-movies-queue="pushMoviesQueue"
             @move-cancel="moveCancel"
@@ -69,7 +70,11 @@ export default {
       selectedTab: "TAB_PLAY",
       playerStart: false,
       atEndingQueue: "STOP",
-      moviesQueue: [emptyMovie]
+      moviesQueue: [emptyMovie],
+      windowSize: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
     };
   },
   methods: {
@@ -114,7 +119,17 @@ export default {
           this.$refs.tabPlayRef.playRestart();
           break;
       }
+    },
+    handleResize(){
+      this.windowSize.width = window.innerWidth
+      this.windowSize.height = window.innerHeight
     }
+  },
+  mounted: function(){
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeDestroy: function(){
+    window.removeEventListener('resize', this.handleResize)
   }
 };
 </script>
