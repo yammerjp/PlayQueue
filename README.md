@@ -18,7 +18,7 @@ open [Play Queue](https://basd4g.github.io/PlayQueue/) on web browswer.
 
 This application is being developed now to change from Vue.js(CDN version) to Nuxt.js.
 
-The code is on a branch, [refactoring/devideComponent](https://github.com/basd4g/PlayQueue/tree/refactoring/devideComponent).
+Release branch is [gh-pages](https://github.com/basd4g/PlayQueue/tree/gh-pages), it use Vue.js(CDN version).
 
 ## Install and run
 
