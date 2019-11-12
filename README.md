@@ -35,8 +35,6 @@ hint: [Youtube Data API](https://developers.google.com/youtube/v3/getting-starte
 ```sh
 $ git clone https://github.com/basd4g/PlayQueue.git
 $ cd PlayQueue
-$ git checkout origin/refactoring/devideComponent
-$ git checkout -b refactoring/devideComponent
 
 $ yarn
 
