@@ -2,9 +2,9 @@
 
 ## Description
 
-Web application to play Youtube in a row.
+Web application to play YouTube in a row.
 
-You can make original playlists of youtube moveis while playing a youtube movie.
+You can make a original playlist of YouTube moveis while playing YouTube movies.
 
 ## How to use
 
@@ -22,13 +22,13 @@ Release branch is [gh-pages](https://github.com/basd4g/PlayQueue/tree/gh-pages),
 
 ## Install and run
 
-### Get Youtube data API v3 key
+### Get a key of YouTube data API v3
 
 1. Create a new project on [Google Cloud Platform Console](https://console.developers.google.com/).
-1. Create a new credential of API key for Youtube Data API.
+1. Create a new credential of API key for YouTube Data API.
 1. Copy the API key to the clipboard.
 
-hint: [Youtube Data API](https://developers.google.com/youtube/v3/getting-started)
+hint: [YouTube Data API](https://developers.google.com/youtube/v3/getting-started)
 
 ### git clone & run
 
@@ -38,10 +38,10 @@ $ cd PlayQueue
 
 $ yarn
 
-$ echo 'module.exports = "YOUR_YOUTUBE_DATA_API_KEYS"' > youtube-keys.js
-# You have to replace your API key  with YOUR_YOUTUBE_DATA_API_KEYS .
+$ echo 'module.exports = "YOUR_YOUTUBE_DATA_API_KEY"' > youtube-keys.js
+# You have to replace your API key  with YOUR_YOUTUBE_DATA_API_KEY .
 # You can paste your API key from the clipboard if you copy it.
 
 $ yarn dev
-# Open a page http://localhost:3000/ with a web browser.
+# Open http://localhost:3000/ on web browser.
 ```
